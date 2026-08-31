@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-cream: #F2EEE8;
+  --bg-charcoal: #171615;
+  --color-vermilion: #FF5A36;
+  --color-lime: #C8FF3D;
+  --color-ink: #161514;
+  --color-paper: #F6F2EC;
+  --color-muted: #A39D94;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-cream);
+  color: var(--color-ink);
+}
+
+body {
+  background-color: var(--bg-cream);
+  color: var(--color-ink);
+  overflow-x: hidden;
+  min-height: 100vh;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Editorial Text Selection in Vermilion */
+::selection {
+  background-color: #FF5A36;
+  color: #F6F2EC;
+}
+
+/* Minimal Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #E8E0D6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #A39D94;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF5A36;
+}
+
+/* Custom keyframes */
+@keyframes marqueeLeft {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marqueeRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.animate-marquee-left {
+  animation: marqueeLeft 32s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marqueeRight 32s linear infinite;
+}
+
+/* Fade In transition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Accessibility: Pre-configured static layouts for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
