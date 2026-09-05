@@ -56,12 +56,14 @@ export function SelectedWork() {
 
         // A card's offset is measured in track coordinates. The final card is
         // clamped to the real maximum, so the track always visibly reaches it.
-        const desiredActiveX = 0;
-        const stops = cards.map((card) =>
-          gsap.utils.clamp(-distance, 0, -(card.offsetLeft - desiredActiveX))
-        );
-        stops[0] = 0;
-        stops[stops.length - 1] = -distance;
+        const measureStops = () => {
+          const maxDistance = measure().distance;
+          const origin = cards[0].offsetLeft;
+          return cards.map((card, index) => index === cards.length - 1
+            ? -maxDistance
+            : gsap.utils.clamp(-maxDistance, 0, -(card.offsetLeft - origin)));
+        };
+        let stops = measureStops();
 
         // Chapter time is intentionally weighted toward looking, rather than moving.
         const hold = 2;
@@ -77,6 +79,7 @@ export function SelectedWork() {
         );
         const tl = gsap.timeline({
           scrollTrigger: {
+            id: 'selected-work-horizontal',
             trigger: section,
             start: 'top top',
             end: () => {
@@ -84,42 +87,45 @@ export function SelectedWork() {
               return `+=${Math.max(next + window.innerHeight * 2, window.innerHeight * 4)}`;
             },
             pin: true,
+            // The section is a flex child; GSAP otherwise disables spacing,
+            // letting Contact cover Work before its horizontal journey ends.
+            pinSpacing: true,
             scrub: 0.85,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              const currentX = Number(gsap.getProperty(track, 'x')) || 0;
-              const nearest = stops.reduce(
-                (best, stop, index) => Math.abs(stop - currentX) < Math.abs(stops[best] - currentX) ? index : best,
-                0
-              );
-              // The closest chapter owns the editorial counter. State changes only
-              // at chapter boundaries; the per-frame polish stays in GSAP.
-              if (activeIndexRef.current !== nearest) {
-                activeIndexRef.current = nearest;
-                setActiveIndex(nearest);
-              }
+            onRefreshInit: () => { stops = measureStops(); },
+          },
+          // Scrub continues after the last scroll event. Follow the rendered
+          // animation so the counter and card focus settle on the same chapter.
+          onUpdate: () => {
+            const currentX = Number(gsap.getProperty(track, 'x')) || 0;
+            const nearest = stops.reduce(
+              (best, stop, index) => Math.abs(stop - currentX) < Math.abs(stops[best] - currentX) ? index : best,
+              0
+            );
+            // The closest chapter owns the editorial counter. State changes only
+            // at chapter boundaries; the per-frame polish stays in GSAP.
+            if (activeIndexRef.current !== nearest) {
+              activeIndexRef.current = nearest;
+              setActiveIndex(nearest);
+            }
 
-              cards.forEach((_, index) => {
-                const focus = gsap.utils.clamp(0, 1, 1 - Math.abs(currentX - stops[index]) / 560);
-                setCardOpacity[index](0.42 + focus * 0.58);
-                setCardScale[index](0.975 + focus * 0.025);
-                setReveal[index].forEach((setter) => {
-                  setter.opacity(0.72 + focus * 0.28);
-                  setter.y((1 - focus) * 18);
-                });
+            cards.forEach((_, index) => {
+              const focus = gsap.utils.clamp(0, 1, 1 - Math.abs(currentX - stops[index]) / 560);
+              setCardOpacity[index](0.42 + focus * 0.58);
+              setCardScale[index](0.975 + focus * 0.025);
+              setReveal[index].forEach((setter) => {
+                setter.opacity(0.72 + focus * 0.28);
+                setter.y((1 - focus) * 18);
               });
-            },
+            });
           },
         });
         tl.to({}, { duration: hold });
-        stops.slice(1).forEach((_, index) => {
-          const card = cards[index + 1];
-          const isFinal = index === stops.length - 2;
+        cards.slice(1).forEach((_, index) => {
+          const isFinal = index === cards.length - 2;
           tl.to(track, {
-            x: () => isFinal
-              ? -measure().distance
-              : gsap.utils.clamp(-measure().distance, 0, -(card.offsetLeft - desiredActiveX)),
+            x: () => stops[index + 1],
             duration: move,
             ease: 'none',
           });
@@ -131,12 +137,20 @@ export function SelectedWork() {
           }
         });
 
-        // Layout can change after fonts load; ScrollTrigger then asks `end` again.
-        requestAnimationFrame(() => ScrollTrigger.refresh());
+        // Refresh once fonts and the other sections' effects have settled.
+        // Cancel this work on breakpoint changes, unmounts and hot reloads.
+        let disposed = false;
+        let refreshFrame = 0;
+        void document.fonts.ready.then(() => {
+          if (!disposed) refreshFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
+        });
         return () => {
+          disposed = true;
+          cancelAnimationFrame(refreshFrame);
           gsap.set(track, { clearProps: 'transform' });
           gsap.set(pin, { clearProps: 'opacity' });
           cards.forEach((card) => gsap.set(card, { clearProps: 'opacity,transform' }));
+          gsap.set(track.querySelectorAll('[data-work-reveal]'), { clearProps: 'opacity,transform' });
         };
       });
 
