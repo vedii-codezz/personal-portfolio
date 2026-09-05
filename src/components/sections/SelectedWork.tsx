@@ -83,6 +83,9 @@ export function SelectedWork() {
             trigger: section,
             start: 'top top',
             end: () => {
+              // ScrollTrigger has reverted the old pin dimensions here.
+              // Measuring in onRefreshInit would retain the previous width.
+              stops = measureStops();
               const next = measure().distance;
               return `+=${Math.max(next + window.innerHeight * 2, window.innerHeight * 4)}`;
             },
@@ -93,7 +96,6 @@ export function SelectedWork() {
             scrub: 0.85,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            onRefreshInit: () => { stops = measureStops(); },
           },
           // Scrub continues after the last scroll event. Follow the rendered
           // animation so the counter and card focus settle on the same chapter.
