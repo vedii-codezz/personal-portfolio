@@ -11,6 +11,7 @@ export function CustomCursor() {
   const cursorFollowerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
+  const [isNarrow, setIsNarrow] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const isVisibleRef = useRef(false);
   const prefersReducedMotion = useReducedMotion();
@@ -23,10 +24,15 @@ export function CustomCursor() {
       window.matchMedia('(pointer: coarse)').matches;
 
     setIsTouch(isTouchDevice);
+    const narrowQuery = window.matchMedia('(max-width: 767px)');
+    const updateNarrow = () => setIsNarrow(narrowQuery.matches);
+    updateNarrow();
+    narrowQuery.addEventListener('change', updateNarrow);
+    return () => narrowQuery.removeEventListener('change', updateNarrow);
   }, []);
 
   useEffect(() => {
-    if (!mounted || isTouch || prefersReducedMotion) return;
+    if (!mounted || isTouch || isNarrow || prefersReducedMotion) return;
 
     const dot = cursorDotRef.current;
     const follower = cursorFollowerRef.current;
@@ -69,9 +75,9 @@ export function CustomCursor() {
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
     };
-  }, [mounted, isTouch, prefersReducedMotion]);
+  }, [mounted, isTouch, isNarrow, prefersReducedMotion]);
 
-  if (!mounted || isTouch || prefersReducedMotion) return null;
+  if (!mounted || isTouch || isNarrow || prefersReducedMotion) return null;
 
   const isTextMode = ['view', 'open', 'copy', 'copied', 'explore'].includes(cursorVariant);
   const displayText = cursorText || cursorVariant.toUpperCase();

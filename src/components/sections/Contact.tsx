@@ -33,9 +33,9 @@ export function Contact() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 70%',
-          end: 'top 20%',
-          scrub: 0.8,
+          start: 'top 72%',
+          end: 'top 28%',
+          scrub: 0.75,
         },
       });
 
@@ -43,7 +43,7 @@ export function Contact() {
       if (markerRef.current) {
         tl.fromTo(
           markerRef.current,
-          { opacity: 0.2, y: 15 },
+          { opacity: 0, y: 12 },
           { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
         );
       }
@@ -51,7 +51,7 @@ export function Contact() {
       if (eyebrowRef.current) {
         tl.fromTo(
           eyebrowRef.current,
-          { opacity: 0.2, y: 15 },
+          { opacity: 0, y: 10 },
           { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' },
           '-=0.15'
         );
@@ -61,7 +61,7 @@ export function Contact() {
       if (headlineLine1Ref.current) {
         tl.fromTo(
           headlineLine1Ref.current,
-          { yPercent: 100, opacity: 0.4 },
+          { yPercent: 100, opacity: 0 },
           { yPercent: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
           '-=0.1'
         );
@@ -70,7 +70,7 @@ export function Contact() {
       if (headlineLine2Ref.current) {
         tl.fromTo(
           headlineLine2Ref.current,
-          { yPercent: 100, opacity: 0.4 },
+          { yPercent: 100, opacity: 0 },
           { yPercent: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
           '-=0.3'
         );
@@ -79,7 +79,7 @@ export function Contact() {
       if (headlineWeirdRef.current) {
         tl.fromTo(
           headlineWeirdRef.current,
-          { yPercent: 100, scale: 0.94, opacity: 0.3 },
+          { yPercent: 100, scale: 0.96, opacity: 0 },
           { yPercent: 0, scale: 1, opacity: 1, duration: 0.6, ease: 'power3.out' },
           '-=0.3'
         );
@@ -98,7 +98,7 @@ export function Contact() {
       if (supportingCopyRef.current) {
         tl.fromTo(
           supportingCopyRef.current,
-          { opacity: 0.2, y: 20 },
+          { opacity: 0, y: 16 },
           { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
           '-=0.3'
         );
@@ -108,7 +108,7 @@ export function Contact() {
       if (actionBtnRef.current) {
         tl.fromTo(
           actionBtnRef.current,
-          { opacity: 0.3, y: 20 },
+          { opacity: 0, y: 14 },
           { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
           '-=0.2'
         );
@@ -117,7 +117,7 @@ export function Contact() {
       if (socialsRef.current) {
         tl.fromTo(
           socialsRef.current,
-          { opacity: 0.3, y: 20 },
+          { opacity: 0, y: 12 },
           { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
           '-=0.2'
         );
@@ -177,7 +177,7 @@ export function Contact() {
           {/* Section Marker (Far Left) */}
           <div ref={markerRef} className="md:col-span-3 flex items-center gap-4">
             <span className="font-mono text-xs font-bold tracking-widest text-vermilion">
-              03
+              04
             </span>
             <span className="h-px w-6 bg-charcoal-light" />
             <span className="font-mono text-xs tracking-widest text-paper-muted uppercase">
@@ -206,7 +206,7 @@ export function Contact() {
             <div className="overflow-hidden">
               <h2
                 ref={headlineLine1Ref}
-                className="font-sans font-black text-6xl sm:text-7xl md:text-8xl xl:text-9xl tracking-tighter text-paper uppercase leading-[0.85] will-change-transform"
+                className="font-sans font-black text-[clamp(3.1rem,13vw,4.5rem)] sm:text-7xl md:text-8xl xl:text-9xl tracking-tighter text-paper uppercase leading-[0.85] will-change-transform"
               >
                 LET&apos;S MAKE
               </h2>
@@ -216,7 +216,7 @@ export function Contact() {
             <div className="overflow-hidden">
               <h2
                 ref={headlineLine2Ref}
-                className="font-sans font-black text-6xl sm:text-7xl md:text-8xl xl:text-9xl tracking-tighter text-paper uppercase leading-[0.85] will-change-transform"
+                className="font-sans font-black text-[clamp(3.1rem,13vw,4.5rem)] sm:text-7xl md:text-8xl xl:text-9xl tracking-tighter text-paper uppercase leading-[0.85] will-change-transform"
               >
                 SOMETHING
               </h2>
@@ -277,7 +277,7 @@ export function Contact() {
             <div ref={actionBtnRef} className="space-y-4">
               <a
                 href={`mailto:${siteConfig.socials.email}`}
-                onMouseEnter={() => setCursorVariant('hover')}
+                onMouseEnter={() => setCursorVariant('copy', 'MAIL')}
                 onMouseLeave={resetCursor}
                 className="group inline-flex items-center justify-between w-full max-w-sm py-4 px-6 rounded-full border border-charcoal-elevated hover:border-paper/40 bg-charcoal-light hover:bg-charcoal transition-all duration-300 font-mono text-xs sm:text-sm font-bold tracking-widest uppercase text-paper"
               >
@@ -311,6 +311,19 @@ export function Contact() {
               </span>
 
               <div className="flex flex-col space-y-2.5 font-mono text-xs font-bold tracking-wider">
+                {/* Email */}
+                <a
+                  href={`mailto:${siteConfig.socials.email}`}
+                  onMouseEnter={() => setCursorVariant('copy', 'MAIL')}
+                  onMouseLeave={resetCursor}
+                  className="group flex items-center justify-between text-paper-muted hover:text-paper transition-colors py-3 lg:py-1 relative focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vermilion"
+                >
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">EMAIL</span>
+                  <span className="text-charcoal-light group-hover:text-vermilion group-hover:translate-x-1 transition-all duration-200">
+                    ─────────→
+                  </span>
+                </a>
+
                 {/* GitHub */}
                 <a
                   href={siteConfig.socials.github}
@@ -318,10 +331,10 @@ export function Contact() {
                   rel="noopener noreferrer"
                   onMouseEnter={() => setCursorVariant('open', 'OPEN')}
                   onMouseLeave={resetCursor}
-                  className="group flex items-center justify-between text-paper-muted hover:text-paper transition-colors py-1 relative"
+                  className="group flex items-center justify-between text-paper-muted hover:text-paper transition-colors py-3 lg:py-1 relative focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vermilion"
                 >
-                  <span className="group-hover:text-vermilion transition-colors">GITHUB</span>
-                  <span className="text-charcoal-light group-hover:text-vermilion transition-all duration-300">
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">GITHUB</span>
+                  <span className="text-charcoal-light group-hover:text-vermilion group-hover:translate-x-1 transition-all duration-200">
                     ─────────→
                   </span>
                 </a>
@@ -333,10 +346,10 @@ export function Contact() {
                   rel="noopener noreferrer"
                   onMouseEnter={() => setCursorVariant('open', 'OPEN')}
                   onMouseLeave={resetCursor}
-                  className="group flex items-center justify-between text-paper-muted hover:text-paper transition-colors py-1 relative"
+                  className="group flex items-center justify-between text-paper-muted hover:text-paper transition-colors py-3 lg:py-1 relative focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-vermilion"
                 >
-                  <span className="group-hover:text-vermilion transition-colors">LINKEDIN</span>
-                  <span className="text-charcoal-light group-hover:text-vermilion transition-all duration-300">
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">LINKEDIN</span>
+                  <span className="text-charcoal-light group-hover:text-vermilion group-hover:translate-x-1 transition-all duration-200">
                     ─────────→
                   </span>
                 </a>

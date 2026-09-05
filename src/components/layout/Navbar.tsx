@@ -24,6 +24,15 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 select-none ${
@@ -83,7 +92,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden font-mono text-xs tracking-widest text-paper py-2 px-3 bg-charcoal-light border border-charcoal-elevated rounded-md"
+          className="md:hidden min-h-11 font-mono text-xs tracking-widest text-paper py-2 px-3 bg-charcoal-light border border-charcoal-elevated rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vermilion"
           aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? 'CLOSE [✕]' : 'MENU [☰]'}
@@ -92,13 +101,13 @@ export function Navbar() {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-[62px] bg-charcoal border-b border-charcoal-light px-6 py-8 flex flex-col gap-6 backdrop-blur-xl animate-fadeIn shadow-2xl">
+        <div className="md:hidden fixed inset-x-0 top-[72px] bg-charcoal border-b border-charcoal-light px-6 py-8 flex flex-col gap-6 backdrop-blur-xl animate-fadeIn shadow-2xl">
           {NAV_ITEMS.map((item, index) => (
             <Link
               key={item.label}
               href={item.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="font-sans text-3xl font-black tracking-tight text-paper hover:text-vermilion transition-colors flex items-baseline justify-between"
+              className="font-sans text-3xl font-black tracking-tight text-paper hover:text-vermilion transition-colors flex items-baseline justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vermilion"
             >
               <span>{item.label}</span>
               <span className="font-mono text-sm text-vermilion">0{index + 1}</span>

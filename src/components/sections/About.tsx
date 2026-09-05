@@ -7,6 +7,9 @@ import { gsap } from '@/lib/gsap';
 
 export function About() {
   const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const payoffGroupRef = useRef<HTMLDivElement>(null);
+  const supportingContentRef = useRef<HTMLDivElement>(null);
   const introLineRef = useRef<HTMLParagraphElement>(null);
   const unreasonableRef = useRef<HTMLHeadingElement>(null);
   const numberIdeasRef = useRef<HTMLParagraphElement>(null);
@@ -28,18 +31,27 @@ export function About() {
       const masterTl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 85%',
+          start: 'top 88%',
           end: 'bottom 65%',
-          scrub: 1.0,
+          scrub: 0.8,
         },
       });
 
-      // STATE 1: ARRIVAL
+      // STATE 1: ARRIVAL — the marker arrives first as Hero clears.
+      if (headerRef.current) {
+        masterTl.fromTo(
+          headerRef.current,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.28, ease: 'power2.out' }
+        );
+      }
+
       if (introLineRef.current) {
         masterTl.fromTo(
           introLineRef.current,
           { opacity: 0.2, y: 24 },
-          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+          '-=0.08'
         );
       }
 
@@ -114,6 +126,37 @@ export function About() {
           '-=0.2'
         );
       }
+
+      if (window.matchMedia('(min-width: 1024px)').matches) {
+        // The final line becomes the clean transition anchor. Its wrapper moves
+        // independently from the internal payoff reveals, avoiding transform
+        // conflicts while the rest of About quietly recedes before Work enters.
+        const handoffTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'bottom 55%',
+            end: 'bottom top',
+            scrub: 0.75,
+          },
+        });
+
+        if (supportingContentRef.current) {
+          handoffTl.to(supportingContentRef.current, {
+            opacity: 0.35,
+            y: -12,
+            duration: 0.6,
+            ease: 'none',
+          });
+        }
+
+        if (payoffGroupRef.current) {
+          handoffTl.to(
+            payoffGroupRef.current,
+            { y: -14, scale: 1.01, duration: 0.6, ease: 'none' },
+            0
+          );
+        }
+      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -126,13 +169,16 @@ export function About() {
       className="relative bg-charcoal text-paper py-28 md:py-44 px-6 md:px-12 overflow-hidden select-none border-t border-charcoal-light"
     >
       <div className="max-w-7xl mx-auto">
-        <SectionHeader number="01" title="ABOUT" category="PHILOSOPHY" theme="dark" />
+        <div ref={headerRef}>
+          <SectionHeader number="01" title="ABOUT" category="PHILOSOPHY" theme="dark" />
+        </div>
 
         {/* Pure Typographic Editorial Scrollytelling Grid (Zero Duplicate Portrait) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center relative">
           {/* Left Column: Typographic Chaos -> Structure Hierarchy */}
           <div className="lg:col-span-8 flex flex-col justify-center z-20">
-            {/* Phase 1: Introductory line */}
+            <div ref={supportingContentRef}>
+              {/* Phase 1: Introductory line */}
             <p
               ref={introLineRef}
               className="font-sans font-semibold text-2xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-paper-muted uppercase mb-1 will-change-transform"
@@ -143,7 +189,7 @@ export function About() {
             {/* Phase 2: Dominant UNREASONABLE */}
             <h3
               ref={unreasonableRef}
-              className="font-sans font-black text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] tracking-tighter text-paper uppercase leading-[0.85] my-2 md:my-4 will-change-transform origin-left"
+              className="font-sans font-black text-[clamp(2.75rem,13vw,4.5rem)] sm:text-[clamp(4.5rem,11vw,6rem)] md:text-[clamp(5rem,10vw,7rem)] lg:text-[11rem] tracking-tighter text-paper uppercase leading-[0.85] my-2 md:my-4 will-change-transform origin-left"
             >
               UNREASONABLE
             </h3>
@@ -171,9 +217,10 @@ export function About() {
                 Some become problems.
               </p>
             </div>
+            </div>
 
             {/* Phase 5: Structure & Payoff (Narrative Handoff into Selected Work) */}
-            <div className="space-y-2">
+            <div ref={payoffGroupRef} className="space-y-2 origin-left">
               <h4
                 ref={payoffHeaderRef}
                 className="font-sans font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl tracking-tight text-paper uppercase will-change-transform"

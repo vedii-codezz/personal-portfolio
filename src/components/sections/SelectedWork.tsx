@@ -14,10 +14,12 @@ export function SelectedWork() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   const sectionRef = useRef<HTMLElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const mobileStageRefs = useRef<(HTMLElement | null)[]>([]);
+  const activeIndexRef = useRef(0);
 
   const { setCursorVariant, resetCursor } = useCursor();
   const prefersReducedMotion = useReducedMotion();
@@ -26,128 +28,116 @@ export function SelectedWork() {
     cardRefs.current[index] = el;
   }, []);
 
-  // useLayoutEffect ensures DOM measurements happen after render but before paint
+  // The desktop track has exactly one transform owner: this GSAP timeline.
+  // Keeping setup here also makes every hot reload clean up its pin and spacer.
   useLayoutEffect(() => {
     if (prefersReducedMotion) return;
 
     const section = sectionRef.current;
+    const pin = pinRef.current;
     const viewport = viewportRef.current;
     const track = trackRef.current;
 
-    if (!section || !viewport || !track) return;
+    if (!section || !pin || !viewport || !track) return;
 
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      // =========================================================
-      // DESKTOP: PINNED HORIZONTAL SCROLL (>= 1024px)
-      // =========================================================
       mm.add('(min-width: 1024px)', () => {
-        // Force layout recalculation
-        ScrollTrigger.refresh();
-
-        const trackWidth = track.scrollWidth;
-        const viewportWidth = viewport.clientWidth;
-        const maxX = trackWidth - viewportWidth;
-
-        // DEBUG: Verify measurements (will remove after verification)
-        console.log('[SelectedWork] Measurements:', {
-          trackWidth,
-          viewportWidth,
-          maxX,
-        });
-
-        if (maxX <= 0) {
-          console.warn('[SelectedWork] maxX is <= 0. Horizontal scroll cannot work.');
-          return;
-        }
-
-        // Calculate stop positions for each project card
+        // Always clear stale inline x values before measuring/recreating.
+        gsap.set(track, { clearProps: 'transform' });
         const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
-        const stopPositions = cards.map((card) => {
-          // card.offsetLeft is relative to its offsetParent (the track).
-          // We negate it to get the required track translateX.
-          const pos = -card.offsetLeft;
-          // Clamp: don't go past the maximum scrollable distance
-          return Math.max(-maxX, Math.min(0, pos));
-        });
+        const measure = () => {
+          const distance = track.scrollWidth - viewport.clientWidth;
+          return { distance: Math.max(0, distance), viewportWidth: viewport.clientWidth };
+        };
+        const { distance } = measure();
+        if (distance <= 0 || cards.length !== projects.length) return;
 
-        console.log('[SelectedWork] Stop positions:', stopPositions);
-        console.log('[SelectedWork] Card offsets:', cards.map((c, i) => ({
-          project: projects[i]?.title,
-          offsetLeft: c.offsetLeft,
-          stopX: stopPositions[i],
-        })));
+        // A card's offset is measured in track coordinates. The final card is
+        // clamped to the real maximum, so the track always visibly reaches it.
+        const desiredActiveX = 0;
+        const stops = cards.map((card) =>
+          gsap.utils.clamp(-distance, 0, -(card.offsetLeft - desiredActiveX))
+        );
+        stops[0] = 0;
+        stops[stops.length - 1] = -distance;
 
-        // Total scroll runway: generous vertical distance
-        const totalScrollDistance = window.innerHeight * 6;
-
-        // Build segmented timeline with holds
+        // Chapter time is intentionally weighted toward looking, rather than moving.
+        const hold = 2;
+        const move = 0.9;
+        const finalHold = 2.5;
+        const setCardOpacity = cards.map((card) => gsap.quickSetter(card, 'opacity'));
+        const setCardScale = cards.map((card) => gsap.quickSetter(card, 'scale'));
+        const setReveal = cards.map((card) =>
+          gsap.utils.toArray<HTMLElement>('[data-work-reveal]', card).map((element) => ({
+            opacity: gsap.quickSetter(element, 'opacity'),
+            y: gsap.quickSetter(element, 'y'),
+          }))
+        );
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: section,
             start: 'top top',
-            end: () => `+=${totalScrollDistance}`,
+            end: () => {
+              const next = measure().distance;
+              return `+=${Math.max(next + window.innerHeight * 2, window.innerHeight * 4)}`;
+            },
             pin: true,
-            scrub: 1,
+            scrub: 0.85,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-              const p = self.progress;
-              // Map progress to active project index
-              // Total timeline duration = 10.6 units
-              // FINORA hold: 0 - 1.6 => progress 0 - 0.151
-              // Move to APTLY: 1.6 - 2.6 => progress 0.151 - 0.245
-              // APTLY hold: 2.6 - 4.2 => progress 0.245 - 0.396
-              // Move to VEYRA: 4.2 - 5.2 => progress 0.396 - 0.491
-              // VEYRA hold: 5.2 - 6.8 => progress 0.491 - 0.642
-              // Move to NIKOT: 6.8 - 7.8 => progress 0.642 - 0.736
-              // NIKOT hold: 7.8 - 10.0 => progress 0.736 - 1.0
-              if (p < 0.20) {
-                setActiveIndex(0);
-              } else if (p < 0.45) {
-                setActiveIndex(1);
-              } else if (p < 0.70) {
-                setActiveIndex(2);
-              } else {
-                setActiveIndex(3);
+              const currentX = Number(gsap.getProperty(track, 'x')) || 0;
+              const nearest = stops.reduce(
+                (best, stop, index) => Math.abs(stop - currentX) < Math.abs(stops[best] - currentX) ? index : best,
+                0
+              );
+              // The closest chapter owns the editorial counter. State changes only
+              // at chapter boundaries; the per-frame polish stays in GSAP.
+              if (activeIndexRef.current !== nearest) {
+                activeIndexRef.current = nearest;
+                setActiveIndex(nearest);
               }
+
+              cards.forEach((_, index) => {
+                const focus = gsap.utils.clamp(0, 1, 1 - Math.abs(currentX - stops[index]) / 560);
+                setCardOpacity[index](0.42 + focus * 0.58);
+                setCardScale[index](0.975 + focus * 0.025);
+                setReveal[index].forEach((setter) => {
+                  setter.opacity(0.72 + focus * 0.28);
+                  setter.y((1 - focus) * 18);
+                });
+              });
             },
           },
         });
-
-        // 1. FINORA HOLD (1.6 units)
-        tl.to({}, { duration: 1.6 });
-
-        // 2. MOVE TO APTLY (1.0 units)
-        tl.to(track, {
-          x: stopPositions[1] || -maxX * 0.33,
-          duration: 1.0,
-          ease: 'power2.inOut',
+        tl.to({}, { duration: hold });
+        stops.slice(1).forEach((_, index) => {
+          const card = cards[index + 1];
+          const isFinal = index === stops.length - 2;
+          tl.to(track, {
+            x: () => isFinal
+              ? -measure().distance
+              : gsap.utils.clamp(-measure().distance, 0, -(card.offsetLeft - desiredActiveX)),
+            duration: move,
+            ease: 'none',
+          });
+          if (isFinal) {
+            tl.to({}, { duration: finalHold - 0.35 });
+            tl.to(pin, { opacity: 0.9, duration: 0.35, ease: 'none' });
+          } else {
+            tl.to({}, { duration: hold });
+          }
         });
 
-        // 3. APTLY HOLD (1.6 units)
-        tl.to({}, { duration: 1.6 });
-
-        // 4. MOVE TO VEYRA (1.0 units)
-        tl.to(track, {
-          x: stopPositions[2] || -maxX * 0.66,
-          duration: 1.0,
-          ease: 'power2.inOut',
-        });
-
-        // 5. VEYRA HOLD (1.6 units)
-        tl.to({}, { duration: 1.6 });
-
-        // 6. MOVE TO NIKOT-E-METRO (1.0 units)
-        tl.to(track, {
-          x: stopPositions[3] || -maxX,
-          duration: 1.0,
-          ease: 'power2.inOut',
-        });
-
-        // 7. NIKOT-E-METRO FINAL HOLD (2.2 units)
-        tl.to({}, { duration: 2.2 });
+        // Layout can change after fonts load; ScrollTrigger then asks `end` again.
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+        return () => {
+          gsap.set(track, { clearProps: 'transform' });
+          gsap.set(pin, { clearProps: 'opacity' });
+          cards.forEach((card) => gsap.set(card, { clearProps: 'opacity,transform' }));
+        };
       });
 
       // =========================================================
@@ -183,12 +173,12 @@ export function SelectedWork() {
     <section
       id="work"
       ref={sectionRef}
-      className="relative bg-charcoal text-paper select-none border-t border-charcoal-elevated"
+      className="work-section relative bg-charcoal text-paper select-none border-t border-charcoal-elevated"
     >
       {/* ========================================================= */}
       {/* DESKTOP PINNED HORIZONTAL SCROLL (min-width: 1024px)      */}
       {/* ========================================================= */}
-      <div className="hidden lg:flex h-screen w-full flex-col justify-between py-8 xl:py-10 px-8 xl:px-14 overflow-hidden relative">
+      <div ref={pinRef} className="work-pin hidden lg:flex h-screen w-full flex-col justify-between py-8 xl:py-10 px-8 xl:px-14 overflow-hidden relative">
         {/* Top Minimal Editorial Meta Header */}
         <div className="w-full flex items-center justify-between font-mono text-xs text-paper-muted border-b border-charcoal-light pb-3 z-20">
           <div className="flex items-center gap-3">
@@ -215,7 +205,7 @@ export function SelectedWork() {
         {/* Middle Stage: Left Intro + Viewport with Track */}
         <div className="my-auto flex w-full h-[76vh] relative">
           {/* Left Anchor Panel — fixed intro sidebar */}
-          <aside className="w-[24vw] min-w-[280px] max-w-[360px] shrink-0 pr-8 xl:pr-12 flex flex-col justify-between h-full py-4 z-20 bg-charcoal/95 backdrop-blur-md border-r border-charcoal-light">
+          <aside className="work-intro w-[24vw] min-w-[280px] max-w-[360px] shrink-0 pr-8 xl:pr-12 flex flex-col justify-between h-full py-4 z-20 bg-charcoal/95 backdrop-blur-md border-r border-charcoal-light">
             <div>
               <span className="font-mono text-xs font-bold text-vermilion tracking-widest uppercase mb-4 block">
                 CURATED INDEX // 2024–2026
@@ -245,13 +235,12 @@ export function SelectedWork() {
           {/* Viewport: visible project window — overflow hidden clips the track */}
           <div
             ref={viewportRef}
-            className="flex-1 h-full overflow-hidden relative"
+            className="work-viewport flex-1 h-full overflow-hidden relative"
           >
             {/* Track: physically translates left via GSAP — width: max-content makes it wider than viewport */}
             <div
               ref={trackRef}
-              className="flex flex-nowrap items-stretch h-full py-2 will-change-transform"
-              style={{ width: 'max-content' }}
+              className="work-track flex flex-nowrap items-stretch h-full py-2 will-change-transform"
             >
               {projects.map((project, index) => {
                 const isHovered = hoveredSlug === project.slug;
@@ -261,12 +250,7 @@ export function SelectedWork() {
                   <article
                     key={project.slug}
                     ref={(el) => setCardRef(el, index)}
-                    className={`shrink-0 h-full flex flex-col justify-between py-4 px-8 xl:px-12 transition-opacity duration-500 relative select-none ${
-                      isActive
-                        ? 'opacity-100'
-                        : 'opacity-40'
-                    }`}
-                    style={{ width: 'min(55vw, 780px)' }}
+                    className="project-card shrink-0 h-full flex flex-col justify-between py-4 px-8 xl:px-12 relative select-none"
                     onMouseEnter={() => {
                       setHoveredSlug(project.slug);
                       setCursorVariant('view', 'VIEW');
@@ -278,6 +262,7 @@ export function SelectedWork() {
                   >
                     {/* Oversized Thin Architectural Background Number */}
                     <div
+                      data-work-reveal
                       className="absolute -top-4 -right-4 font-sans font-thin text-[13rem] xl:text-[17rem] 2xl:text-[20rem] leading-none text-charcoal-light/35 select-none pointer-events-none z-0 tracking-tighter"
                       aria-hidden="true"
                     >
@@ -285,7 +270,7 @@ export function SelectedWork() {
                     </div>
 
                     {/* Stage Top Bar */}
-                    <div className="flex items-center justify-between font-mono text-xs text-paper-muted border-b border-charcoal-light pb-2 relative z-10">
+                    <div data-work-reveal className="flex items-center justify-between font-mono text-xs text-paper-muted border-b border-charcoal-light pb-2 relative z-10">
                       <div className="flex items-center gap-2">
                         <span className="text-vermilion font-bold">({project.number})</span>
                         <span className="tracking-widest uppercase">CHAPTER // {project.subtitle}</span>
@@ -294,7 +279,7 @@ export function SelectedWork() {
                     </div>
 
                     {/* Stage Middle: Open Visual Metaphor */}
-                    <div className="my-auto py-3 relative z-10">
+                    <div data-work-reveal className="my-auto py-3 relative z-10">
                       <Link
                         href={`/project/${project.slug}`}
                         className="block focus:outline-none overflow-hidden rounded-2xl border border-charcoal-elevated bg-charcoal-light"
@@ -309,7 +294,7 @@ export function SelectedWork() {
                     </div>
 
                     {/* Stage Bottom: Typography & Case Study Action */}
-                    <div className="space-y-3 pt-2 relative z-10">
+                    <div data-work-reveal className="space-y-3 pt-2 relative z-10">
                       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
                         <Link href={`/project/${project.slug}`} className="block group">
                           <h3 className="font-sans font-black text-3xl xl:text-4xl 2xl:text-5xl tracking-tighter uppercase text-paper group-hover:text-vermilion transition-colors duration-200">

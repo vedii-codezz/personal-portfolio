@@ -80,6 +80,9 @@ export function Hero() {
 
     const ctx = gsap.context(() => {
       if (!containerRef.current) return;
+      const isMobile = window.matchMedia('(max-width: 767px)').matches;
+      const isCompact = window.matchMedia('(max-width: 1023px)').matches;
+      const nameShift = isMobile ? 12 : isCompact ? 24 : 42;
 
       // Master Reversible Scrubbed Timeline
       // Progress 0: BEDANTIKA & MONDAL in place, Portrait 100% visible
@@ -100,9 +103,9 @@ export function Hero() {
         scrollTl.to(
           firstNameRef.current,
           {
-            xPercent: -42,
-            y: -25,
-            opacity: 0.15,
+            xPercent: -nameShift,
+            y: isMobile ? -8 : -25,
+            opacity: isMobile ? 0.35 : 0.15,
             ease: 'power1.inOut',
           },
           0
@@ -114,9 +117,9 @@ export function Hero() {
         scrollTl.to(
           lastNameRef.current,
           {
-            xPercent: 42,
-            y: 30,
-            opacity: 0.15,
+            xPercent: nameShift,
+            y: isMobile ? 10 : 30,
+            opacity: isMobile ? 0.35 : 0.15,
             ease: 'power1.inOut',
           },
           0
@@ -130,8 +133,8 @@ export function Hero() {
           portraitRef.current,
           {
             opacity: 0,
-            scale: 0.92,
-            y: 35,
+            scale: isMobile ? 0.96 : 0.92,
+            y: isMobile ? 16 : 35,
             ease: 'power1.inOut',
           },
           0
@@ -142,7 +145,7 @@ export function Hero() {
       if (identityTagRef.current) {
         scrollTl.to(
           identityTagRef.current,
-          { opacity: 0, y: -20, ease: 'power1.inOut' },
+          { opacity: 0, y: isMobile ? -10 : -20, ease: 'power1.inOut' },
           0
         );
       }
@@ -150,7 +153,7 @@ export function Hero() {
       if (philosophyTagRef.current) {
         scrollTl.to(
           philosophyTagRef.current,
-          { opacity: 0, y: -20, ease: 'power1.inOut' },
+          { opacity: 0, y: isMobile ? -10 : -20, ease: 'power1.inOut' },
           0
         );
       }
@@ -158,12 +161,22 @@ export function Hero() {
       if (bottomBarRef.current) {
         scrollTl.to(
           bottomBarRef.current,
-          { opacity: 0, y: 20, ease: 'power1.inOut' },
+          { opacity: 0, y: isMobile ? 10 : 20, ease: 'power1.inOut' },
           0
         );
       }
 
-      // 5. Desktop Pointer Micro-Depth (quickTo on X-axis to avoid scroll-driven Y fighting)
+      // 5. The editorial metadata recedes with the supporting copy so the
+      // incoming About marker has a clear visual lane.
+      if (topBarRef.current) {
+        scrollTl.to(
+          topBarRef.current,
+          { opacity: 0.25, y: isMobile ? -8 : -12, ease: 'power1.inOut' },
+          0.08
+        );
+      }
+
+      // 6. Desktop Pointer Micro-Depth (quickTo on X-axis to avoid scroll-driven Y fighting)
       const isTouch =
         window.matchMedia('(pointer: coarse)').matches ||
         'ontouchstart' in window;
@@ -192,7 +205,7 @@ export function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen bg-charcoal text-paper flex flex-col justify-between pt-24 md:pt-28 pb-10 px-6 sm:px-10 md:px-14 xl:px-20 overflow-hidden select-none"
+      className="relative min-h-[100svh] md:min-h-screen bg-charcoal text-paper flex flex-col justify-between pt-24 md:pt-28 pb-10 px-6 sm:px-10 md:px-14 xl:px-20 overflow-hidden select-none"
     >
       {/* ========================================================= */}
       {/* CINEMATIC INTRO OVERLAY (Runs Once on Initial Entry)     */}
@@ -255,7 +268,7 @@ export function Hero() {
         <div className="overflow-hidden">
           <h1
             ref={firstNameRef}
-            className="font-sans font-black text-6xl sm:text-8xl md:text-[9.5rem] lg:text-[11.5rem] xl:text-[13.5rem] leading-[0.82] tracking-tighter text-paper uppercase will-change-transform"
+            className="font-sans font-black text-[clamp(3.25rem,14vw,5.5rem)] sm:text-8xl md:text-[clamp(6rem,12vw,9.5rem)] lg:text-[11.5rem] xl:text-[13.5rem] leading-[0.82] tracking-tighter text-paper uppercase will-change-transform"
           >
             BEDANTIKA
           </h1>
@@ -318,7 +331,7 @@ export function Hero() {
         <div className="overflow-hidden flex justify-end">
           <h1
             ref={lastNameRef}
-            className="font-sans font-black text-6xl sm:text-8xl md:text-[9.5rem] lg:text-[11.5rem] xl:text-[13.5rem] leading-[0.82] tracking-tighter text-paper uppercase text-right will-change-transform"
+            className="font-sans font-black text-[clamp(3.25rem,14vw,5.5rem)] sm:text-8xl md:text-[clamp(6rem,12vw,9.5rem)] lg:text-[11.5rem] xl:text-[13.5rem] leading-[0.82] tracking-tighter text-paper uppercase text-right will-change-transform"
           >
             MONDAL
           </h1>

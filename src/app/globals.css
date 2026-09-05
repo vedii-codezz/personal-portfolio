@@ -16,17 +16,48 @@ html {
   scroll-behavior: smooth;
   background-color: var(--bg-cream);
   color: var(--color-ink);
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   background-color: var(--bg-cream);
   color: var(--color-ink);
   overflow-x: hidden;
+  width: 100%;
   min-height: 100vh;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selected Work: the pinned window clips one deliberately over-wide track. */
+@media (min-width: 1024px) {
+  .work-pin {
+    overflow: hidden;
+  }
+
+  .work-intro {
+    flex: 0 0 clamp(280px, 24vw, 360px);
+  }
+
+  .work-viewport {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .work-track {
+    display: flex;
+    flex-wrap: nowrap;
+    width: max-content;
+    min-width: max-content;
+    height: 100%;
+  }
+
+  .project-card {
+    flex: 0 0 clamp(640px, 70vw, 900px);
+  }
 }
 
 /* Editorial Text Selection in Vermilion */
