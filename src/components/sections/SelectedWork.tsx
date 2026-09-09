@@ -1,498 +1,117 @@
 'use client';
 
-import React, { useState, useLayoutEffect, useRef, useCallback } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { projects } from '@/data/projects';
-import { MonospaceTag } from '../ui/MonospaceTag';
 import { ProjectVisualMetaphor } from '../project/ProjectVisualMetaphor';
-import { useCursor } from '../cursor/CursorContext';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
+const HOLD = 1.7;
+const MOVE = 1;
+const FINAL_HOLD = 2.2;
+
 export function SelectedWork() {
-  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-
   const sectionRef = useRef<HTMLElement>(null);
-  const pinRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLElement | null)[]>([]);
-  const mobileStageRefs = useRef<(HTMLElement | null)[]>([]);
-  const activeIndexRef = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const { setCursorVariant, resetCursor } = useCursor();
-  const prefersReducedMotion = useReducedMotion();
-
-  const setCardRef = useCallback((el: HTMLElement | null, index: number) => {
-    cardRefs.current[index] = el;
+  useLayoutEffect(() => {
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      const section = sectionRef.current!;
+      const scenes = gsap.utils.toArray<HTMLElement>('.work-scene', section);
+      const position = (offset: number) => offset === 0 ? 0 : offset > 0 ? offset * window.innerWidth * 0.72 : offset * window.innerWidth * 0.55;
+      scenes.forEach((scene, index) => {
+        gsap.set(scene.querySelector('.work-title'), { y: index ? 20 : 0 });
+        gsap.set(scene.querySelector('[data-work-details]'), { opacity: index ? 0 : 1 });
+        gsap.set(scene.querySelector('.work-number'), { opacity: index ? 0.06 : 0.18 });
+        gsap.set(scene, { x: () => position(index), scale: index ? 0.92 : 1, opacity: index ? 0.45 : 1 });
+      });
+      scenes.forEach((scene, index) => {
+        scene.inert = index !== 0;
+        scene.setAttribute('aria-hidden', String(index !== 0));
+      });
+      let active = -1;
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          id: 'selected-work-stage', trigger: section, start: 'top top',
+          end: () => `+=${window.innerHeight * 5.5}`,
+          pin: true, pinSpacing: true, scrub: 0.85,
+          anticipatePin: 1, invalidateOnRefresh: true,
+        },
+        onUpdate: () => {
+          const next = Math.min(projects.length - 1, Math.max(0, Math.floor((tl.time() + MOVE / 2) / (HOLD + MOVE))));
+          if (active === next) return;
+          active = next;
+          setActiveIndex(next);
+          scenes.forEach((scene, index) => {
+            scene.inert = index !== next;
+            scene.setAttribute('aria-hidden', String(index !== next));
+            scene.style.zIndex = String(index === next ? 3 : 1);
+          });
+        },
+      });
+      tl.to({}, { duration: HOLD });
+      for (let chapter = 1; chapter < scenes.length; chapter++) {
+        const at = tl.duration();
+        scenes.forEach((scene, index) => {
+          const offset = index - chapter;
+          tl.to(scene, {
+            x: () => position(offset), scale: offset === 0 ? 1 : 0.92,
+            opacity: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.45 : 0,
+            duration: MOVE, ease: 'none',
+          }, at);
+          tl.to(scene.querySelector('.work-title'), { y: offset === 0 ? 0 : 20, duration: MOVE, ease: 'none' }, at);
+          tl.to(scene.querySelector('[data-work-details]'), { opacity: offset === 0 ? 1 : 0, duration: MOVE, ease: 'none' }, at);
+          tl.to(scene.querySelector('.work-number'), { opacity: offset === 0 ? 0.18 : 0.06, duration: MOVE, ease: 'none' }, at);
+          tl.fromTo(scene.querySelector('.work-visual'), { y: offset === 0 ? 12 : 0 }, { y: offset === 0 ? 0 : -12, duration: MOVE, ease: 'none', immediateRender: false }, at);
+        });
+        tl.to({}, { duration: chapter === scenes.length - 1 ? FINAL_HOLD : HOLD });
+      }
+      let disposed = false;
+      let frame = 0;
+      void document.fonts.ready.then(() => {
+        if (!disposed) frame = requestAnimationFrame(() => ScrollTrigger.refresh());
+      });
+      return () => {
+        disposed = true;
+        cancelAnimationFrame(frame);
+        scenes.forEach(scene => { scene.inert = false; scene.removeAttribute('aria-hidden'); scene.style.removeProperty('z-index'); });
+      };
+    }, sectionRef);
+    return () => mm.revert();
   }, []);
 
-  // The desktop track has exactly one transform owner: this GSAP timeline.
-  // Keeping setup here also makes every hot reload clean up its pin and spacer.
-  useLayoutEffect(() => {
-    if (prefersReducedMotion) return;
-
-    const section = sectionRef.current;
-    const pin = pinRef.current;
-    const viewport = viewportRef.current;
-    const track = trackRef.current;
-
-    if (!section || !pin || !viewport || !track) return;
-
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
-
-      mm.add('(min-width: 1024px)', () => {
-        // Always clear stale inline x values before measuring/recreating.
-        gsap.set(track, { clearProps: 'transform' });
-        const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
-        const measure = () => {
-          const distance = track.scrollWidth - viewport.clientWidth;
-          return { distance: Math.max(0, distance), viewportWidth: viewport.clientWidth };
-        };
-        const { distance } = measure();
-        if (distance <= 0 || cards.length !== projects.length) return;
-
-        // A card's offset is measured in track coordinates. The final card is
-        // clamped to the real maximum, so the track always visibly reaches it.
-        const measureStops = () => {
-          const maxDistance = measure().distance;
-          const origin = cards[0].offsetLeft;
-          return cards.map((card, index) => index === cards.length - 1
-            ? -maxDistance
-            : gsap.utils.clamp(-maxDistance, 0, -(card.offsetLeft - origin)));
-        };
-        let stops = measureStops();
-
-        // Chapter time is intentionally weighted toward looking, rather than moving.
-        const hold = 2;
-        const move = 0.9;
-        const finalHold = 2.5;
-        const setCardOpacity = cards.map((card) => gsap.quickSetter(card, 'opacity'));
-        const setCardScale = cards.map((card) => gsap.quickSetter(card, 'scale'));
-        const setReveal = cards.map((card) =>
-          gsap.utils.toArray<HTMLElement>('[data-work-reveal]', card).map((element) => ({
-            opacity: gsap.quickSetter(element, 'opacity'),
-            y: gsap.quickSetter(element, 'y'),
-          }))
-        );
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            id: 'selected-work-horizontal',
-            trigger: section,
-            start: 'top top',
-            end: () => {
-              // ScrollTrigger has reverted the old pin dimensions here.
-              // Measuring in onRefreshInit would retain the previous width.
-              stops = measureStops();
-              const next = measure().distance;
-              return `+=${Math.max(next + window.innerHeight * 2, window.innerHeight * 4)}`;
-            },
-            pin: true,
-            // The section is a flex child; GSAP otherwise disables spacing,
-            // letting Contact cover Work before its horizontal journey ends.
-            pinSpacing: true,
-            scrub: 0.85,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-          // Scrub continues after the last scroll event. Follow the rendered
-          // animation so the counter and card focus settle on the same chapter.
-          onUpdate: () => {
-            const currentX = Number(gsap.getProperty(track, 'x')) || 0;
-            const nearest = stops.reduce(
-              (best, stop, index) => Math.abs(stop - currentX) < Math.abs(stops[best] - currentX) ? index : best,
-              0
-            );
-            // The closest chapter owns the editorial counter. State changes only
-            // at chapter boundaries; the per-frame polish stays in GSAP.
-            if (activeIndexRef.current !== nearest) {
-              activeIndexRef.current = nearest;
-              setActiveIndex(nearest);
-            }
-
-            cards.forEach((_, index) => {
-              const focus = gsap.utils.clamp(0, 1, 1 - Math.abs(currentX - stops[index]) / 560);
-              setCardOpacity[index](0.42 + focus * 0.58);
-              setCardScale[index](0.975 + focus * 0.025);
-              setReveal[index].forEach((setter) => {
-                setter.opacity(0.72 + focus * 0.28);
-                setter.y((1 - focus) * 18);
-              });
-            });
-          },
-        });
-        tl.to({}, { duration: hold });
-        cards.slice(1).forEach((_, index) => {
-          const isFinal = index === cards.length - 2;
-          tl.to(track, {
-            x: () => stops[index + 1],
-            duration: move,
-            ease: 'none',
-          });
-          if (isFinal) {
-            tl.to({}, { duration: finalHold - 0.35 });
-            tl.to(pin, { opacity: 0.9, duration: 0.35, ease: 'none' });
-          } else {
-            tl.to({}, { duration: hold });
-          }
-        });
-
-        // Refresh once fonts and the other sections' effects have settled.
-        // Cancel this work on breakpoint changes, unmounts and hot reloads.
-        let disposed = false;
-        let refreshFrame = 0;
-        void document.fonts.ready.then(() => {
-          if (!disposed) refreshFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
-        });
-        return () => {
-          disposed = true;
-          cancelAnimationFrame(refreshFrame);
-          gsap.set(track, { clearProps: 'transform' });
-          gsap.set(pin, { clearProps: 'opacity' });
-          cards.forEach((card) => gsap.set(card, { clearProps: 'opacity,transform' }));
-          gsap.set(track.querySelectorAll('[data-work-reveal]'), { clearProps: 'opacity,transform' });
-        };
-      });
-
-      // =========================================================
-      // MOBILE / TABLET: NATURAL VERTICAL STACK (< 1024px)
-      // =========================================================
-      mm.add('(max-width: 1023px)', () => {
-        mobileStageRefs.current.forEach((stage) => {
-          if (!stage) return;
-          gsap.fromTo(
-            stage,
-            { y: 35, opacity: 0.3 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.6,
-              ease: 'power2.out',
-              scrollTrigger: {
-                trigger: stage,
-                start: 'top 85%',
-                end: 'top 50%',
-                scrub: 0.8,
-              },
-            }
-          );
-        });
-      });
-    }, section);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
-
   return (
-    <section
-      id="work"
-      ref={sectionRef}
-      className="work-section relative bg-charcoal text-paper select-none border-t border-charcoal-elevated"
-    >
-      {/* ========================================================= */}
-      {/* DESKTOP PINNED HORIZONTAL SCROLL (min-width: 1024px)      */}
-      {/* ========================================================= */}
-      <div ref={pinRef} className="work-pin hidden lg:flex h-screen w-full flex-col justify-between py-8 xl:py-10 px-8 xl:px-14 overflow-hidden relative">
-        {/* Top Minimal Editorial Meta Header */}
-        <div className="w-full flex items-center justify-between font-mono text-xs text-paper-muted border-b border-charcoal-light pb-3 z-20">
-          <div className="flex items-center gap-3">
-            <span className="font-bold text-vermilion text-sm">02</span>
-            <span className="text-charcoal-light">/</span>
-            <span className="tracking-widest uppercase font-semibold text-paper">SELECTED WORK</span>
-            <span className="text-paper-muted">· ARCHITECTURES &amp; SYSTEMS</span>
-          </div>
-
-          {/* Active Chapter Counter */}
-          <div className="flex items-center gap-4">
-            <span className="tracking-widest text-paper font-bold font-mono">
-              CHAPTER 0{activeIndex + 1} / 0{projects.length}
-            </span>
-            <div className="w-24 h-1 bg-charcoal-light rounded-full overflow-hidden">
-              <div
-                className="h-full bg-vermilion transition-all duration-500 ease-out"
-                style={{ width: `${((activeIndex + 1) / projects.length) * 100}%` }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Middle Stage: Left Intro + Viewport with Track */}
-        <div className="my-auto flex w-full h-[76vh] relative">
-          {/* Left Anchor Panel — fixed intro sidebar */}
-          <aside className="work-intro w-[24vw] min-w-[280px] max-w-[360px] shrink-0 pr-8 xl:pr-12 flex flex-col justify-between h-full py-4 z-20 bg-charcoal/95 backdrop-blur-md border-r border-charcoal-light">
-            <div>
-              <span className="font-mono text-xs font-bold text-vermilion tracking-widest uppercase mb-4 block">
-                CURATED INDEX // 2024–2026
-              </span>
-
-              {/* Dominant Headline */}
-              <h2 className="font-sans font-black text-6xl xl:text-7xl 2xl:text-8xl tracking-tighter text-paper uppercase leading-[0.84] mb-6">
-                REAL<br />
-                IDEAS.<br />
-                <span className="text-vermilion">BUILT.</span>
-              </h2>
-
-              <p className="font-sans text-sm xl:text-base text-paper-muted leading-snug tracking-tight font-medium max-w-xs mb-8">
-                Four distinct systems where curiosity met code and ideas turned into real things.
-              </p>
-            </div>
-
-            {/* Bottom Directional Cue */}
-            <div className="space-y-4 pt-6 border-t border-charcoal-light">
-              <div className="flex items-center gap-2 font-mono text-xs font-bold tracking-widest text-paper uppercase">
-                <span>EXPLORE CHAPTERS</span>
-                <span className="text-vermilion animate-pulse">→</span>
-              </div>
-            </div>
-          </aside>
-
-          {/* Viewport: visible project window — overflow hidden clips the track */}
-          <div
-            ref={viewportRef}
-            className="work-viewport flex-1 h-full overflow-hidden relative"
-          >
-            {/* Track: physically translates left via GSAP — width: max-content makes it wider than viewport */}
-            <div
-              ref={trackRef}
-              className="work-track flex flex-nowrap items-stretch h-full py-2 will-change-transform"
-            >
-              {projects.map((project, index) => {
-                const isHovered = hoveredSlug === project.slug;
-                const isActive = activeIndex === index;
-
-                return (
-                  <article
-                    key={project.slug}
-                    ref={(el) => setCardRef(el, index)}
-                    className="project-card shrink-0 h-full flex flex-col justify-between py-4 px-8 xl:px-12 relative select-none"
-                    onMouseEnter={() => {
-                      setHoveredSlug(project.slug);
-                      setCursorVariant('view', 'VIEW');
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredSlug(null);
-                      resetCursor();
-                    }}
-                  >
-                    {/* Oversized Thin Architectural Background Number */}
-                    <div
-                      data-work-reveal
-                      className="absolute -top-4 -right-4 font-sans font-thin text-[13rem] xl:text-[17rem] 2xl:text-[20rem] leading-none text-charcoal-light/35 select-none pointer-events-none z-0 tracking-tighter"
-                      aria-hidden="true"
-                    >
-                      {project.number}
-                    </div>
-
-                    {/* Stage Top Bar */}
-                    <div data-work-reveal className="flex items-center justify-between font-mono text-xs text-paper-muted border-b border-charcoal-light pb-2 relative z-10">
-                      <div className="flex items-center gap-2">
-                        <span className="text-vermilion font-bold">({project.number})</span>
-                        <span className="tracking-widest uppercase">CHAPTER // {project.subtitle}</span>
-                      </div>
-                      <span className="tracking-widest">{project.year}</span>
-                    </div>
-
-                    {/* Stage Middle: Open Visual Metaphor */}
-                    <div data-work-reveal className="my-auto py-3 relative z-10">
-                      <Link
-                        href={`/project/${project.slug}`}
-                        className="block focus:outline-none overflow-hidden rounded-2xl border border-charcoal-elevated bg-charcoal-light"
-                      >
-                        <ProjectVisualMetaphor
-                          type={project.visualType}
-                          isHovered={isHovered}
-                          scrollProgress={isActive ? 1 : 0.5}
-                          className="transition-transform duration-500 group-hover:scale-[1.02]"
-                        />
-                      </Link>
-                    </div>
-
-                    {/* Stage Bottom: Typography & Case Study Action */}
-                    <div data-work-reveal className="space-y-3 pt-2 relative z-10">
-                      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
-                        <Link href={`/project/${project.slug}`} className="block group">
-                          <h3 className="font-sans font-black text-3xl xl:text-4xl 2xl:text-5xl tracking-tighter uppercase text-paper group-hover:text-vermilion transition-colors duration-200">
-                            {project.title}
-                          </h3>
-                        </Link>
-
-                        {/* Monospace Tags */}
-                        <div className="flex flex-wrap gap-1.5">
-                          {project.tags.slice(0, 3).map((tag) => (
-                            <MonospaceTag key={tag} active={isHovered} theme="dark">
-                              {tag}
-                            </MonospaceTag>
-                          ))}
-                        </div>
-                      </div>
-
-                      <p className="font-sans text-sm xl:text-base font-medium text-paper-muted leading-snug line-clamp-2 max-w-xl">
-                        {project.tagline}
-                      </p>
-
-                      {/* Action Links */}
-                      <div className="pt-2 flex items-center justify-between border-t border-charcoal-light font-mono text-xs font-bold tracking-widest uppercase">
-                        <Link
-                          href={`/project/${project.slug}`}
-                          className="inline-flex items-center gap-2 text-paper hover:text-vermilion transition-colors py-1 group"
-                        >
-                          <span>VIEW CASE STUDY</span>
-                          <span className="text-vermilion group-hover:translate-x-1.5 transition-transform">→</span>
-                        </Link>
-
-                        {project.links?.github && (
-                          <a
-                            href={project.links.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-paper-muted hover:text-paper transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            [GITHUB ↗]
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Architectural Chapter Progress Bar */}
-        <div className="w-full flex items-center justify-between font-mono text-xs text-paper-muted pt-3 border-t border-charcoal-light z-20">
-          <div className="flex items-center gap-6 xl:gap-10">
-            {projects.map((p, i) => (
-              <div
-                key={p.slug}
-                className={`flex items-center gap-2.5 transition-all duration-300 ${
-                  activeIndex === i
-                    ? 'text-vermilion font-bold scale-105'
-                    : 'text-paper-muted opacity-40'
-                }`}
-              >
-                <span className="font-mono">0{i + 1}</span>
-                <span className="tracking-wider uppercase hidden sm:inline">{p.title}</span>
-                {i < projects.length - 1 && <span className="text-charcoal-light ml-4 sm:ml-6">/</span>}
-              </div>
-            ))}
-          </div>
-
-          <span className="tracking-widest text-[11px] text-paper-muted hidden md:inline">
-            SCROLL TO ADVANCE CHAPTERS
-          </span>
-        </div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* MOBILE / TABLET VERTICAL CHAPTER STACK (< 1024px)        */}
-      {/* ========================================================= */}
-      <div className="lg:hidden py-20 px-6 sm:px-10 max-w-3xl mx-auto space-y-20">
-        {/* Mobile Intro Header */}
-        <div className="space-y-4 border-b border-charcoal-light pb-8">
-          <div className="flex items-center gap-3 font-mono text-xs text-paper-muted">
-            <span className="text-vermilion font-bold text-sm">02</span>
-            <span className="uppercase tracking-widest font-semibold text-paper">SELECTED WORK</span>
-          </div>
-
-          <h2 className="font-sans font-black text-5xl sm:text-6xl tracking-tighter text-paper uppercase leading-[0.86]">
-            REAL<br />
-            IDEAS.<br />
-            <span className="text-vermilion">BUILT.</span>
-          </h2>
-
-          <p className="font-sans text-base text-paper-muted leading-snug tracking-tight font-medium">
-            Four distinct systems where curiosity met code and ideas turned into real things.
-          </p>
-        </div>
-
-        {/* Mobile Project Chapters */}
-        <div className="space-y-20">
+    <section id="work" ref={sectionRef} className="work-section bg-charcoal text-paper border-t border-charcoal-elevated" aria-labelledby="work-heading">
+      <div className="work-pin">
+        <header className="work-header font-mono text-xs tracking-widest">
+          <h2 id="work-heading"><span className="text-vermilion">02 / </span> SELECTED WORK</h2>
+          <span className="text-paper-muted">ARCHITECTURES &amp; SYSTEMS</span>
+        </header>
+        <div className="work-stage">
           {projects.map((project, index) => (
-            <article
-              key={project.slug}
-              ref={(el) => {
-                mobileStageRefs.current[index] = el;
-              }}
-              className="space-y-6 relative"
-            >
-              {/* Giant Mobile Number */}
-              <div
-                className="font-sans font-thin text-7xl text-charcoal-light/60 tracking-tighter select-none"
-                aria-hidden="true"
-              >
-                {project.number}
-              </div>
-
-              <div className="flex items-center justify-between font-mono text-xs pb-3 border-b border-charcoal-light text-paper-muted">
-                <span className="text-vermilion font-bold text-sm">
-                  ({project.number})
-                </span>
-                <span className="uppercase tracking-wider">
-                  {project.subtitle} · {project.year}
-                </span>
-              </div>
-
-              <Link
-                href={`/project/${project.slug}`}
-                className="block rounded-2xl overflow-hidden border border-charcoal-elevated bg-charcoal-light"
-              >
-                <ProjectVisualMetaphor
-                  type={project.visualType}
-                  scrollProgress={1}
-                />
-              </Link>
-
-              <div className="space-y-3">
-                <Link href={`/project/${project.slug}`} className="block">
-                  <h3 className="font-sans font-black text-3xl sm:text-4xl tracking-tighter uppercase text-paper hover:text-vermilion transition-colors">
-                    {project.title}
-                  </h3>
-                </Link>
-
-                <p className="font-sans text-base font-semibold text-paper-muted leading-snug">
-                  {project.tagline}
-                </p>
-
-                <p className="text-sm text-paper-muted/80 leading-relaxed">
-                  {project.description}
-                </p>
-
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {project.tags.map((tag) => (
-                    <MonospaceTag key={tag} theme="dark">
-                      {tag}
-                    </MonospaceTag>
-                  ))}
+            <article key={project.slug} className="work-scene" data-active={activeIndex === index} aria-label={`${project.number} ${project.title}`}>
+              <span className="work-number" aria-hidden="true">{project.number}</span>
+              <div className="work-copy">
+                <p className="font-mono text-xs tracking-widest text-paper-muted mb-6">PROJECT {project.number} / {project.year}</p>
+                <h3 className="work-title"><Link href={`/project/${project.slug}`}>{project.title}</Link></h3>
+                <div data-work-details>
+                  <p className="text-paper-muted text-base leading-relaxed mt-6 max-w-sm">{project.tagline}</p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-paper-muted mt-6">{project.tags.slice(0, 3).join(' / ')}</p>
+                  <Link href={`/project/${project.slug}`} className="work-cta inline-flex items-center gap-5 mt-9 font-mono text-xs tracking-widest hover:text-vermilion">VIEW PROJECT <span className="text-vermilion">→</span></Link>
                 </div>
-
-                <div className="pt-4 flex items-center justify-between border-t border-charcoal-light font-mono text-xs font-bold tracking-widest uppercase">
-                  <Link
-                    href={`/project/${project.slug}`}
-                    className="inline-flex items-center gap-2 text-paper hover:text-vermilion transition-colors"
-                  >
-                    <span>VIEW CASE STUDY</span>
-                    <span className="text-vermilion">→</span>
-                  </Link>
-
-                  {project.links?.github && (
-                    <a
-                      href={project.links.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-paper-muted hover:text-paper transition-opacity"
-                    >
-                      [GITHUB ↗]
-                    </a>
-                  )}
-                </div>
+              </div>
+              <div className="work-visual" aria-hidden="true">
+                <ProjectVisualMetaphor type={project.visualType} scrollProgress={1} />
               </div>
             </article>
           ))}
         </div>
+        <footer className="work-footer font-mono text-xs text-paper-muted tracking-widest">
+          <ol className="work-index" aria-label="Project progress">
+            {projects.map((project, index) => <li key={project.slug} aria-current={index === activeIndex ? 'step' : undefined} className={index === activeIndex ? 'text-paper' : 'opacity-40'}><span className={index === activeIndex ? 'text-vermilion' : ''}>{project.number}</span> {project.title}</li>)}
+          </ol><span>0{activeIndex + 1} / 04</span>
+        </footer>
       </div>
     </section>
   );
