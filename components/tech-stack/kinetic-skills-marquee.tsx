@@ -147,23 +147,17 @@ export function KineticSkillsMarquee({
         </div>
       </div>
 
-      {/* Secondary Status Strip: Currently Learning / Progressing */}
-      <div className="mt-8 pt-6 border-t border-line/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
+      {/* Single Compact Status Line: Loud in motion, light in surrounding information */}
+      <div className="mt-8 pt-6 border-t border-line/30 flex items-center justify-between gap-4 px-2">
         <div className="flex items-center gap-3">
-          <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" aria-hidden="true" />
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
           <span className="font-mono text-xs uppercase tracking-widest text-secondary">
-            CURRENTLY LEARNING &amp; EXPANDING
+            CURRENTLY LEARNING // JAVA / DATA SCIENCE
           </span>
         </div>
-
-        <div className="flex flex-wrap items-center gap-4 sm:gap-8 font-mono text-xs">
-          {secondaryStatus.map((item) => (
-            <div key={item.name} className="flex items-center gap-2 border border-line bg-raised/40 px-3 py-1.5 rounded">
-              <span className="text-primary font-medium">{item.name}</span>
-              <span className="text-secondary/60">[{item.status}]</span>
-            </div>
-          ))}
-        </div>
+        <span className="hidden sm:inline-block font-mono text-[11px] uppercase tracking-widest text-secondary/40">
+          CORE STACK IN ACTIVE ROTATION
+        </span>
       </div>
 
       {/* Accessible Screen-Reader Summary */}

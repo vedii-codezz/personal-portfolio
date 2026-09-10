@@ -20,9 +20,10 @@ export const portfolio = {
   },
   hero: {
     academic: "CSE × AI/ML",
+    masthead: "CSE × AI/ML STUDENT",
+    identityLine: "DEVELOPER · BUILDER · EXPERIMENTER",
     location: "HOWRAH / WEST BENGAL / INDIA",
     roles: ["DEVELOPER", "BUILDER", "EXPERIMENTER"],
-    identityStrip: ["DEVELOPER", "BUILDER", "EXPERIMENTER", "CSE × AI/ML"],
     statement: ["Building intelligent systems", "and interfaces worth exploring."],
     workLabel: "Explore selected work",
     portraitLabel: "01 / AN INDEPENDENT PERSPECTIVE",
@@ -37,14 +38,11 @@ export const portfolio = {
     id: "intro",
     index: "01",
     label: "INTRODUCTION",
-    annotation: "LEARNING BY BUILDING",
-    transitionalStatement: {
-      line1: "I DON'T JUST WANT TO USE TECHNOLOGY.",
-      line2: "I WANT TO UNDERSTAND IT, EXPERIMENT WITH IT, AND BUILD WITH IT.",
-    },
+    annotation: "LEARNING THROUGH BUILDING",
+    part1: ["I DON'T JUST WANT", "TO USE TECHNOLOGY."],
+    part2: ["I WANT TO", "UNDERSTAND IT.", "EXPERIMENT WITH IT.", "BUILD WITH IT."],
     heading: ["I don't just want to", "use technology.", "I want to understand it."],
     paragraphs: [
-      "I'm Bedantika, a B.Tech Computer Science & Engineering student specializing in Artificial Intelligence and Machine Learning.",
       "I explore AI/ML, creative web development, interactive systems, and experimental interfaces by building real projects—and figuring things out along the way.",
     ],
   },
@@ -52,10 +50,10 @@ export const portfolio = {
     id: "work",
     index: "02",
     label: "SELECTED WORK",
-    annotation: "EXPERIMENTS INTO APPLICATIONS",
+    annotation: "04 PROJECTS / SELECTED SYSTEMS",
     entryBadge: "02 // SELECTED WORK",
-    heading: "Built to learn.",
-    description: "Different projects. Different questions to explore.",
+    heading: "Selected work.",
+    description: "Four systems exploring multi-agent orchestration, explainable decision engines, deterministic finance, and transit routing.",
     liveLabel: "View live",
     sourceLabel: "GitHub",
   },
@@ -63,42 +61,23 @@ export const portfolio = {
     id: "about",
     index: "03",
     label: "ABOUT",
-    annotation: "PERSONAL TECHNICAL DOSSIER",
+    annotation: "CURIOUS BY DEFAULT",
     heading: ["CURIOUS BY DEFAULT.", "BUILDING TO UNDERSTAND."],
-    meta: [
-      { label: "ACADEMIC SPEC", value: "CSE × AI/ML" },
-      { label: "IDENTITY", value: "STUDENT / DEVELOPER / BUILDER" },
-      { label: "LOCATION", value: "HOWRAH / WEST BENGAL" },
-    ],
-    fragments: [
-      "CURIOUS BY DEFAULT.",
-      "BUILDING TO UNDERSTAND.",
-    ],
-    narrative: [
-      "I approach computing through direct construction. Rather than memorizing theoretical patterns in isolation, I build working systems—observing where frameworks break, how state propagates, and what makes software feel resilient and legible.",
-      "My work explores the intersection of intelligent algorithmic models and disciplined visual interfaces. Every project is an experimental instrument built to test questions, inspect failure modes, and deepen technical understanding.",
-    ],
-    focusHeading: "CORE EXPLORATIONS",
-    focusAreas: [
+    pillars: [
       {
         index: "01",
-        label: "AI / ML",
-        detail: "Applied model exploration, multi-agent coordination, and practical inference pipelines.",
+        label: "LEARN",
+        detail: "Building helps me understand ideas that theory alone cannot.",
       },
       {
         index: "02",
-        label: "CREATIVE WEB",
-        detail: "Kinetic typography, disciplined monochrome aesthetics, and responsive layout architectures.",
+        label: "BREAK",
+        detail: "I like taking systems apart, understanding their logic, and rebuilding them better.",
       },
       {
         index: "03",
-        label: "INTERACTIVE SYSTEMS",
-        detail: "State machines, user feedback loops, and robust client-side runtime behavior.",
-      },
-      {
-        index: "04",
-        label: "EXPERIMENTAL INTERFACES",
-        detail: "Explainability matrices, conceptual data visualization, and exploratory tooling.",
+        label: "EXPLORE",
+        detail: "Right now, I am exploring AI/ML, data, and creative web experiences.",
       },
     ],
   },
@@ -106,9 +85,8 @@ export const portfolio = {
     id: "tech-stack",
     index: "04",
     label: "WHAT I WORK WITH",
-    annotation: "PERSONAL SKILL INVENTORY",
-    heading: "Tools and foundational study.",
-    description: "Personal languages, data fundamentals, and active directions of learning. Projects and implementation tools are contextualized separately.",
+    annotation: "FOUNDATIONS & PROGRESSION",
+    heading: "WHAT I WORK WITH.",
     primarySkills: [
       "PYTHON",
       "C++",
@@ -121,33 +99,6 @@ export const portfolio = {
     secondaryStatus: [
       { name: "JAVA", status: "LEARNING" },
       { name: "DATA SCIENCE", status: "IN PROGRESS" },
-    ],
-    categories: [
-      {
-        index: "01",
-        name: "FOUNDATIONAL LANGUAGES",
-        items: [
-          { name: "Python", context: "Primary language for data, ML, and algorithmic problem solving." },
-          { name: "C++", context: "Systems foundations, data structures, and core CS coursework." },
-          { name: "HTML & CSS", context: "Semantic DOM architecture, modern layouts, and kinetic styling." },
-        ],
-      },
-      {
-        index: "02",
-        name: "DATA FUNDAMENTALS",
-        items: [
-          { name: "NumPy & Pandas", context: "Completed fundamentals; tabular transformation and numerical manipulation." },
-          { name: "AI / ML", context: "Academic specialization and primary direction of ongoing study." },
-        ],
-      },
-      {
-        index: "03",
-        name: "CURRENTLY PROGRESSING",
-        items: [
-          { name: "Java", context: "Actively studying core object-oriented principles and platform mechanics." },
-          { name: "Data Science", context: "In progress; integrating statistical methods and data workflows." },
-        ],
-      },
     ],
   },
   lab: {
@@ -163,7 +114,7 @@ export const portfolio = {
         title: "CREATIVE WEB MOTION",
         subtitle: "Kinetic typography / scroll experiments",
         substrate: "DOM / CSS / GSAP",
-        note: "Testing typographic threshold mechanics and viewport pinning under tight layout budgets.",
+        note: "Typographic threshold mechanics and viewport pinning under tight layout budgets.",
         type: "kinetic" as const,
       },
       {
@@ -171,7 +122,7 @@ export const portfolio = {
         title: "SPATIAL INTERFACE STUDIES",
         subtitle: "Spatial interaction / geometric projection",
         substrate: "SVG Isometric / CSS 3D",
-        note: "Wireframe geometric planes and perspective projection without high-overhead runtime libraries.",
+        note: "Geometric projection and wireframe planes without heavy runtime libraries.",
         type: "wireframe" as const,
       },
       {
@@ -179,7 +130,7 @@ export const portfolio = {
         title: "ML EXPERIMENTS",
         subtitle: "Model training / inference exploration",
         substrate: "PyTorch / Transformers",
-        note: "Schematic analysis of linear projections, attention weight distributions, and latent layer dimensions.",
+        note: "Schematic analysis of linear projections and transformer attention distributions.",
         type: "model" as const,
       },
     ],
