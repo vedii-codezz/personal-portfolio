@@ -17,7 +17,7 @@ This portfolio uses editorial storytelling, purposeful motion, and deep technica
 
 ## SELECTED WORK
 
-The portfolio presents four systems across multi-agent orchestration, explainable decision engines, deterministic budgeting interfaces, and offline transit routing.
+The portfolio presents four systems across multi-agent orchestration, explainable decision engines, deterministic budgeting interfaces, and computed transit routing.
 
 ### 01 / FINORA
 **Multi-Agent Personal CFO**  
@@ -57,7 +57,7 @@ A full-stack transit prototype exploring nearest-station discovery, multimodal r
 
 - **Case Study:** `/project/nikot-e-metro`
 - **GitHub:** [github.com/vedii-codezz/nikot-e-metro](https://github.com/vedii-codezz/nikot-e-metro)
-- **Live:** Offline routing architecture (no public web deployment)
+- **Live:** No verified public deployment
 
 ---
 
