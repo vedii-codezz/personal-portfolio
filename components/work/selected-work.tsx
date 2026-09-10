@@ -10,7 +10,7 @@ export function SelectedWork() {
       <div className="work-entry-header pb-8 mb-4 border-b border-line flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <span className="font-mono text-xs uppercase tracking-widest text-secondary block mb-3">
-            02 // PORTFOLIO CHAPTERS
+            02 // SELECTED WORK
           </span>
           <h2 id="work-title" className="font-sans text-4xl sm:text-6xl md:text-7xl font-bold tracking-tighter text-primary leading-none">
             SELECTED WORK

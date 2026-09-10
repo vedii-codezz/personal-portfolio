@@ -155,9 +155,6 @@ export function KineticSkillsMarquee({
             CURRENTLY LEARNING // JAVA / DATA SCIENCE
           </span>
         </div>
-        <span className="hidden sm:inline-block font-mono text-[11px] uppercase tracking-widest text-secondary/40">
-          CORE STACK IN ACTIVE ROTATION
-        </span>
       </div>
 
       {/* Accessible Screen-Reader Summary */}
