@@ -1,0 +1,46 @@
+/* Case Study Styling - Strict Monochrome Aesthetic */
+
+.case-study-root {
+  min-height: 100vh;
+  background-color: var(--color-canvas);
+  color: var(--color-primary);
+}
+
+.case-study-nav {
+  backdrop-filter: blur(8px);
+  background-color: rgba(5, 5, 5, 0.92);
+}
+
+.case-study-title {
+  letter-spacing: -0.07em;
+}
+
+/* System Topography Stage */
+.topography-stage-frame {
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
+}
+
+.topo-stage-card {
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+@media (min-width: 1024px) {
+  [data-topography-pin] {
+    will-change: transform;
+  }
+}
+
+/* Seven Specialists Theatre */
+.theatre-layout {
+  min-height: 520px;
+}
+
+/* Reduced Motion Fallback */
+@media (prefers-reduced-motion: reduce) {
+  [data-topography-pin] {
+    will-change: auto !important;
+  }
+  .topo-stage-card {
+    transition: none !important;
+  }
+}
