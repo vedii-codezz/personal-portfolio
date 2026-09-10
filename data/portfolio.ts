@@ -134,9 +134,9 @@ export const portfolio = {
       },
       {
         index: "02",
-        name: "DATA & SPECIALIZATION",
+        name: "DATA FUNDAMENTALS",
         items: [
-          { name: "NumPy & Pandas", context: "Fundamentals mastered; tabular transformation and numerical manipulation." },
+          { name: "NumPy & Pandas", context: "Completed fundamentals; tabular transformation and numerical manipulation." },
           { name: "AI / ML", context: "Academic specialization and primary direction of ongoing study." },
         ],
       },

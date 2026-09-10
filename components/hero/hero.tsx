@@ -142,12 +142,14 @@ export function Hero() {
       {/* Transitional Identity Ribbon Strip */}
       <div className="identity-ribbon mt-12 pt-4 border-t border-line/50 overflow-hidden" data-hero-meta>
         <div className="flex items-center justify-between gap-6 font-mono text-[10px] tracking-widest uppercase text-secondary">
-          <div className="flex items-center gap-6">
-            <span>SYSTEM DISCIPLINE</span>
+          <div className="flex items-center gap-4 sm:gap-6">
+            <span>DEVELOPER</span>
             <span>✦</span>
-            <span>EXPERIMENT-FIRST</span>
+            <span>BUILDER</span>
             <span>✦</span>
-            <span>DETERMINISTIC LOGIC</span>
+            <span>EXPERIMENTER</span>
+            <span>✦</span>
+            <span>CSE × AI/ML</span>
           </div>
           <div className="hidden md:flex items-center gap-4 text-primary">
             <span>[SCROLL TO DISCOVER]</span>
