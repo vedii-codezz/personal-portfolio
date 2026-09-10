@@ -1,79 +1,101 @@
 import { portfolio } from "@/data/portfolio";
-import { SectionLabel } from "@/components/ui/section-label";
 
 export function About() {
   const about = portfolio.about;
 
   return (
-    <section id={about.id} className="about site-gutter" aria-labelledby="about-title" data-about>
-      <SectionLabel {...about} />
+    <section
+      id={about.id}
+      className="about-inverted bg-[#f3f3ef] text-[#050505] py-20 md:py-32 my-20 transition-colors selection:bg-[#050505] selection:text-[#f3f3ef]"
+      aria-labelledby="about-title"
+      data-about
+    >
+      <div className="site-gutter">
+        {/* Inverted Section Header */}
+        <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[#050505]/15 pb-4 font-mono text-xs tracking-wider">
+          <div className="flex items-center gap-2">
+            <span className="font-bold">03</span>
+            <span className="opacity-40">//</span>
+            <span className="font-semibold uppercase tracking-widest">ABOUT</span>
+          </div>
+          <div className="opacity-65 uppercase tracking-widest text-[11px]">
+            EDITORIAL DOSSIER // MONOCHROME INVERSION
+          </div>
+        </div>
 
-      <div className="dossier-layout pt-12 md:pt-16" data-about-reveal>
-        {/* Architectural Dossier Header */}
-        <div className="dossier-header pb-8 md:pb-12">
-          <div className="dossier-meta grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
+        <div className="about-content pt-12 md:pt-16" data-about-reveal>
+          {/* Metadata Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 border-b border-[#050505]/15 pb-10">
             {about.meta.map((item) => (
-              <div key={item.label} className="metadata flex flex-col gap-1">
-                <span className="text-secondary">{item.label}</span>
-                <span className="font-medium text-primary">{item.value}</span>
+              <div key={item.label} className="font-mono flex flex-col gap-1">
+                <span className="text-xs text-[#050505]/60 tracking-wider uppercase">{item.label}</span>
+                <span className="text-sm font-semibold tracking-tight text-[#050505]">{item.value}</span>
               </div>
             ))}
           </div>
 
-          <h2 id="about-title" className="dossier-display mt-8 text-secondary">
-            {about.heading.join(" / ")}
-          </h2>
-        </div>
-
-        {/* Identity Fragments */}
-        <div className="dossier-fragments border-b border-line pt-6 pb-12 md:pt-8 md:pb-16" data-about-reveal>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
-            {about.fragments.map((fragment, idx) => (
-              <div key={fragment} className="fragment-block flex flex-col gap-3">
-                <span className="metadata text-secondary">FRAGMENT // 0{idx + 1}</span>
-                <p className="fragment-text">{fragment}</p>
-              </div>
-            ))}
+          {/* Monumental Editorial Headline */}
+          <div className="py-12 md:py-20 border-b border-[#050505]/15">
+            <span className="font-mono text-xs uppercase tracking-widest text-[#050505]/60 block mb-4">
+              PERSONAL ETHOS &amp; APPROACH
+            </span>
+            <h2 id="about-title" className="font-sans font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95]">
+              {about.heading[0]}
+              <span className="block text-[#050505]/50 mt-2 font-normal">
+                {about.heading[1]}
+              </span>
+            </h2>
           </div>
-        </div>
 
-        {/* Narrative & Philosophy */}
-        <div className="dossier-narrative border-b border-line py-12 md:py-16" data-about-reveal>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-12">
-            <div className="md:col-span-4">
-              <span className="metadata text-secondary">ENGINEERING OUTLOOK</span>
-              <p className="mt-2 text-sm text-secondary">
-                Systems, models, and interfaces explored from first principles.
+          {/* Narrative Grid */}
+          <div className="py-12 md:py-20 border-b border-[#050505]/15 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+            <div className="lg:col-span-4 font-mono text-xs text-[#050505]/70 space-y-4">
+              <span className="uppercase tracking-widest block text-[#050505] font-bold">
+                ENGINEERING DISCIPLINE
+              </span>
+              <p className="leading-relaxed">
+                Software is not an abstract theory. It is a tangible system that behaves, fails, and communicates through constraints.
               </p>
+              <div className="pt-4 border-t border-[#050505]/15 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#050505]" aria-hidden="true" />
+                <span>ACTIVE STUDENT PRACTICE</span>
+              </div>
             </div>
-            <div className="dossier-prose flex flex-col gap-6 md:col-span-8">
-              {about.narrative.map((p) => (
-                <p key={p}>{p}</p>
+
+            <div className="lg:col-span-8 font-sans text-base sm:text-lg leading-relaxed text-[#050505]/85 space-y-6">
+              {about.narrative.map((paragraph, idx) => (
+                <p key={idx} className="font-normal">
+                  {paragraph}
+                </p>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Core Focus Areas */}
-        <div className="dossier-focus py-12 md:py-16" data-about-reveal>
-          <div className="mb-8 flex items-baseline justify-between border-b border-line pb-4">
-            <span className="metadata text-secondary">{about.focusHeading}</span>
-            <span className="metadata text-secondary">04 DOMAINS</span>
-          </div>
+          {/* Core Focus Domains in Editorial Ledger */}
+          <div className="pt-12 md:pt-16">
+            <div className="flex items-baseline justify-between border-b border-[#050505]/15 pb-4 font-mono text-xs">
+              <span className="uppercase font-bold tracking-wider">{about.focusHeading}</span>
+              <span className="text-[#050505]/60">04 ARCHITECTURAL VECTORS</span>
+            </div>
 
-          <div className="focus-index divide-y divide-line">
-            {about.focusAreas.map((area) => (
-              <div
-                key={area.index}
-                className="focus-row grid grid-cols-1 items-baseline gap-2 py-6 sm:grid-cols-12 sm:gap-6"
-              >
-                <span className="metadata text-secondary sm:col-span-2">
-                  {area.index} // DOMAIN
-                </span>
-                <h3 className="focus-label text-xl font-medium sm:col-span-4">{area.label}</h3>
-                <p className="text-sm text-secondary sm:col-span-6">{area.detail}</p>
-              </div>
-            ))}
+            <div className="divide-y divide-[#050505]/15">
+              {about.focusAreas.map((area) => (
+                <div
+                  key={area.index}
+                  className="py-6 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-6 items-baseline transition-colors hover:bg-[#050505]/[0.02]"
+                >
+                  <span className="font-mono text-xs text-[#050505]/60 sm:col-span-2">
+                    {area.index} // DOMAIN
+                  </span>
+                  <h3 className="font-sans text-xl sm:text-2xl font-bold tracking-tight text-[#050505] sm:col-span-4">
+                    {area.label}
+                  </h3>
+                  <p className="font-sans text-sm text-[#050505]/75 leading-relaxed sm:col-span-6">
+                    {area.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
