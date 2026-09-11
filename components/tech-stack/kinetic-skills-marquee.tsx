@@ -18,7 +18,8 @@ export function KineticSkillsMarquee({
   useEffect(() => {
     const track1 = track1Ref.current;
     const track2 = track2Ref.current;
-    if (!track1 || !track2) return;
+    const container = containerRef.current;
+    if (!track1 || !track2 || !container) return;
 
     // Check prefers-reduced-motion
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -30,11 +31,14 @@ export function KineticSkillsMarquee({
 
     let pos1 = 0;
     let pos2 = 0;
-    let baseSpeed1 = 0.9; // Base movement left (pixels per frame)
-    let baseSpeed2 = 0.7; // Base movement right (pixels per frame)
+    const baseSpeed1 = 0.9; // Base movement left (pixels per frame)
+    const baseSpeed2 = 0.7; // Base movement right (pixels per frame)
     let scrollVelocity = 0;
     let lastScrollY = window.scrollY;
-    let animFrameId: number;
+    let animFrameId: number | null = null;
+    let isRunning = false;
+    let hasActivated = false;
+    let activationTimer: ReturnType<typeof setTimeout> | null = null;
 
     const onScroll = () => {
       const currentScrollY = window.scrollY;
@@ -46,9 +50,9 @@ export function KineticSkillsMarquee({
       scrollVelocity += impulse;
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-
     const loop = () => {
+      if (!isRunning) return;
+
       // Half width of track content for seamless wrapping
       const halfWidth1 = track1.scrollWidth / 2;
       const halfWidth2 = track2.scrollWidth / 2;
@@ -80,12 +84,78 @@ export function KineticSkillsMarquee({
       animFrameId = requestAnimationFrame(loop);
     };
 
-    animFrameId = requestAnimationFrame(loop);
+    const startAnimation = () => {
+      if (isRunning) return;
+      isRunning = true;
+      lastScrollY = window.scrollY;
+      window.addEventListener("scroll", onScroll, { passive: true });
+      animFrameId = requestAnimationFrame(loop);
+    };
+
+    const pauseAnimation = () => {
+      if (!isRunning) return;
+      isRunning = false;
+      window.removeEventListener("scroll", onScroll);
+      if (animFrameId !== null) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+      }
+    };
+
+    // Fallback if IntersectionObserver is not available
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
+      startAnimation();
+      return () => {
+        pauseAnimation();
+      };
+    }
+
+    const targetSection = container.closest("section") || container;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+          // Meaningfully visible in viewport (threshold ~35%)
+          if (!hasActivated) {
+            // First arrival: small intentional delay (450ms) before wake up
+            if (!activationTimer) {
+              activationTimer = setTimeout(() => {
+                hasActivated = true;
+                activationTimer = null;
+                startAnimation();
+              }, 450);
+            }
+          } else {
+            // Subsequent re-entry: resume immediately from existing position
+            if (activationTimer) {
+              clearTimeout(activationTimer);
+              activationTimer = null;
+            }
+            startAnimation();
+          }
+        } else if (!entry.isIntersecting || entry.intersectionRatio < 0.15) {
+          // Substantially outside viewport: pause loop to conserve resources
+          if (activationTimer) {
+            clearTimeout(activationTimer);
+            activationTimer = null;
+          }
+          pauseAnimation();
+        }
+      },
+      {
+        threshold: [0, 0.15, 0.35],
+      }
+    );
+
+    observer.observe(targetSection);
 
     const onMediaChange = (e: MediaQueryListEvent) => {
       if (e.matches) {
-        cancelAnimationFrame(animFrameId);
-        window.removeEventListener("scroll", onScroll);
+        if (activationTimer) clearTimeout(activationTimer);
+        pauseAnimation();
         track1.style.transform = "none";
         track2.style.transform = "none";
       }
@@ -94,8 +164,9 @@ export function KineticSkillsMarquee({
     mediaQuery.addEventListener("change", onMediaChange);
 
     return () => {
-      cancelAnimationFrame(animFrameId);
-      window.removeEventListener("scroll", onScroll);
+      if (activationTimer) clearTimeout(activationTimer);
+      pauseAnimation();
+      observer.disconnect();
       mediaQuery.removeEventListener("change", onMediaChange);
     };
   }, []);
