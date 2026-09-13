@@ -25,9 +25,9 @@ export function FinoraTopography() {
             </span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
-            <span className="text-secondary">[ FAST_DATA: 0 LLM CALLS ]</span>
+            <span className="text-secondary">[ USER REQUEST ]</span>
             <span className="text-line hidden sm:inline">|</span>
-            <span className="text-primary hidden sm:inline">[ DECISION: 2-CALL PIPELINE ]</span>
+            <span className="text-primary hidden sm:inline">[ FINAL RESPONSE ]</span>
           </div>
         </div>
 
@@ -66,11 +66,11 @@ export function FinoraTopography() {
                 <div className="pt-3 border-t border-white/5" data-topo-router-path>
                   <div className="font-mono text-[10px] text-primary/80 bg-white/5 p-2 rounded flex flex-col gap-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-secondary">BYPASS ROUTE:</span>
-                      <span className="text-primary font-bold">FAST_DATA</span>
+                      <span className="text-secondary">REQUEST ROUTING:</span>
+                      <span className="text-primary font-bold">ROUTER</span>
                     </div>
                     <span className="text-[9px] text-secondary font-sans">
-                      Profile lookup → Immediate JSON (0 tokens)
+                      User request → Router
                     </span>
                   </div>
                 </div>
@@ -79,7 +79,7 @@ export function FinoraTopography() {
               {stage.id === "orchestrator" && (
                 <div className="pt-3 border-t border-white/5">
                   <div className="font-mono text-[10px] text-secondary bg-white/5 p-2 rounded">
-                    <span>AGENT_TOOLS (7 schemas)</span>
+                    <span>SELECTED SPECIALISTS</span>
                   </div>
                 </div>
               )}
@@ -89,7 +89,7 @@ export function FinoraTopography() {
                   <div className="font-mono text-[10px] text-primary bg-white/5 p-2 rounded">
                     <span className="font-semibold block text-primary">DETERMINISTIC MATH</span>
                     <span className="text-[9px] text-secondary block font-sans">
-                      Python 3.13 stdlib only
+                      Python tools
                     </span>
                   </div>
                 </div>
@@ -100,7 +100,7 @@ export function FinoraTopography() {
                   <div className="font-mono text-[10px] text-secondary bg-white/5 p-2 rounded flex flex-col gap-1">
                     <div className="flex items-center justify-between">
                       <span className="text-primary">REVISION LOOP:</span>
-                      <span className="text-secondary">≤ 2 PASSES</span>
+                      <span className="text-secondary">PASS / REVISE</span>
                     </div>
                     <span className="text-[9px] text-secondary/80 font-sans">
                       response_ok vs transaction_safe
@@ -141,14 +141,14 @@ export function FinoraTopography() {
               </p>
               {stage.id === "router" && (
                 <div className="mt-1 pt-2 border-t border-white/5 font-mono text-[10px] text-secondary flex items-center justify-between">
-                  <span>FAST_DATA BYPASS:</span>
-                  <span className="text-primary font-bold">0 LLM calls (~15ms)</span>
+                  <span>USER REQUEST:</span>
+                  <span className="text-primary font-bold">Router → Orchestrator</span>
                 </div>
               )}
               {stage.id === "judge" && (
                 <div className="mt-1 pt-2 border-t border-white/5 font-mono text-[10px] text-secondary flex items-center justify-between">
-                  <span>BOUNDED REVISION:</span>
-                  <span className="text-primary">≤ 2 iterations cap</span>
+                  <span>JUDGE DECISION:</span>
+                  <span className="text-primary">PASS / REVISE</span>
                 </div>
               )}
             </div>
@@ -161,12 +161,12 @@ export function FinoraTopography() {
           data-topo-bypass-path
         >
           <div className="flex items-center gap-3">
-            <span className="text-primary font-bold">[BYPASS ARCHITECTURE]</span>
-            <span className="font-sans">FAST_DATA path bypasses Orchestrator, Specialists, and Synthesis entirely.</span>
+            <span className="text-primary font-bold">[VERIFIED ARCHITECTURE]</span>
+            <span className="font-sans">Selected specialists inform the Judge before synthesis.</span>
           </div>
           <div className="flex items-center gap-2 text-primary text-[11px]">
-            <span className="px-2 py-0.5 rounded border border-line bg-white/5">LATENCY: ~15ms</span>
-            <span className="px-2 py-0.5 rounded border border-line bg-white/5">COST: ₹0 / $0</span>
+            <span className="px-2 py-0.5 rounded border border-line bg-white/5">PASS / REVISE</span>
+            <span className="px-2 py-0.5 rounded border border-line bg-white/5">FINAL RESPONSE</span>
           </div>
         </div>
       </div>

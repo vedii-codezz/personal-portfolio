@@ -5,6 +5,7 @@ import { CaseStudyNav } from "@/components/case-study/case-study-nav";
 import { CaseStudyHero } from "@/components/case-study/case-study-hero";
 import { CaseStudySection } from "@/components/case-study/case-study-section";
 import { NextProjectTeaser } from "@/components/case-study/next-project-teaser";
+import { ExpandableDetail } from "@/components/case-study/expandable-detail";
 import { AptlyStatusMatrix } from "@/components/project/aptly/aptly-status-matrix";
 import { AptlyEvidenceChain } from "@/components/project/aptly/aptly-evidence-chain";
 import { AptlyGapEngine } from "@/components/project/aptly/aptly-gap-engine";
@@ -42,6 +43,7 @@ export default function AptlyPage() {
         liveUrl={meta.links.live}
       />
 
+      <main id="main-content" tabIndex={-1}>
       {/* 00 / PROJECT HERO */}
       <CaseStudyHero
         number={meta.number}
@@ -62,45 +64,38 @@ export default function AptlyPage() {
           id="illusion"
           index="01"
           label={illusion.heading}
-          annotation={illusion.annotation}
+          annotation="[CONCEPTUAL VISUALIZATION] THE REDUCTIVE SCORING PROBLEM"
           dataAttribute={{ "data-aptly-intro-reveal": true }}
         >
-          <div className="space-y-12">
-            {/* Monumental Critique Metric */}
-            <div className="p-8 sm:p-12 md:p-16 border border-line bg-[#0a0a0a] rounded flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div className="space-y-8">
+            {/* Monumental Critique Metric Card */}
+            <div className="p-6 sm:p-10 border border-line bg-[#0a0a0a] rounded flex flex-col md:flex-row md:items-center justify-between gap-8">
               <div>
-                <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-3">
+                <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-2">
                   CONVENTIONAL ATS EVALUATION
                 </span>
-                <div className="text-7xl sm:text-8xl md:text-9xl font-mono font-bold tracking-tighter text-primary leading-none">
-                  {illusion.abstractScore}
+                <div className="relative inline-block">
+                  <div className="text-6xl sm:text-7xl md:text-8xl font-mono font-bold tracking-tighter text-primary/40 line-through decoration-primary/60 decoration-2 leading-none">
+                    {illusion.abstractScore}
+                  </div>
                 </div>
-                <div className="font-mono text-[11px] text-secondary tracking-wider mt-4">
+                <div className="font-mono text-[10px] text-secondary tracking-wider mt-3">
                   {illusion.scoreNotice}
                 </div>
               </div>
 
-              {/* Surrounding Investigative Questions (De-boxed editorial prompts) */}
-              <div className="md:max-w-lg space-y-4 pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-line md:pl-10">
-                <span className="font-mono text-[11px] text-secondary tracking-widest uppercase block mb-3">
-                  THE UNANSWERED AUDIT // FIVE CRITICAL GAPS
+              {/* Diagnostic Inquiry Grid */}
+              <div className="md:max-w-md space-y-3 pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-line md:pl-8">
+                <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-2">
+                  UNANSWERED INQUIRIES // CRITICAL GAPS
                 </span>
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {illusion.questions.map((item, idx) => (
-                    <div
-                      key={item.q}
-                      className="flex items-baseline gap-4 pb-3 border-b border-line/40 last:border-b-0"
-                    >
-                      <span className="font-mono text-xs text-secondary/70">
-                        0{idx + 1}
-                      </span>
-                      <div className="flex-1">
-                        <h4 className="font-sans text-base sm:text-lg font-bold text-primary tracking-tight">
-                          {item.q}
-                        </h4>
-                        <p className="font-sans text-xs sm:text-sm text-secondary leading-normal mt-0.5">
-                          {item.context}
-                        </p>
+                    <div key={item.q} className="flex items-baseline gap-3 pb-2 border-b border-line/30 last:border-b-0">
+                      <span className="font-mono text-[10px] text-secondary/60">0{idx + 1}</span>
+                      <div>
+                        <span className="font-sans text-xs sm:text-sm font-bold text-primary block">{item.q}</span>
+                        <span className="font-sans text-[11px] text-secondary">{item.context}</span>
                       </div>
                     </div>
                   ))}
@@ -108,17 +103,9 @@ export default function AptlyPage() {
               </div>
             </div>
 
-            {/* Editorial Critique Body */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 pt-4">
-              {illusion.critique.map((paragraph, idx) => (
-                <p
-                  key={idx}
-                  className="font-sans text-base sm:text-lg text-secondary leading-relaxed"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+            <p className="font-sans text-sm sm:text-base text-secondary leading-relaxed max-w-3xl">
+              Conventional tools collapse multidimensional qualification data into an arbitrary percentage. Aptly rejects opaque scoring in favor of inspectable, rule-by-rule provenance.
+            </p>
           </div>
         </CaseStudySection>
 
@@ -127,88 +114,62 @@ export default function AptlyPage() {
           id="decomposition"
           index="02"
           label={decomposition.heading}
-          annotation={decomposition.annotation}
+          annotation="[VERIFIED ARCHITECTURE] UNSTRUCTURED TO TYPED SCHEMA"
           dataAttribute={{ "data-aptly-intro-reveal": true }}
         >
-          <div className="space-y-12">
-            <p className="font-sans text-lg sm:text-xl text-primary leading-relaxed max-w-4xl">
+          <div className="space-y-8">
+            <p className="font-sans text-base sm:text-lg text-primary leading-relaxed max-w-3xl">
               {decomposition.intro}
             </p>
 
-            {/* Unstructured vs Structured Comparison */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Unstructured vs Structured Comparison Flow */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left: Raw Job Description Excerpt */}
-              <div className="lg:col-span-5 p-6 sm:p-8 bg-[#0a0a0a] border border-line rounded">
-                <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-4">
+              <div className="lg:col-span-5 p-5 bg-[#090909] border border-line rounded">
+                <span className="font-mono text-[11px] text-secondary tracking-widest uppercase block mb-3">
                   [ RAW UNSTRUCTURED EXCERPT ]
                 </span>
-                <blockquote className="font-mono text-xs sm:text-sm text-secondary leading-relaxed bg-[#111111] p-4 rounded border border-line/40 mb-4">
+                <blockquote className="font-mono text-xs text-secondary leading-relaxed bg-[#111111] p-3.5 rounded border border-line/40 mb-3">
                   &ldquo;{decomposition.rawExcerpt.text}&rdquo;
                 </blockquote>
-                <span className="font-mono text-[11px] text-secondary/70">
+                <span className="font-mono text-[10px] text-secondary/60">
                   SOURCE: {decomposition.rawExcerpt.source}
                 </span>
               </div>
 
-              {/* Right: Structured Criteria Ledger (De-boxed open rows) */}
-              <div className="lg:col-span-7 space-y-4">
+              {/* Right: Structured Criteria Ledger */}
+              <div className="lg:col-span-7 space-y-3">
                 <div className="flex items-center justify-between font-mono text-xs text-secondary tracking-widest uppercase pb-2 border-b border-line">
                   <span>[ EXTRACTED ATOMIC CRITERIA LEDGER ]</span>
-                  <span>08 TYPED CLASSES</span>
+                  <span className="text-primary font-bold">[VERIFIED ARCHITECTURE]</span>
                 </div>
                 <div className="divide-y divide-line/40">
                   {decomposition.categories.map((cat, idx) => (
                     <div
                       key={cat.name}
-                      className="py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2"
+                      className="py-2.5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2"
                     >
-                      <div className="flex items-baseline gap-3">
-                        <span className="font-mono text-[11px] text-secondary/60">
-                          0{idx + 1}
-                        </span>
-                        <span className="font-mono text-xs font-bold text-primary tracking-wider">
-                          {cat.name}
-                        </span>
+                      <div className="flex items-baseline gap-2.5">
+                        <span className="font-mono text-[10px] text-secondary/60">0{idx + 1}</span>
+                        <span className="font-mono text-xs font-bold text-primary tracking-wider">{cat.name}</span>
                       </div>
-                      <span className="font-sans text-xs sm:text-sm text-secondary sm:text-right">
-                        {cat.desc}
-                      </span>
+                      <span className="font-sans text-xs text-secondary sm:text-right">{cat.desc}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Importance Tiers & Ambiguity Preservation (De-boxed horizontal ledger) */}
-            <div className="pt-8 border-t border-line space-y-6">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 pb-4 border-b border-line">
-                <span className="font-mono text-xs text-primary font-semibold tracking-wider">
-                  IMPORTANCE TIERS
-                </span>
-                <span className="font-mono text-[11px] text-secondary">
-                  AMBIGUITY PRESERVATION ENGINE
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Importance Tiers Grid */}
+            <div className="pt-4 border-t border-line">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {decomposition.importanceTiers.map((tier) => (
-                  <div key={tier.tier} className="space-y-1.5 border-t border-line/60 pt-3">
-                    <span className="font-mono text-xs font-bold text-primary block">
-                      {tier.tier}
-                    </span>
-                    <p className="font-sans text-xs sm:text-sm text-secondary leading-relaxed">
-                      {tier.role}
-                    </p>
+                  <div key={tier.tier} className="p-4 border border-line/60 bg-[#090909] rounded space-y-1">
+                    <span className="font-mono text-xs font-bold text-primary block">{tier.tier}</span>
+                    <p className="font-sans text-xs text-secondary leading-relaxed">{tier.role}</p>
                   </div>
                 ))}
               </div>
-
-              <p className="font-sans text-xs sm:text-sm text-secondary leading-relaxed pt-4 border-t border-line/60">
-                <strong className="text-primary font-mono font-medium">
-                  AMBIGUITY PRESERVATION:{" "}
-                </strong>
-                {decomposition.ambiguityPreservation}
-              </p>
             </div>
           </div>
         </CaseStudySection>
@@ -216,16 +177,25 @@ export default function AptlyPage() {
 
       {/* CLUSTER 2: CORE DETERMINISTIC ENGINES */}
       <div data-aptly-engine>
-        {/* 03 / THE QUAD-STATE MODEL (SIGNATURE VISUAL A) */}
+        {/* 03 / THE QUAD-STATE MODEL */}
         <CaseStudySection
           id="quad-state"
           index="03"
           label={quadState.heading}
-          annotation={quadState.annotation}
+          annotation="[VERIFIED DATA] SIGNATURE VISUAL // QUAD-STATE CLASSIFICATION"
           dataAttribute={{ "data-aptly-engine-reveal": true }}
         >
-          <div className="space-y-8">
-            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED DATA]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Deterministic 4-State Machine: MATCHED, PARTIAL, FAILED, UNKNOWN
+              </span>
+            </div>
+
+            <p className="font-sans text-sm sm:text-base text-secondary leading-relaxed max-w-3xl">
               {quadState.rationale}
             </p>
 
@@ -234,16 +204,25 @@ export default function AptlyPage() {
           </div>
         </CaseStudySection>
 
-        {/* 04 / THE EVIDENCE CHAIN (SIGNATURE VISUAL B — PRIMARY MOMENT) */}
+        {/* 04 / THE EVIDENCE CHAIN */}
         <CaseStudySection
           id="evidence-chain"
           index="04"
           label={evidenceChain.heading}
-          annotation={evidenceChain.annotation}
+          annotation="[VERIFIED DATA] SIGNATURE VISUAL // 4-STAGE PROVENANCE TRACE"
           dataAttribute={{ "data-aptly-engine-reveal": true }}
         >
-          <div className="space-y-8">
-            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED DATA]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                4-Stage Concrete Provenance Evidence: Source &rarr; Rule &rarr; Evidence &rarr; Verdict
+              </span>
+            </div>
+
+            <p className="font-sans text-sm sm:text-base text-secondary leading-relaxed max-w-3xl">
               {evidenceChain.description}
             </p>
 
@@ -252,38 +231,31 @@ export default function AptlyPage() {
           </div>
         </CaseStudySection>
 
-        {/* 05 / ELIGIBILITY VS COMPETITIVENESS (Open editorial split) */}
+        {/* 05 / ELIGIBILITY VS COMPETITIVENESS */}
         <CaseStudySection
           id="eligibility-vs-competitiveness"
           index="05"
           label={eligibilityVsCompetitiveness.heading}
-          annotation={eligibilityVsCompetitiveness.annotation}
+          annotation="[VERIFIED ARCHITECTURE] DUAL-ENGINE TAXONOMY"
           dataAttribute={{ "data-aptly-engine-reveal": true }}
         >
-          <div className="space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 pt-4">
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
               {/* Left Column: Eligibility (Hard Gate) */}
-              <div className="flex flex-col justify-between space-y-8">
+              <div className="p-6 border border-line bg-[#080808] rounded flex flex-col justify-between space-y-6">
                 <div>
-                  <div className="pb-4 mb-6 border-b border-line">
+                  <div className="pb-3 mb-4 border-b border-line">
                     <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">
                       {eligibilityVsCompetitiveness.left.subtitle}
                     </span>
-                    <h3 className="font-sans text-3xl sm:text-4xl text-primary font-normal">
+                    <h3 className="font-sans text-2xl text-primary font-normal">
                       {eligibilityVsCompetitiveness.left.question}
                     </h3>
                   </div>
 
-                  <span className="font-mono text-[11px] text-secondary uppercase tracking-widest block mb-4">
-                    NATURE // {eligibilityVsCompetitiveness.left.nature}
-                  </span>
-
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-2 mb-6">
                     {eligibilityVsCompetitiveness.left.principles.map((p, idx) => (
-                      <li
-                        key={idx}
-                        className="font-mono text-xs text-primary flex items-start gap-3"
-                      >
+                      <li key={idx} className="font-mono text-xs text-primary flex items-start gap-2">
                         <span className="text-secondary font-bold">―</span>
                         <span>{p}</span>
                       </li>
@@ -291,33 +263,26 @@ export default function AptlyPage() {
                   </ul>
                 </div>
 
-                <div className="pt-6 border-t border-line/60 font-sans text-sm text-secondary leading-relaxed">
+                <div className="pt-4 border-t border-line/60 font-sans text-xs text-secondary leading-relaxed">
                   {eligibilityVsCompetitiveness.left.methodology}
                 </div>
               </div>
 
               {/* Right Column: Competitiveness (Fit Depth) */}
-              <div className="flex flex-col justify-between space-y-8 pt-10 md:pt-0 border-t md:border-t-0 md:border-l md:pl-16 border-line">
+              <div className="p-6 border border-line bg-[#080808] rounded flex flex-col justify-between space-y-6">
                 <div>
-                  <div className="pb-4 mb-6 border-b border-line">
+                  <div className="pb-3 mb-4 border-b border-line">
                     <span className="font-mono text-xs text-secondary tracking-widest uppercase block mb-1">
                       {eligibilityVsCompetitiveness.right.subtitle}
                     </span>
-                    <h3 className="font-sans text-3xl sm:text-4xl text-primary font-normal">
+                    <h3 className="font-sans text-2xl text-primary font-normal">
                       {eligibilityVsCompetitiveness.right.question}
                     </h3>
                   </div>
 
-                  <span className="font-mono text-[11px] text-secondary uppercase tracking-widest block mb-4">
-                    NATURE // {eligibilityVsCompetitiveness.right.nature}
-                  </span>
-
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-2 mb-6">
                     {eligibilityVsCompetitiveness.right.principles.map((p, idx) => (
-                      <li
-                        key={idx}
-                        className="font-mono text-xs text-primary flex items-start gap-3"
-                      >
+                      <li key={idx} className="font-mono text-xs text-primary flex items-start gap-2">
                         <span className="text-secondary font-bold">―</span>
                         <span>{p}</span>
                       </li>
@@ -325,24 +290,24 @@ export default function AptlyPage() {
                   </ul>
                 </div>
 
-                <div className="pt-6 border-t border-line/60 font-sans text-sm text-secondary leading-relaxed">
+                <div className="pt-4 border-t border-line/60 font-sans text-xs text-secondary leading-relaxed">
                   {eligibilityVsCompetitiveness.right.methodology}
                 </div>
               </div>
             </div>
 
-            <p className="font-mono text-xs text-secondary leading-relaxed p-4 bg-black/40 border border-line rounded text-center">
+            <p className="font-mono text-xs text-secondary leading-relaxed p-3 bg-black/40 border border-line rounded text-center">
               {eligibilityVsCompetitiveness.disclaimer}
             </p>
           </div>
         </CaseStudySection>
 
-        {/* 06 / THE ACTIONABLE GAP ENGINE (SIGNATURE VISUAL C) */}
+        {/* 06 / THE ACTIONABLE GAP ENGINE */}
         <CaseStudySection
           id="gap-engine"
           index="06"
           label={gapEngine.heading}
-          annotation={gapEngine.annotation}
+          annotation="[VERIFIED ARCHITECTURE] REMEDIATION PIPELINE"
           dataAttribute={{ "data-aptly-engine-reveal": true }}
         >
           {/* Signature Visual C: Actionable Gap Inspector */}
@@ -357,58 +322,43 @@ export default function AptlyPage() {
           id="ats"
           index="07"
           label={atsSection.heading}
-          annotation={atsSection.annotation}
+          annotation="[VERIFIED ARCHITECTURE] DOCUMENT DIAGNOSTICS"
           dataAttribute={{ "data-aptly-ats-reveal": true }}
         >
-          <div className="space-y-12">
-            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+          <div className="space-y-6">
+            <p className="font-sans text-sm sm:text-base text-secondary leading-relaxed max-w-3xl">
               {atsSection.intro}
             </p>
 
-            {/* Document Review Style Checklist */}
-            <div className="border border-line rounded overflow-hidden">
-              <div className="p-4 bg-[#111111] border-b border-line font-mono text-xs flex items-center justify-between">
-                <span className="text-primary font-semibold">
-                  DOCUMENT PARSER DIAGNOSTIC AUDIT
-                </span>
-                <span className="text-secondary text-[11px]">
-                  5 STRUCTURAL CRITERIA
-                </span>
-              </div>
-              <div className="divide-y divide-line/60 bg-[#0a0a0a]">
+            {/* Anti-Keyword-Stuffing Principle Callout */}
+            <div className="p-5 sm:p-6 bg-[#090909] border border-line rounded space-y-3">
+              <span className="font-mono text-xs text-secondary tracking-widest uppercase block">
+                [ {atsSection.antiStuffingCallout.headline} ]
+              </span>
+              <pre className="font-mono text-xs text-primary whitespace-pre-wrap leading-relaxed bg-black/60 p-3 rounded border border-line/40">
+                {atsSection.antiStuffingCallout.rule}
+              </pre>
+              <p className="font-sans text-xs text-secondary leading-relaxed">
+                {atsSection.antiStuffingCallout.implication}
+              </p>
+            </div>
+
+            {/* Expandable Document Diagnostics */}
+            <ExpandableDetail label="Document Parser Diagnostic Audit (5 Structural Criteria)" badge="VERIFIED ARCHITECTURE">
+              <div className="divide-y divide-line/40 pt-2">
                 {atsSection.checks.map((check) => (
-                  <div
-                    key={check.name}
-                    className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div className="space-y-1">
-                      <span className="font-mono text-xs font-bold text-primary block">
-                        {check.name}
-                      </span>
-                      <p className="font-sans text-xs sm:text-sm text-secondary">
-                        {check.purpose}
-                      </p>
+                  <div key={check.name} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <span className="font-mono text-xs font-bold text-primary block">{check.name}</span>
+                      <span className="font-sans text-xs text-secondary">{check.purpose}</span>
                     </div>
-                    <span className="font-mono text-xs font-semibold px-3 py-1 bg-black/60 border border-line rounded text-primary self-start sm:self-auto">
+                    <span className="font-mono text-xs px-2.5 py-0.5 bg-black/60 border border-line rounded text-primary self-start sm:self-auto">
                       {check.status}
                     </span>
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* Anti-Keyword-Stuffing Callout */}
-            <div className="p-6 sm:p-8 bg-[#0d0d0d] border border-line rounded space-y-4">
-              <span className="font-mono text-xs text-secondary tracking-widest uppercase block">
-                [ {atsSection.antiStuffingCallout.headline} ]
-              </span>
-              <pre className="font-mono text-xs sm:text-sm text-primary whitespace-pre-wrap leading-relaxed bg-black/60 p-4 rounded border border-line/40">
-                {atsSection.antiStuffingCallout.rule}
-              </pre>
-              <p className="font-sans text-xs sm:text-sm text-secondary leading-relaxed">
-                {atsSection.antiStuffingCallout.implication}
-              </p>
-            </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
 
@@ -420,58 +370,45 @@ export default function AptlyPage() {
           annotation={perimeterDefense.annotation}
           dataAttribute={{ "data-aptly-ats-reveal": true }}
         >
-          <div className="space-y-12">
-            {/* SSRF Prevention Pipeline */}
-            <div>
-              <div className="flex items-center justify-between font-mono text-xs pb-4 mb-6 border-b border-line">
-                <span className="text-primary font-semibold tracking-wider">
-                  PUBLIC URL INGESTION SECURITY GATEWAY
-                </span>
-                <span className="text-secondary text-[11px]">
-                  SSRF MITIGATION
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {perimeterDefense.pipeline.map((step) => (
-                  <div
-                    key={step.step}
-                    className="p-5 bg-[#0a0a0a] border border-line rounded flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between font-mono text-xs pb-3 mb-3 border-b border-line/40">
-                        <span className="font-bold text-primary">
-                          {step.name}
-                        </span>
-                        <span className="text-secondary text-[10px]">
-                          STEP {step.step}
-                        </span>
-                      </div>
-                      <p className="font-sans text-xs sm:text-sm text-secondary leading-relaxed">
-                        {step.detail}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Client-Side Sandbox Execution Boundary
+              </span>
             </div>
 
-            {/* Privacy & Ephemeral Processing */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {perimeterDefense.privacyArchitecture.map((p) => (
-                <div
-                  key={p.title}
-                  className="p-6 bg-[#0a0a0a] border border-line rounded flex flex-col justify-between"
-                >
-                  <span className="font-mono text-xs font-bold text-primary block mb-3">
-                    {p.title}
-                  </span>
-                  <p className="font-sans text-xs sm:text-sm text-secondary leading-relaxed">
-                    {p.detail}
-                  </p>
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Strict ingestion boundaries guard against SSRF, payload inflation, and unauthorized persistence.
+            </p>
+
+            {/* Ingestion Security Pipeline */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {perimeterDefense.pipeline.map((p) => (
+                <div key={p.step} className="p-4 border border-line rounded bg-surface/20 space-y-2">
+                  <div className="flex items-center justify-between font-mono text-[10px] text-secondary">
+                    <span className="text-primary font-bold">STEP {p.step}</span>
+                    <span>SECURITY BOUNDARY</span>
+                  </div>
+                  <h4 className="font-mono text-xs font-bold text-primary">{p.name}</h4>
+                  <p className="font-sans text-xs text-secondary leading-relaxed">{p.detail}</p>
                 </div>
               ))}
             </div>
+
+            {/* Privacy Architecture in Expandable Detail */}
+            <ExpandableDetail label="Ephemeral Processing & Client-Side Privacy Boundary">
+              <div className="space-y-4 pt-2">
+                {perimeterDefense.privacyArchitecture.map((item) => (
+                  <div key={item.title} className="space-y-1">
+                    <span className="font-mono text-xs font-bold text-primary block">{item.title}</span>
+                    <p className="font-sans text-xs sm:text-sm text-secondary leading-relaxed">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
       </div>
@@ -581,6 +518,7 @@ export default function AptlyPage() {
           nextCategory={nextProject.nextCategory}
         />
       </div>
+      </main>
     </CaseStudyShell>
   );
 }

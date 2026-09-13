@@ -24,6 +24,9 @@ export function AptlyGapEngine() {
       nextIndex = (index - 1 + gapEngine.scenarios.length) % gapEngine.scenarios.length;
     }
 
+    if (e.key === "Home") { e.preventDefault(); nextIndex = 0; }
+    if (e.key === "End") { e.preventDefault(); nextIndex = gapEngine.scenarios.length - 1; }
+
     if (nextIndex >= 0) {
       setActiveScenarioId(gapEngine.scenarios[nextIndex].id);
       tabRefs.current[nextIndex]?.focus();

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useId, KeyboardEvent } from "react";
+import { handleTabKeyDown } from "@/lib/tab-keyboard";
+
+import { useState, useId } from "react";
 import { finoraData } from "@/data/projects/finora";
 
 export function FinoraAgentTheatre() {
@@ -12,20 +14,6 @@ export function FinoraAgentTheatre() {
     specialists.agents.find((agent) => agent.id === activeId) ||
     specialists.agents[0];
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const currentIndex = specialists.agents.findIndex((a) => a.id === activeId);
-    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-      e.preventDefault();
-      const nextIndex = (currentIndex + 1) % specialists.agents.length;
-      setActiveId(specialists.agents[nextIndex].id);
-    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-      e.preventDefault();
-      const prevIndex =
-        (currentIndex - 1 + specialists.agents.length) %
-        specialists.agents.length;
-      setActiveId(specialists.agents[prevIndex].id);
-    }
-  };
 
   return (
     <div className="finora-agent-theatre" data-theatre-section>
@@ -38,7 +26,6 @@ export function FinoraAgentTheatre() {
       {/* Desktop & Tablet: Left Directory + Right Technical Instrument Stage */}
       <div
         className="theatre-layout grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 border border-line rounded bg-[#080808] p-4 sm:p-6 lg:p-8"
-        onKeyDown={handleKeyDown}
         role="region"
         aria-label="Interactive Seven Specialists directory and inspector"
       >
@@ -54,6 +41,7 @@ export function FinoraAgentTheatre() {
             <div
               className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 pb-2 lg:pb-0 scrollbar-none"
               role="tablist"
+          onKeyDown={handleTabKeyDown}
               aria-orientation="vertical"
             >
               {specialists.agents.map((agent, index) => {

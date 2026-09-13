@@ -1,5 +1,7 @@
 "use client";
 
+import { handleTabKeyDown } from "@/lib/tab-keyboard";
+
 import { useState } from "react";
 import type { LandmarkOrigin } from "@/data/projects/nikot";
 
@@ -19,7 +21,7 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 border border-line bg-[#0a0a0a] rounded">
         <div>
           <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-1">
-            SELECT CITY ORIGIN // VERIFIED LANDMARKS
+            SELECT CONCEPTUAL ORIGIN
           </span>
           <span className="font-sans text-sm sm:text-base font-semibold text-primary">
             {activeOrigin.name} ({activeOrigin.bengaliName})
@@ -30,7 +32,8 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
         <div
           className="flex flex-wrap gap-2"
           role="tablist"
-          aria-label="Kolkata Landmark Origins"
+          onKeyDown={handleTabKeyDown}
+          aria-label="Conceptual Origins"
         >
           {origins.map((origin) => {
             const isSelected = origin.id === selectedOriginId;
@@ -40,6 +43,7 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
                 type="button"
                 role="tab"
                 aria-selected={isSelected}
+                tabIndex={isSelected ? 0 : -1}
                 aria-controls={`origin-panel-${origin.id}`}
                 id={`origin-tab-${origin.id}`}
                 onClick={() => setSelectedOriginId(origin.id)}
@@ -70,7 +74,7 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
               RADIAL ACCESS SCHEMATIC
             </span>
             <span className="font-mono text-[11px] text-secondary">
-              {activeOrigin.coordinates.latitude.toFixed(4)}° N, {activeOrigin.coordinates.longitude.toFixed(4)}° E
+              NOT TO SCALE
             </span>
           </div>
 
@@ -87,9 +91,9 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
               <circle cx="0" cy="0" r="150" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" strokeOpacity="0.2" fill="none" />
 
               {/* Ring Labels */}
-              <text x="5" y="-55" fill="currentColor" fillOpacity="0.4" fontSize="9" fontFamily="monospace">500 m</text>
-              <text x="5" y="-105" fill="currentColor" fillOpacity="0.4" fontSize="9" fontFamily="monospace">1.0 km</text>
-              <text x="5" y="-155" fill="currentColor" fillOpacity="0.4" fontSize="9" fontFamily="monospace">1.5 km</text>
+              <text x="5" y="-55" fill="currentColor" fillOpacity="0.4" fontSize="9" fontFamily="monospace"></text>
+              <text x="5" y="-105" fill="currentColor" fillOpacity="0.4" fontSize="9" fontFamily="monospace"></text>
+              <text x="5" y="-155" fill="currentColor" fillOpacity="0.4" fontSize="9" fontFamily="monospace"></text>
 
               {/* Center Origin Node */}
               <circle cx="0" cy="0" r="6" fill="currentColor" />
@@ -98,12 +102,12 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
                 ORIGIN
               </text>
 
-              {/* Candidate Station Nodes (Positioned proportionally) */}
+              {/* Candidate nodes: schematic positions do not encode geographic distance */}
               {activeOrigin.candidateStations.map((station, idx) => {
                 // Approximate angular positions for clean display
                 const angle = idx === 0 ? 35 : idx === 1 ? 165 : 285;
                 const rad = (angle * Math.PI) / 180;
-                const distanceScale = Math.min(145, station.straightLineKm * 75);
+                const distanceScale = 65 + idx * 35; // Decorative spacing, not measured distance.
                 const x = Math.round(distanceScale * Math.cos(rad));
                 const y = Math.round(distanceScale * Math.sin(rad));
 
@@ -142,7 +146,7 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
                       fontFamily="monospace"
                       fontWeight={station.isNearest ? "bold" : "normal"}
                     >
-                      {station.name} ({station.straightLineKm}km)
+                      {station.name}
                     </text>
                   </g>
                 );
@@ -159,10 +163,10 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
         <div className="lg:col-span-5 space-y-4">
           <div className="flex items-center justify-between border-b border-line pb-3">
             <span className="font-mono text-xs font-semibold text-primary uppercase">
-              RANKED ACCESS POINTS
+              CANDIDATE NODES
             </span>
             <span className="font-mono text-[10px] text-secondary">
-              HAVERSINE + PEDESTRIAN ROUTING
+              CONCEPTUAL RELATIONSHIPS
             </span>
           </div>
 
@@ -193,7 +197,7 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
 
                   {station.isNearest && (
                     <span className="font-mono text-[10px] px-2 py-0.5 border border-primary bg-primary text-canvas font-bold uppercase">
-                      NEAREST ACCESS
+                      EXAMPLE FOCUS
                     </span>
                   )}
                 </div>
@@ -201,12 +205,12 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
                 <div className="grid grid-cols-2 gap-2 pt-2 mt-2 border-t border-line/60 font-mono text-xs">
                   <div>
                     <span className="text-secondary text-[10px] uppercase block">STRAIGHT-LINE</span>
-                    <span className="text-primary font-medium">{station.straightLineKm} km</span>
+                    <span className="text-primary font-medium">PROXIMITY</span>
                   </div>
                   <div>
                     <span className="text-secondary text-[10px] uppercase block">WALKING DURATION</span>
                     <span className="text-primary font-medium">
-                      ~{station.walkingMinutes} min ({station.walkingDistanceKm} km)
+                      ACCESS CONNECTION
                     </span>
                   </div>
                 </div>
@@ -217,10 +221,10 @@ export function NikotRadialField({ origins }: NikotRadialFieldProps) {
           {/* Selected Access Summary Callout */}
           <div className="p-4 border border-line bg-[#050505] rounded font-mono text-xs space-y-1">
             <span className="text-secondary text-[10px] uppercase tracking-wider block">
-              RECOMMENDED ENTRY NODE
+              CONCEPTUAL ENTRY NODE
             </span>
             <div className="text-primary font-medium">
-              Board at <span className="underline">{nearestStation.name}</span> (~{nearestStation.walkingMinutes} min walk from {activeOrigin.name})
+              <span className="underline">{nearestStation.name}</span> connects {activeOrigin.name} to the example graph.
             </div>
           </div>
         </div>

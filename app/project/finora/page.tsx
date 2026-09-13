@@ -5,6 +5,7 @@ import { CaseStudyNav } from "@/components/case-study/case-study-nav";
 import { CaseStudyHero } from "@/components/case-study/case-study-hero";
 import { CaseStudySection } from "@/components/case-study/case-study-section";
 import { NextProjectTeaser } from "@/components/case-study/next-project-teaser";
+import { ExpandableDetail } from "@/components/case-study/expandable-detail";
 import { FinoraTopography } from "@/components/project/finora/finora-topography";
 import { FinoraAgentTheatre } from "@/components/project/finora/finora-agent-theatre";
 import { FinoraJudgeMatrix } from "@/components/project/finora/finora-judge-matrix";
@@ -13,7 +14,7 @@ import { FinoraTraceViewer } from "@/components/project/finora/finora-trace-view
 export const metadata: Metadata = {
   title: "Finora — Multi-Agent Personal CFO | Bedantika Mondal",
   description:
-    "A deterministic-first financial intelligence architecture where language models plan specialist workflows, while standard-library Python executes financial arithmetic.",
+    "A deterministic-first financial intelligence architecture where language models plan specialist workflows, while deterministic Python tools handle financial calculations and guardrails.",
 };
 
 export default function FinoraCaseStudyPage() {
@@ -44,51 +45,46 @@ export default function FinoraCaseStudyPage() {
           coordinates={meta.coordinates}
         />
 
-        {/* 01 / THE CORE TENSION: ARITHMETIC VS REASONING (De-boxed open editorial flow) */}
+        {/* 01 / THE CORE TENSION: ARITHMETIC VS REASONING */}
         <CaseStudySection
           id="tension"
           index="01"
           label="THE CORE TENSION"
-          annotation={tension.annotation}
+          annotation="[CONCEPTUAL VISUALIZATION] INTERCONNECTED DECISION RIPPLES"
           dataAttribute={{ "data-tension": true }}
         >
-          <div className="space-y-16" data-tension-reveal>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-              <div className="lg:col-span-5">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary leading-tight">
-                  Arithmetic vs. Reasoning
-                </h2>
-              </div>
-              <div className="lg:col-span-7 space-y-6 font-sans text-secondary text-base sm:text-lg leading-relaxed">
-                <p className="text-primary font-medium">{tension.intro}</p>
-                {tension.body.map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
-                ))}
-              </div>
+          <div className="space-y-12" data-tension-reveal>
+            <div className="max-w-3xl">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary mb-4 leading-tight">
+                Arithmetic vs. Reasoning
+              </h2>
+              <p className="font-sans text-secondary text-base sm:text-lg leading-relaxed">
+                Personal financial questions rarely exist in isolation. A single transaction inquiry requires structural verification across multiple interdependent domains.
+              </p>
             </div>
 
-            {/* Interconnected Constraint Ripples: Open sequential list, not boxed cards */}
-            <div className="pt-8 border-t border-line">
-              <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-secondary uppercase tracking-widest mb-8">
-                <span>SYSTEM DYNAMICS // ONE PURCHASE EVENT → FIVE CONSTRAINT RIPPLES</span>
-                <span className="text-[11px] text-primary">[ INTERDEPENDENT EQUILIBRIUM ]</span>
+            {/* Interconnected Constraint Ripples Visual */}
+            <div className="pt-6 border-t border-line">
+              <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-secondary uppercase tracking-widest mb-6">
+                <span>SYSTEM DYNAMICS // INTERDEPENDENT CONSTRAINT RIPPLES</span>
+                <span className="text-[10px] text-primary border border-line px-2 py-0.5 rounded">
+                  [CONCEPTUAL VISUALIZATION]
+                </span>
               </div>
 
-              <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {tension.ripples.map((ripple, idx) => (
                   <div
                     key={idx}
-                    className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-baseline py-4 border-b border-white/5"
+                    className="p-5 border border-line bg-[#090909] rounded flex flex-col justify-between gap-3 hover:border-primary/40 transition-colors"
                   >
-                    <div className="md:col-span-1 font-mono text-xs text-secondary/60">
-                      0{idx + 1}
+                    <div className="flex items-center justify-between font-mono text-xs text-secondary/60">
+                      <span>RIPPLE 0{idx + 1}</span>
+                      <span className="text-primary text-[11px] font-bold">{ripple.domain}</span>
                     </div>
-                    <div className="md:col-span-3 font-mono text-sm sm:text-base text-primary font-medium tracking-tight">
-                      {ripple.domain}
-                    </div>
-                    <div className="md:col-span-8 font-sans text-sm sm:text-base text-secondary leading-relaxed">
+                    <p className="font-sans text-xs sm:text-sm text-secondary leading-relaxed">
                       {ripple.impact}
-                    </div>
+                    </p>
                   </div>
                 ))}
               </div>
@@ -96,93 +92,95 @@ export default function FinoraCaseStudyPage() {
           </div>
         </CaseStudySection>
 
-        {/* 02 / THE DETERMINISTIC-FIRST BOUNDARY (Sharpened contrast between Model and Engine) */}
+        {/* 02 / THE DETERMINISTIC-FIRST BOUNDARY */}
         <CaseStudySection
           id="boundary"
           index="02"
           label="ARCHITECTURAL PRINCIPLE"
-          annotation={boundary.annotation}
+          annotation="[VERIFIED ARCHITECTURE] SEPARATION OF RESPONSIBILITIES"
           dataAttribute={{ "data-boundary": true }}
         >
-          <div className="space-y-12" data-boundary-reveal>
+          <div className="space-y-10" data-boundary-reveal>
             <div className="max-w-3xl">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary mb-4 leading-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary mb-3 leading-tight">
                 {boundary.heading}
               </h2>
-              <p className="font-sans text-secondary text-lg sm:text-xl leading-relaxed">
+              <p className="font-sans text-secondary text-base sm:text-lg leading-relaxed">
                 &ldquo;{boundary.statement}&rdquo;
               </p>
             </div>
 
-            {/* Asymmetrical High-Contrast Comparison: Linguistic vs Structured */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pt-4">
-              {/* Left: Probabilistic Reasoning (Linguistic, Open, Minimal Border) */}
-              <div className="p-6 sm:p-8 border-t border-line flex flex-col justify-between">
+            {/* Asymmetrical High-Contrast Boundary Split */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              {/* Left: Probabilistic Reasoning (Linguistic Planning) */}
+              <div className="p-6 sm:p-8 border border-line bg-[#060606] rounded flex flex-col justify-between">
                 <div>
-                  <div className="font-mono text-xs text-secondary uppercase tracking-wider mb-2">
-                    LAYER 01 // PROBABILISTIC REASONING
+                  <div className="flex items-center justify-between font-mono text-xs text-secondary uppercase tracking-wider mb-2">
+                    <span>LAYER 01 // PROBABILISTIC REASONING</span>
+                    <span className="text-primary text-[10px]">[LLM]</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-normal text-primary mb-6">
+                  <h3 className="text-xl sm:text-2xl font-medium text-primary mb-4">
                     Linguistic Planning
                   </h3>
 
-                  <div className="space-y-6 font-sans mb-8">
+                  <div className="space-y-4 font-sans text-xs sm:text-sm mb-6">
                     <div>
-                      <span className="font-mono text-[11px] text-secondary uppercase tracking-wider block mb-1">
+                      <span className="font-mono text-[10px] text-secondary uppercase tracking-wider block mb-1">
                         PERMITTED RESPONSIBILITY:
                       </span>
-                      <p className="text-primary text-base leading-relaxed">
+                      <p className="text-primary leading-relaxed">
                         {boundary.comparison[0].role}
                       </p>
                     </div>
                     <div>
-                      <span className="font-mono text-[11px] text-secondary uppercase tracking-wider block mb-1">
+                      <span className="font-mono text-[10px] text-secondary uppercase tracking-wider block mb-1">
                         FORBIDDEN ACTION:
                       </span>
-                      <p className="text-secondary text-sm leading-relaxed">
+                      <p className="text-secondary leading-relaxed">
                         {boundary.comparison[0].forbidden}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 font-mono text-xs text-secondary">
+                <div className="pt-3 border-t border-line font-mono text-[11px] text-secondary">
                   <span className="text-primary font-semibold">RUNTIME: </span>
                   {boundary.comparison[0].runtime}
                 </div>
               </div>
 
-              {/* Right: Deterministic Computation (Tabular, Exact, Crisp Surface) */}
-              <div className="p-6 sm:p-8 bg-[#0a0a0a] border border-line rounded flex flex-col justify-between">
+              {/* Right: Deterministic Computation (Exact Math) */}
+              <div className="p-6 sm:p-8 border border-primary/40 bg-[#0c0c0c] rounded flex flex-col justify-between shadow-[0_0_20px_-8px_rgba(243,243,239,0.06)]">
                 <div>
-                  <div className="font-mono text-xs text-primary font-bold uppercase tracking-wider mb-2">
-                    LAYER 02 // DETERMINISTIC ENGINE
+                  <div className="flex items-center justify-between font-mono text-xs text-primary font-bold uppercase tracking-wider mb-2">
+                    <span>LAYER 02 // DETERMINISTIC ENGINE</span>
+                    <span className="text-primary text-[10px]">[PYTHON]</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-normal text-primary mb-6">
-                    Exact Computation
+                  <h3 className="text-xl sm:text-2xl font-medium text-primary mb-4">
+                    Deterministic Computation
                   </h3>
 
-                  <div className="space-y-6 font-sans mb-8">
+                  <div className="space-y-4 font-sans text-xs sm:text-sm mb-6">
                     <div>
-                      <span className="font-mono text-[11px] text-secondary uppercase tracking-wider block mb-1">
+                      <span className="font-mono text-[10px] text-secondary uppercase tracking-wider block mb-1">
                         MANDATORY ENFORCEMENT:
                       </span>
-                      <p className="text-primary text-base leading-relaxed">
+                      <p className="text-primary leading-relaxed">
                         {boundary.comparison[1].role}
                       </p>
                     </div>
                     <div>
-                      <span className="font-mono text-[11px] text-secondary uppercase tracking-wider block mb-1">
-                        ABSOLUTE GUARANTEE:
+                      <span className="font-mono text-[10px] text-secondary uppercase tracking-wider block mb-1">
+                        RESPONSIBILITY BOUNDARY:
                       </span>
-                      <p className="text-secondary text-sm leading-relaxed">
+                      <p className="text-secondary leading-relaxed">
                         {boundary.comparison[1].forbidden}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-line font-mono text-xs text-secondary bg-black/40 p-3 rounded">
+                <div className="pt-3 border-t border-line font-mono text-[11px] text-secondary">
                   <span className="text-primary font-semibold">RUNTIME: </span>
                   {boundary.comparison[1].runtime}
                 </div>
@@ -191,32 +189,42 @@ export default function FinoraCaseStudyPage() {
           </div>
         </CaseStudySection>
 
-        {/* 03 / SYSTEM TOPOGRAPHY (Primary Signature Visual A) */}
+        {/* 03 / SYSTEM TOPOGRAPHY */}
         <CaseStudySection
           id="topography"
           index="03"
           label="SYSTEM TOPOGRAPHY"
-          annotation="FIVE-STAGE ORCHESTRATION PIPELINE"
+          annotation="[VERIFIED ARCHITECTURE] FIVE-STAGE ORCHESTRATION PIPELINE"
         >
           <FinoraTopography />
         </CaseStudySection>
 
-        {/* 04 / THE SEVEN SPECIALISTS (Signature Visual B) */}
+        {/* 04 / THE SEVEN SPECIALISTS */}
         <CaseStudySection
           id="specialists"
           index="04"
           label="SEVEN SPECIALISTS"
-          annotation="DETERMINISTIC DOMAIN TOOLS"
+          annotation="[VERIFIED DATA] DETERMINISTIC DOMAIN TOOLS"
         >
-          <FinoraAgentTheatre />
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED DATA]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                7 Specialized Domain Agents &amp; Discrete Arithmetic Schemas
+              </span>
+            </div>
+            <FinoraAgentTheatre />
+          </div>
         </CaseStudySection>
 
-        {/* 05 / THE TWO-AXIS JUDGE (Signature Visual C) */}
+        {/* 05 / THE TWO-AXIS JUDGE */}
         <CaseStudySection
           id="judge"
           index="05"
           label="TWO-AXIS JUDGE"
-          annotation="SOLVING THE PASS/FAIL PARADOX"
+          annotation="[VERIFIED ARCHITECTURE] DUAL-CRITERIA EVALUATION"
         >
           <FinoraJudgeMatrix />
         </CaseStudySection>
@@ -226,77 +234,81 @@ export default function FinoraCaseStudyPage() {
           id="trace"
           index="06"
           label="TRACE &amp; EXPLAINABILITY"
-          annotation="AUDITABLE SYSTEM PROVENANCE"
+          annotation="[VERIFIED ARCHITECTURE] WORKFLOW TRACE"
         >
-          <FinoraTraceViewer />
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED DATA]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Auditable Execution Trace: PLAN &rarr; AGENT &rarr; JUDGE &rarr; SYNTHESISE
+              </span>
+            </div>
+            <FinoraTraceViewer />
+          </div>
         </CaseStudySection>
 
-        {/* 07 / ENGINEERING CONSTRAINTS & STACK (De-boxed open technical manifest) */}
+        {/* 07 / ENGINEERING CONSTRAINTS & STACK */}
         <CaseStudySection
           id="engineering"
           index="07"
           label="ENGINEERING CONSTRAINTS"
-          annotation={engineering.annotation}
+          annotation="[VERIFIED ARCHITECTURE] RESPONSIBILITY BOUNDARIES"
           dataAttribute={{ "data-engineering": true }}
         >
-          <div className="space-y-12" data-engineering-reveal>
+          <div className="space-y-8" data-engineering-reveal>
             <div className="max-w-3xl">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary mb-4 leading-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary mb-3 leading-tight">
                 {engineering.heading}
               </h2>
-              <p className="font-sans text-secondary text-base sm:text-lg leading-relaxed">
-                Architectural choices prioritized sub-100ms cold starts, stateless sessions, and standard-library arithmetic over heavyweight frameworks.
+              <p className="font-sans text-secondary text-base leading-relaxed">
+                The architecture separates language-model interpretation from deterministic Python calculations and guardrails.
               </p>
             </div>
 
-            {/* Open Technical Stack Manifest: No card boxes */}
-            <div className="border-t border-line pt-8">
-              <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-6">
-                SYSTEM SUBSTRATE &amp; DEPENDENCY INVENTORY
-              </span>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {engineering.manifest.map((item, idx) => (
-                  <div key={idx} className="border-t border-white/10 pt-4 flex flex-col justify-between gap-1">
-                    <div className="font-mono text-[11px] text-secondary tracking-wider uppercase">
-                      {item.layer}
-                    </div>
-                    <div className="font-mono text-sm sm:text-base text-primary font-semibold">
-                      {item.stack}
-                    </div>
-                    <div className="font-sans text-xs text-secondary leading-relaxed mt-1">
-                      {item.note}
-                    </div>
+            {/* Visual Invariant Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {engineering.specs.map((spec, idx) => (
+                <div key={idx} className="p-5 border border-line bg-[#090909] rounded">
+                  <div className="font-mono text-[10px] text-secondary mb-2 flex items-center justify-between">
+                    <span>INVARIANT 0{idx + 1}</span>
+                    <span className="text-primary font-medium">[VERIFIED ARCHITECTURE]</span>
                   </div>
-                ))}
-              </div>
+                  <h3 className="text-base font-medium text-primary mb-1">
+                    {spec.title}
+                  </h3>
+                  <p className="font-sans text-secondary text-xs leading-relaxed">
+                    {spec.detail}
+                  </p>
+                </div>
+              ))}
             </div>
 
-            {/* Architectural Production Invariants */}
-            <div className="border-t border-line pt-8">
-              <span className="font-mono text-xs text-secondary uppercase tracking-widest block mb-6">
-                FOUR ARCHITECTURAL INVARIANTS
-              </span>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                {engineering.specs.map((spec, idx) => (
-                  <div key={idx} className="border-t border-white/10 pt-4">
-                    <div className="font-mono text-[11px] text-secondary mb-2 flex items-center justify-between">
-                      <span>INVARIANT 0{idx + 1}</span>
-                      <span className="text-primary font-medium">[VERIFIED]</span>
+            {/* Expandable Technical Substrate Details */}
+            <div className="space-y-3 pt-4">
+              <ExpandableDetail label="System Responsibilities" badge="VERIFIED ARCHITECTURE">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                  {engineering.manifest.map((item, idx) => (
+                    <div key={idx} className="border-t border-line/40 pt-3">
+                      <div className="font-mono text-[10px] text-secondary tracking-wider uppercase mb-1">
+                        {item.layer}
+                      </div>
+                      <div className="font-mono text-xs text-primary font-semibold">
+                        {item.stack}
+                      </div>
+                      <div className="font-sans text-xs text-secondary leading-relaxed mt-1">
+                        {item.note}
+                      </div>
                     </div>
-                    <h3 className="text-lg sm:text-xl font-normal text-primary mb-2">
-                      {spec.title}
-                    </h3>
-                    <p className="font-sans text-secondary text-sm leading-relaxed">
-                      {spec.detail}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </ExpandableDetail>
             </div>
           </div>
         </CaseStudySection>
 
-        {/* 08 / TEAM CONTEXT & INDIVIDUAL ROLE (Quiet editorial reflection without development brackets) */}
+        {/* 08 / TEAM CONTEXT & INDIVIDUAL ROLE */}
         <CaseStudySection
           id="role"
           index="08"
@@ -304,27 +316,27 @@ export default function FinoraCaseStudyPage() {
           annotation={role.annotation}
           dataAttribute={{ "data-role": true }}
         >
-          <div className="space-y-8" data-role-reveal>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-              <div className="lg:col-span-5">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary leading-tight">
-                  Collaborative Context
-                </h2>
-              </div>
-              <div className="lg:col-span-7 space-y-6 font-sans text-secondary text-base sm:text-lg leading-relaxed">
-                <p className="text-primary font-medium">{role.context}</p>
-                <p>{role.reflection}</p>
+          <div className="space-y-6" data-role-reveal>
+            <div className="max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-primary mb-3">
+                Collaborative Context
+              </h2>
+              <p className="font-sans text-secondary text-sm sm:text-base leading-relaxed mb-3">
+                {role.context}
+              </p>
+              <p className="font-sans text-secondary text-sm leading-relaxed">
+                {role.reflection}
+              </p>
+            </div>
 
-                <div className="pt-4 border-t border-line mt-6 font-mono text-xs text-secondary/60 flex items-center justify-between">
-                  <span>COLLABORATION // HACKATHON RESEARCH PROTOTYPE</span>
-                  <span>STATUS // REPOSITORY VERIFIED</span>
-                </div>
-              </div>
+            <div className="pt-3 border-t border-line font-mono text-xs text-secondary/60 flex flex-wrap items-center justify-between gap-2">
+              <span>COLLABORATION // HACKATHON RESEARCH PROTOTYPE</span>
+              <span className="text-primary">{role.statusNotice}</span>
             </div>
           </div>
         </CaseStudySection>
 
-        {/* 09 / RETROSPECTIVE & TRADE-OFFS (Calm editorial reflection, de-boxed) */}
+        {/* 09 / RETROSPECTIVE & TRADE-OFFS */}
         <CaseStudySection
           id="retrospective"
           index="09"
@@ -332,32 +344,27 @@ export default function FinoraCaseStudyPage() {
           annotation={retrospective.annotation}
           dataAttribute={{ "data-retrospective": true }}
         >
-          <div className="space-y-12" data-retrospective-reveal>
+          <div className="space-y-8" data-retrospective-reveal>
             <div className="max-w-3xl">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-primary mb-4 leading-tight">
+              <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-primary mb-2">
                 {retrospective.heading}
               </h2>
-              <p className="font-sans text-secondary text-base sm:text-lg leading-relaxed">
-                Lessons gained from implementing autonomous agents under strict financial guarantees.
+              <p className="font-sans text-secondary text-sm sm:text-base leading-relaxed">
+                Key lessons gained from implementing autonomous multi-agent pipelines with deterministic computation.
               </p>
             </div>
 
-            {/* Open 3-column editorial reflections: No card enclosures */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {retrospective.tradeoffs.map((tradeoff, idx) => (
-                <div
-                  key={idx}
-                  className="border-t border-line pt-6 flex flex-col justify-between"
-                >
+                <div key={idx} className="p-5 border border-line bg-[#090909] rounded flex flex-col justify-between">
                   <div>
-                    <div className="font-mono text-xs text-secondary mb-3 flex items-center justify-between">
-                      <span>LESSON 0{idx + 1}</span>
-                      <span className="text-primary font-bold">SYSTEM DYNAMICS</span>
+                    <div className="font-mono text-[10px] text-secondary mb-2">
+                      LESSON 0{idx + 1}
                     </div>
-                    <h3 className="text-lg sm:text-xl font-normal text-primary mb-4">
+                    <h3 className="text-base font-medium text-primary mb-2">
                       {tradeoff.title}
                     </h3>
-                    <p className="font-sans text-secondary text-sm leading-relaxed">
+                    <p className="font-sans text-secondary text-xs leading-relaxed">
                       {tradeoff.takeaway}
                     </p>
                   </div>

@@ -12,9 +12,8 @@ export function Hero() {
   const shadowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Only apply subtle parallax on desktop without reduced-motion
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktop = window.matchMedia("(min-width: 1024px)");
 
     const heroEl = heroRef.current;
     if (!heroEl) return;
@@ -23,7 +22,8 @@ export function Hero() {
     let targetY = 0;
     let currentX = 0;
     let currentY = 0;
-    let frameId: number;
+    let frameId: number | null = null;
+    let running = false;
 
     const onMouseMove = (e: MouseEvent) => {
       const rect = heroEl.getBoundingClientRect();
@@ -33,9 +33,8 @@ export function Hero() {
       targetY = relY * 10;
     };
 
-    heroEl.addEventListener("mousemove", onMouseMove, { passive: true });
-
     const animate = () => {
+      if (!running) return;
       currentX += (targetX - currentX) * 0.08;
       currentY += (targetY - currentY) * 0.08;
 
@@ -53,11 +52,34 @@ export function Hero() {
       frameId = requestAnimationFrame(animate);
     };
 
-    frameId = requestAnimationFrame(animate);
+    const stop = () => {
+      running = false;
+      heroEl.removeEventListener("mousemove", onMouseMove);
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = null;
+      targetX = targetY = currentX = currentY = 0;
+      for (const ref of [portraitRef, textRef, shadowRef]) {
+        ref.current?.style.removeProperty("transform");
+      }
+    };
+
+    const syncMotion = () => {
+      if (reducedMotion.matches || !desktop.matches) {
+        stop();
+      } else if (!running) {
+        running = true;
+        heroEl.addEventListener("mousemove", onMouseMove, { passive: true });
+        frameId = requestAnimationFrame(animate);
+      }
+    };
+    reducedMotion.addEventListener("change", syncMotion);
+    desktop.addEventListener("change", syncMotion);
+    syncMotion();
 
     return () => {
-      heroEl.removeEventListener("mousemove", onMouseMove);
-      cancelAnimationFrame(frameId);
+      stop();
+      reducedMotion.removeEventListener("change", syncMotion);
+      desktop.removeEventListener("change", syncMotion);
     };
   }, []);
 

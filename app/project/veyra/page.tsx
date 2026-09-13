@@ -5,6 +5,7 @@ import { CaseStudyNav } from "@/components/case-study/case-study-nav";
 import { CaseStudyHero } from "@/components/case-study/case-study-hero";
 import { CaseStudySection } from "@/components/case-study/case-study-section";
 import { NextProjectTeaser } from "@/components/case-study/next-project-teaser";
+import { ExpandableDetail } from "@/components/case-study/expandable-detail";
 import { VeyraBudgetField } from "@/components/project/veyra/veyra-budget-field";
 import { VeyraScoreInspector } from "@/components/project/veyra/veyra-score-inspector";
 import { VeyraCashFlow } from "@/components/project/veyra/veyra-cash-flow";
@@ -12,7 +13,7 @@ import { VeyraCashFlow } from "@/components/project/veyra/veyra-cash-flow";
 export const metadata: Metadata = {
   title: "Veyra — Budget Analysis & Financial Observation Interface | Bedantika Mondal",
   description:
-    "A deterministic client-side financial observatory that transforms raw transaction noise into spatial budget envelopes, weighted health indices, and continuous cash-flow streams.",
+    "A deterministic client-side financial observatory that transforms raw transaction noise into spatial budget envelopes, score structure, and conceptual financial flow.",
 };
 
 export default function VeyraPage() {
@@ -43,6 +44,7 @@ export default function VeyraPage() {
         liveUrl={meta.links.live}
       />
 
+      <main id="main-content" tabIndex={-1}>
       {/* 00 / PROJECT HERO */}
       <CaseStudyHero
         number={meta.number}
@@ -56,11 +58,22 @@ export default function VeyraPage() {
         coordinates={meta.coordinates}
       />
 
-      {/* Synthetic Data Notice Banner */}
-      <div className="site-gutter py-4 border-b border-line bg-[#080808]">
-        <p className="font-mono text-[11px] sm:text-xs text-secondary text-center tracking-wide">
-          {hero.syntheticDataNotice}
-        </p>
+      {/* Verified Fixture & Storage Disclosure Banner */}
+      <div className="site-gutter py-4 border-b border-line bg-surface/30">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-xs text-secondary">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded text-[10px] font-semibold uppercase tracking-wider">
+              [VERIFIED DATA]
+            </span>
+            <span>{hero.syntheticDataNotice}</span>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-secondary/80">
+            <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded text-[10px] font-semibold uppercase tracking-wider">
+              [VERIFIED ARCHITECTURE]
+            </span>
+            <span>Client-side in-memory Zustand state. No database, auth, or persistent storage.</span>
+          </div>
+        </div>
       </div>
 
       {/* CLUSTER 1: INTRO & MATHEMATICAL FOUNDATIONS */}
@@ -73,10 +86,23 @@ export default function VeyraPage() {
           annotation={tension.annotation}
           dataAttribute={{ "data-veyra-intro-reveal": true }}
         >
-          <div className="space-y-12">
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Linear Debit Log vs Spatial Budget Envelopes
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Chronological tables present high transaction fidelity but obscure systemic burn rates. Veyra restructures linear debit streams into category envelopes.
+            </p>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left: Chronological Transaction Fragments */}
-              <div className="lg:col-span-5 p-6 border border-line bg-[#0a0a0a] rounded space-y-4">
+              <div className="lg:col-span-5 p-5 border border-line bg-[#0a0a0a] rounded space-y-4">
                 <div className="flex items-center justify-between border-b border-line pb-3">
                   <span className="font-mono text-xs font-semibold text-primary">
                     CHRONOLOGICAL DEBIT LOG
@@ -102,7 +128,7 @@ export default function VeyraPage() {
                 </div>
 
                 <div className="pt-2 font-mono text-[11px] text-secondary border-t border-line/60 text-center">
-                  6 of 28 monthly rows • High chronological fidelity, zero systemic awareness
+                  Conceptual record structure; no category amounts are represented.
                 </div>
               </div>
 
@@ -149,25 +175,34 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-intro-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {engine.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED DATA]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Deterministic Financial Equations &amp; Synchronous Calculations
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Financial indicators are computed through deterministic arithmetic rather than statistical heuristics. Pure functions enforce mathematical consistency across the viewport.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {engine.formulas.map((f, idx) => (
                 <div
                   key={idx}
                   className="p-5 border border-line bg-[#0a0a0a] rounded flex flex-col justify-between gap-4"
                 >
-                  <div>
-                    <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-1">
-                      ALGORITHMIC SPECIFICATION
+                  <div className="space-y-3">
+                    <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block">
+                      FORMULA 0{idx + 1}
                     </span>
-                    <h4 className="font-mono text-xs font-semibold text-primary mb-3">
+                    <h4 className="font-mono text-xs font-semibold text-primary">
                       {f.label}
                     </h4>
 
-                    <div className="p-3 border border-line bg-[#050505] rounded font-mono text-xs text-primary mb-3 overflow-x-auto">
+                    <div className="p-3 border border-line bg-[#050505] rounded font-mono text-xs text-primary overflow-x-auto">
                       <code>{f.math}</code>
                     </div>
 
@@ -177,12 +212,26 @@ export default function VeyraPage() {
                   </div>
 
                   <div className="pt-3 border-t border-line/60 flex items-center justify-between font-mono text-[11px]">
-                    <span className="text-secondary">SAMPLE EVALUATION:</span>
-                    <span className="text-primary font-medium">{f.fixtureValue}</span>
+                    <span className="text-secondary">SYNTHETIC EVALUATION:</span>
+                    <span className="text-primary font-semibold">{f.fixtureValue}</span>
                   </div>
                 </div>
               ))}
             </div>
+
+            <ExpandableDetail label="Mathematical Derivations & Algorithmic Bounds" badge="SPECIFICATION">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Income and Spend:</strong> The approved synthetic fixture supplies monthly totals.
+                </p>
+                <p>
+                  <strong>Savings:</strong> Income less spend gives the approved savings total.
+                </p>
+                <p>
+                  <strong>Savings Rate:</strong> Savings relative to income gives the displayed 38.5% rate.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
 
@@ -195,8 +244,17 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-intro-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {pipeline.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                5-Stage Progressive Transformation Pipeline
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Raw transactions pass through a 5-stage transformation pipeline, converting discrete bank entries into visual envelopes and composite health metrics.
             </p>
 
             {/* 5-Stage Progressive Transformation Matrix */}
@@ -231,6 +289,17 @@ export default function VeyraPage() {
                 </div>
               ))}
             </div>
+
+            <ExpandableDetail label="Pipeline Stage Transformation Invariants" badge="ARCH">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Conceptual Progression:</strong> Records, categories, calculations, and observations show the relationship between inputs and outputs.
+                </p>
+                <p>
+                  <strong>Scope:</strong> This diagram describes structure without a measured execution-time claim.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
       </div>
@@ -246,14 +315,37 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-systems-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {budgetField.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Spatial Budget Envelopes — March 2024 Synthetic Demo Fixture
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Categories render as structural category envelopes rather than static table cells. The diagram shows relationships, not measured allocations or utilization.
             </p>
 
             <VeyraBudgetField
               categories={budgetField.categories}
               statusLegend={budgetField.statusLegend}
             />
+
+            <ExpandableDetail label="Budget Envelope Variance Rules & Thresholds" badge="CALC">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Healthy:</strong> Standard operational envelope. Category spend remains within allocation.
+                </p>
+                <p>
+                  <strong>Warning:</strong> Approaching cap. High risk of budget breach if unplanned discretionary transactions occur.
+                </p>
+                <p>
+                  <strong>Exceeded:</strong> Deficit status. Category spending has outpaced allocation, requiring rebalancing from uncommitted liquidity.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
 
@@ -266,14 +358,49 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-systems-reveal": true }}
         >
           <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED DATA]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Deterministic Composite Score — Multi-Factor Evaluation
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              VeyraScore connects inputs, formula, score, and tier. The inspector explains this structure without publishing a specific score or weights.
+            </p>
+
             <VeyraScoreInspector
-              compositeScore={veyraScore.compositeScore}
-              tier={veyraScore.tier}
-              tierDefinition={veyraScore.tierDefinition}
               notice={veyraScore.notice}
-              tiers={veyraScore.tiers}
-              factors={veyraScore.factors}
+              stages={veyraScore.stages}
             />
+
+            <ExpandableDetail label="Score Calculation Architecture" badge="EVALUATION">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <div className="flex items-center gap-2 text-primary font-semibold pb-2 border-b border-line/40">
+                  <span>INPUTS</span>
+                  <span>&rarr;</span>
+                  <span>FORMULA</span>
+                  <span>&rarr;</span>
+                  <span>SCORE</span>
+                  <span>&rarr;</span>
+                  <span>TIER</span>
+                </div>
+                <p>
+                  <strong>INPUTS:</strong> Discrete monthly transactions, categorized debit amounts, and designated liquidity buffers.
+                </p>
+                <p>
+                  <strong>FORMULA:</strong> Deterministic functional calculations evaluate category adherence and uncommitted savings margins.
+                </p>
+                <p>
+                  <strong>SCORE:</strong> Normalized composite health index computed synchronously in client memory.
+                </p>
+                <p>
+                  <strong>TIER:</strong> Bounded classification threshold mapping composite score to qualitative operational status.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
 
@@ -286,8 +413,17 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-systems-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {cashFlow.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Conceptual Financial Flow Visualization
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              A conceptual financial flow visualization connects income, records, categories, spend, and savings. Branch geometry does not encode measured proportions.
             </p>
 
             <VeyraCashFlow
@@ -296,6 +432,17 @@ export default function VeyraPage() {
               inflowNotice={cashFlow.inflowNotice}
               streams={cashFlow.streams}
             />
+
+            <ExpandableDetail label="Cash Flow River Geometry & Stream Aggregations" badge="GEOMETRY">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Conceptual Geometry:</strong> Fixed SVG branches show relationships, not quantities.
+                </p>
+                <p>
+                  <strong>Approved Fixture:</strong> ₹95,000 income less ₹58,400 spend leaves ₹36,600 savings.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
       </div>
@@ -311,8 +458,17 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-engineering-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {reactivity.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                In-Memory Synchronous Reactivity Loop
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Client-side in-memory Zustand holds financial state. Calculations inform updated observations; no persistent storage is implemented.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -349,8 +505,17 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-engineering-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {engineering.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Frontend Technology Stack &amp; Layer Responsibilities
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              The financial observation interface uses client-side in-memory Zustand and deterministic calculations.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -390,8 +555,17 @@ export default function VeyraPage() {
           dataAttribute={{ "data-veyra-engineering-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {scopeDiscipline.intro}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Deliberate Architectural Boundaries &amp; Scope Rigor
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Veyra was conceived and built strictly as a client-side computational prototype to explore data visualization and ergonomics, not as a commercial banking backend.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -487,6 +661,7 @@ export default function VeyraPage() {
         nextSubtitle={nextProject.nextSubtitle}
         nextCategory={nextProject.nextCategory}
       />
+      </main>
     </CaseStudyShell>
   );
 }

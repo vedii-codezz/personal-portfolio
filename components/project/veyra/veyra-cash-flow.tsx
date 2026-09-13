@@ -20,7 +20,7 @@ export function VeyraCashFlow({
       {/* Top Banner Notice */}
       <div className="p-4 sm:p-5 border border-line bg-[#0a0a0a] rounded flex items-center justify-between gap-4">
         <span className="font-mono text-xs text-primary font-semibold uppercase tracking-wider">
-          LIQUIDITY DISPATCH SPECIFICATION
+          CONCEPTUAL FINANCIAL FLOW
         </span>
         <span className="font-mono text-[11px] text-secondary tracking-widest hidden sm:inline">
           {inflowNotice}
@@ -46,12 +46,12 @@ export function VeyraCashFlow({
                 {baselineInflow}
               </span>
               <span className="font-mono text-xs text-secondary mt-1 block">
-                100.0% OF DISPATCHED CAPITAL
+                APPROVED SYNTHETIC INCOME
               </span>
             </div>
 
             <div className="font-mono text-[11px] text-secondary border-t border-line/60 pt-3">
-              Single recurring credit allocation evaluated at the start of billing cycle.
+              Conceptual financial flow visualization; fixed branches are not a quantity scale.
             </div>
           </div>
 
@@ -112,7 +112,7 @@ export function VeyraCashFlow({
                       {stream.channel}
                     </span>
                     <span className="font-mono text-[10px] text-secondary">
-                      ({stream.percentage.toFixed(1)}%)
+                      RELATIONSHIP
                     </span>
                   </div>
                   <p className="font-mono text-[10px] text-secondary truncate max-w-xs">
@@ -122,10 +122,10 @@ export function VeyraCashFlow({
 
                 <div className="text-right shrink-0">
                   <span className="font-mono text-sm font-semibold text-primary block">
-                    ₹{stream.amount.toLocaleString()}
+                    {stream.channel}
                   </span>
                   <span className="font-mono text-[9px] text-secondary">
-                    {stream.includedCategories.length} allocations
+                    STRUCTURAL VIEW
                   </span>
                 </div>
               </div>
@@ -148,7 +148,7 @@ export function VeyraCashFlow({
             {baselineInflow}
           </span>
           <span className="font-mono text-xs text-secondary mt-1 block">
-            100% of dispatched monthly capital
+            Approved synthetic income
           </span>
         </div>
 
@@ -168,13 +168,13 @@ export function VeyraCashFlow({
                   {stream.channel}
                 </span>
                 <span className="font-mono text-xs px-2 py-0.5 border border-line bg-[#141414] text-primary font-medium">
-                  {stream.percentage.toFixed(1)}%
+                  CONCEPTUAL
                 </span>
               </div>
 
               <div className="flex items-baseline justify-between pt-1">
                 <span className="font-sans text-2xl font-normal text-primary">
-                  ₹{stream.amount.toLocaleString()}
+                  {stream.channel}
                 </span>
                 <span className="font-mono text-[10px] text-secondary">
                   {stream.classification}
@@ -185,7 +185,7 @@ export function VeyraCashFlow({
               <div className="w-full h-1.5 bg-[#111111] border border-line overflow-hidden mt-2">
                 <div
                   className="h-full bg-primary"
-                  style={{ width: `${stream.percentage}%` }}
+                  style={{ width: "100%" }} aria-hidden="true"
                 />
               </div>
 
@@ -210,7 +210,7 @@ export function VeyraCashFlow({
                   {stream.channel}
                 </span>
                 <span className="font-mono text-[10px] text-secondary">
-                  {stream.percentage.toFixed(1)}%
+                  CONCEPTUAL
                 </span>
               </div>
               <p className="font-sans text-xs text-secondary leading-relaxed mt-2">
@@ -220,7 +220,7 @@ export function VeyraCashFlow({
 
             <div className="pt-3 border-t border-line/50 font-mono text-[10px] text-secondary space-y-1">
               <span className="uppercase tracking-wider block text-primary font-medium">
-                SAMPLED COMPONENTS:
+                RELATED CONCEPTS:
               </span>
               {stream.includedCategories.map((item, idx) => (
                 <div key={idx} className="truncate">

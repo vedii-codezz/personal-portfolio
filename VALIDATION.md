@@ -1,3 +1,61 @@
+# Milestone 9.2B Validation — Source-Truth Cleanup + Accessibility & Motion Lifecycle (13 September 2026)
+
+## Scope and Result
+Completed Milestone 9.2B source-truth cleanup, factual boundary alignment, accessibility fixes, and live reduced-motion lifecycle handling.
+
+### SOURCE VERIFIED
+- **Finora:**
+  - 7 specialist domains confirmed: `BUDGET`, `AFFORDABILITY`, `LOAN`, `BILLS`, `INVESTMENT`, `TAX`, `FRAUD`.
+  - Architecture aligned to verified pipeline: `USER REQUEST → ROUTER → ORCHESTRATOR → SELECTED SPECIALIST AGENTS → JUDGE → PASS / REVISE → SYNTHESIS → FINAL RESPONSE`.
+  - Judge dimensions: `RESPONSE OK` / `TRANSACTION SAFE`.
+  - Execution trace: `PLAN → AGENT → JUDGE → SYNTHESISE`.
+  - All unsupported latency claims (1–2s, sub-second, ~15ms), 40%, GST, regulatory, and emergency-floor references removed from data and page copy.
+- **Veyra:**
+  - Approved synthetic March 2024 demo figures verified: Income ₹95,000; Spend ₹58,400; Savings ₹36,600; Savings Rate 38.5%.
+  - Storage boundary verified: client-side in-memory Zustand; explicitly states no database, no authentication, no persistent storage.
+  - Unsupported claims removed: 78, STRONG tier, 81/100, Optimal Tier, sub-millisecond / 1 millisecond execution, 35/25/20/20 weights, and unapproved category spending figures.
+  - Category envelopes and score inspectors converted to structural and conceptual presentation (`INPUTS → FORMULA → SCORE → TIER`).
+- **Nikot-e-Metro:**
+  - Approved public architecture verified: `YOU ARE HERE → NEARBY STATIONS → TRANSIT GRAPH → ROUTE OPTIONS`.
+  - Routing engine: `DIJKSTRA`, `A*`, `PARETO` balancing `TRAVEL DURATION`, `TRANSFER COUNT`, and `WALKING DURATION`.
+  - Graph model: `STATION NODES`, `TRACK EDGES`, `TRANSFER EDGES`, and `WALKING CONNECTIONS`.
+  - Interchange model: `LINE A → TRANSFER → LINE B` (conceptual graph connection).
+  - Geolocation wording verified: "User location is used transiently for nearby-station computation; no location persistence feature is implemented."
+  - Unsupported physical details removed: live train tracking, live delay feeds, offline PWA, unverified route timings/distances, and physical topology claims (subway, platform, escalator, passageway, Esplanade, etc.).
+- **Accessibility & Landmarks:**
+  - Every project page (`/project/aptly`, `/project/finora`, `/project/nikot-e-metro`, `/project/veyra`) and the home page (`/`) has exactly one `<main id="main-content" tabIndex={-1}>` or `<main id="main" tabIndex={-1}>` semantic landmark.
+  - Homepage ID collision resolved: `work-stage-title` replaces duplicate `work-title`.
+  - ARIA tab interfaces support `ArrowRight`, `ArrowDown`, `ArrowLeft`, `ArrowUp`, `Home`, and `End` keys via shared helper `handleTabKeyDown` in `lib/tab-keyboard.ts`, updating `aria-selected`, roving `tabIndex`, and focus.
+  - Native `<details>/<summary>` component implemented in `components/case-study/expandable-detail.tsx` for accessible disclosures.
+- **Live Reduced Motion:**
+  - Hero and KineticSkillsMarquee listen to live `prefers-reduced-motion: reduce` and breakpoint changes.
+  - Marquee cancels rAF, detaches scroll velocity listeners, clears activation timeout, and sets `transform: none` when reduced motion is enabled.
+  - Hero cancels pointer parallax and rAF, resets transforms, and detaches mouse listener when reduced motion is enabled or screen width drops below 1024px.
+  - Teardown prevents duplicate listeners and duplicate rAF loops.
+
+### TEST VERIFIED
+- `tests/case-study.test.ts` (18 tests passing): Unpinned motion invariants on Veyra and Nikot; approved synthetic totals; Judge trace; conceptual interchange and transit graph boundaries.
+- `tests/animations.test.ts` (6 tests passing): Reduced-motion creation invariants, live preference change teardown, unmount cleanup, single pinned desktop trigger, mobile unpinning, and short viewport fallback.
+- `tests/case-study-ui.test.tsx` (17 tests passing): Single main landmark and unique IDs across Home and all 4 case study pages; absence of banned Finora, Veyra, and Nikot claims; approved rupee numbers; conceptual interchange structure; native disclosure behavior; ARIA tab keyboard navigation across all 8 project inspectors.
+- `tests/micro-interactions.test.tsx` (5 tests passing): Hero and Marquee live motion preference handling in React Strict Mode, IntersectionObserver visibility gating, delay cancellation, pause/resume, and fallback when IntersectionObserver is absent.
+- Full test suite execution: 4 test files, 46 tests passing (`npm run test`).
+
+### BUILD VERIFIED
+- `npm run typecheck` (`tsc --noEmit`): Passed with 0 errors.
+- `npm run build` (`next build`): Production compilation with Turbopack succeeded. All 7 static routes (`/`, `/_not-found`, `/project/aptly`, `/project/finora`, `/project/nikot-e-metro`, `/project/veyra`) prerendered cleanly.
+
+### BROWSER VERIFIED
+- JSDOM virtual DOM rendering and static markup generation for all 5 pages.
+- Keyboard dispatch events (`ArrowRight`, `ArrowDown`, `ArrowLeft`, `ArrowUp`, `Home`, `End`) verifying `document.activeElement`, `aria-selected`, `tabIndex`, and `role="tabpanel"` `aria-labelledby` attributes.
+- Simulated rAF and matchMedia preference change callbacks under React 19 `StrictMode`.
+
+### NOT VERIFIED
+- Manual visual inspection in an active GUI browser session during this specific turn.
+- Physical OS toggle of system-wide Windows/macOS high contrast or reduced motion settings against a live running dev server.
+- Live external links (GitHub repos / demo links) network accessibility.
+
+---
+
 # Milestone 2 audit — 10 September 2026
 
 ## Scope and result

@@ -46,7 +46,7 @@ export function FinoraJudgeMatrix() {
           <div className="flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-primary" />
             <span className="text-primary font-semibold uppercase tracking-wider">
-              THE EVALUATION PARADOX &amp; RESOLUTION
+              [CONCEPTUAL VISUALIZATION] EVALUATION EXAMPLE
             </span>
           </div>
           <span className="text-secondary">[ REAL-WORLD EDGE CASE ]</span>
@@ -112,7 +112,7 @@ export function FinoraJudgeMatrix() {
           <div className="lg:col-span-4 bg-white/5 border border-line p-4 rounded">
             <div className="font-mono text-xs text-primary font-bold mb-1">BOUNDED REVISION GUARDRAIL</div>
             <p className="font-sans text-secondary text-xs leading-normal">
-              If response_ok is False, the Judge returns a targeted revision prompt to the Orchestrator. The loop is strictly capped at ≤ 2 iterations to eliminate infinite reasoning loops.
+              The Judge evaluates response quality and transaction safety separately, informing pass or revision.
             </p>
           </div>
         </div>

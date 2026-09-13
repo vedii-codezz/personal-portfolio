@@ -1,5 +1,7 @@
 "use client";
 
+import { handleTabKeyDown } from "@/lib/tab-keyboard";
+
 import { useState } from "react";
 import type { CategoryBudgetData } from "@/data/projects/veyra";
 
@@ -14,11 +16,12 @@ interface VeyraBudgetFieldProps {
 
 export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldProps) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryBudgetData>(
-    categories[3] // Default to 'Shopping' to highlight the variance threshold in action
+    categories[0]
   );
 
   return (
     <div className="veyra-budget-field space-y-8" data-budget-field>
+      <p className="font-mono text-xs text-secondary">[CONCEPTUAL VISUALIZATION] Categories and states illustrate relationships, not measured category results.</p>
       {/* Visual Status Legend */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-5 border border-line bg-[#0a0a0a] rounded text-xs font-mono">
         {statusLegend.map((item, idx) => (
@@ -48,13 +51,14 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
         <div
           className="lg:col-span-7 space-y-3"
           role="tablist"
+          onKeyDown={handleTabKeyDown}
           aria-label="Category Budget Envelopes"
         >
           {categories.map((cat) => {
             const isSelected = selectedCategory.category === cat.category;
-            const cappedWidth = Math.min(100, Math.max(0, cat.utilization));
-            const isExceeded = cat.status === "exceeded";
-            const isWarning = cat.status === "warning";
+            
+            
+            
 
             return (
               <button
@@ -62,6 +66,7 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
                 type="button"
                 role="tab"
                 aria-selected={isSelected}
+                tabIndex={isSelected ? 0 : -1}
                 aria-controls={`panel-${cat.category}`}
                 id={`tab-${cat.category}`}
                 onClick={() => setSelectedCategory(cat)}
@@ -82,55 +87,33 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
                       {cat.category}
                     </span>
                     <span
-                      className={`font-mono text-[10px] px-1.5 py-0.5 border ${
-                        isExceeded
-                          ? "bg-primary text-canvas border-primary font-bold"
-                          : isWarning
-                          ? "bg-primary/20 text-primary border-primary/60 font-medium"
-                          : "text-secondary border-line"
-                      }`}
+                      className={`font-mono text-[10px] px-1.5 py-0.5 border `}
                     >
-                      {cat.status.toUpperCase()}
+                      CATEGORY
                     </span>
                   </div>
 
                   <div className="font-mono text-xs text-right">
-                    <span className="text-primary font-medium">₹{cat.spent.toLocaleString()}</span>
+                    <span className="text-primary font-medium">RECORDS</span>
                     <span className="text-secondary mx-1.5">/</span>
-                    <span className="text-secondary">₹{cat.allocated.toLocaleString()}</span>
+                    <span className="text-secondary">ALLOCATION</span>
                   </div>
                 </div>
 
-                {/* Proportional Envelope Geometry */}
+                {/* Conceptual envelope: no measured utilization */}
                 <div className="w-full h-3 bg-[#111111] border border-line rounded-xs overflow-hidden relative">
                   {/* Utilization bar */}
                   <div
-                    className={`h-full transition-all duration-300 ${
-                      isExceeded
-                        ? "bg-primary"
-                        : isWarning
-                        ? "bg-primary/70"
-                        : "bg-primary/30"
-                    }`}
-                    style={{ width: `${cappedWidth}%` }}
-                  />
-
-                  {/* 80% Threshold Tick Mark */}
-                  <div
-                    className="absolute top-0 bottom-0 w-[1px] bg-primary/60 z-10"
-                    style={{ left: "80%" }}
-                    title="80% Warning Threshold"
-                    aria-hidden="true"
+                    className="h-full bg-primary/30 transition-all duration-300"
+                    style={{ width: "100%" }} aria-hidden="true"
                   />
                 </div>
 
                 {/* Footnote ratio */}
                 <div className="flex items-center justify-between mt-1.5 font-mono text-[10px] text-secondary">
-                  <span>UTILIZATION: {cat.utilization.toFixed(1)}%</span>
+                  <span>CONCEPTUAL ENVELOPE</span>
                   <span>
-                    {cat.remaining >= 0
-                      ? `REMAINING: ₹${cat.remaining.toLocaleString()}`
-                      : `DEFICIT: ₹${Math.abs(cat.remaining).toLocaleString()}`}
+                    RELATIONSHIP ONLY
                   </span>
                 </div>
               </button>
@@ -157,15 +140,9 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
             </div>
             <div className="text-right">
               <span
-                className={`font-mono text-xs px-2.5 py-1 border uppercase tracking-wider inline-block ${
-                  selectedCategory.status === "exceeded"
-                    ? "bg-primary text-canvas border-primary font-bold"
-                    : selectedCategory.status === "warning"
-                    ? "bg-primary/20 text-primary border-primary/60 font-medium"
-                    : "text-primary border-line"
-                }`}
+                className={`font-mono text-xs px-2.5 py-1 border uppercase tracking-wider inline-block `}
               >
-                {selectedCategory.status}
+                STRUCTURE
               </span>
             </div>
           </div>
@@ -175,33 +152,30 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
             <div className="p-3 border border-line bg-[#050505] rounded">
               <span className="text-secondary text-[10px] uppercase block mb-1">ALLOCATED CAP</span>
               <span className="text-primary font-medium text-sm">
-                ₹{selectedCategory.allocated.toLocaleString()}
+                PLANNED ALLOCATION
               </span>
             </div>
 
             <div className="p-3 border border-line bg-[#050505] rounded">
               <span className="text-secondary text-[10px] uppercase block mb-1">ACTUAL SPEND</span>
               <span className="text-primary font-medium text-sm">
-                ₹{selectedCategory.spent.toLocaleString()}
+                CATEGORY RECORDS
               </span>
             </div>
 
             <div className="p-3 border border-line bg-[#050505] rounded">
               <span className="text-secondary text-[10px] uppercase block mb-1">VARIANCE DELTA</span>
               <span
-                className={`font-medium text-sm ${
-                  selectedCategory.remaining < 0 ? "text-primary font-bold underline" : "text-primary"
-                }`}
+                className={`font-medium text-sm `}
               >
-                {selectedCategory.remaining >= 0 ? "+" : "-"}₹
-                {Math.abs(selectedCategory.remaining).toLocaleString()}
+                ALLOCATION − SPEND
               </span>
             </div>
 
             <div className="p-3 border border-line bg-[#050505] rounded">
               <span className="text-secondary text-[10px] uppercase block mb-1">BURN RATE</span>
               <span className="text-primary font-medium text-sm">
-                {selectedCategory.utilization.toFixed(1)}%
+                SPEND / ALLOCATION
               </span>
             </div>
           </div>
@@ -210,11 +184,11 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
           <div className="space-y-3 pt-2 border-t border-line font-mono text-xs">
             <div className="flex justify-between py-1 border-b border-line/50">
               <span className="text-secondary">TRANSACTION COUNT</span>
-              <span className="text-primary">{selectedCategory.transactionCount} records</span>
+              <span className="text-primary">INPUT RECORDS</span>
             </div>
             <div className="flex justify-between py-1 border-b border-line/50">
               <span className="text-secondary">TOP MERCHANT</span>
-              <span className="text-primary font-medium">{selectedCategory.topMerchant}</span>
+              <span className="text-primary font-medium">NOT REPRESENTED</span>
             </div>
           </div>
 
@@ -224,7 +198,7 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
               OBSERVATION &amp; IMPACT
             </span>
             <p className="text-secondary text-xs sm:text-sm leading-relaxed font-sans">
-              {selectedCategory.varianceNote}
+              {selectedCategory.description}
             </p>
           </div>
         </div>

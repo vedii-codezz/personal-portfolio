@@ -22,6 +22,9 @@ export function AptlyEvidenceChain() {
       nextIndex = (index - 1 + evidenceChain.traces.length) % evidenceChain.traces.length;
     }
 
+    if (e.key === "Home") { e.preventDefault(); nextIndex = 0; }
+    if (e.key === "End") { e.preventDefault(); nextIndex = evidenceChain.traces.length - 1; }
+
     if (nextIndex >= 0) {
       setActiveTraceId(evidenceChain.traces[nextIndex].id);
       tabRefs.current[nextIndex]?.focus();

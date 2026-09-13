@@ -6,6 +6,7 @@ import { CaseStudyNav } from "@/components/case-study/case-study-nav";
 import { CaseStudyHero } from "@/components/case-study/case-study-hero";
 import { CaseStudySection } from "@/components/case-study/case-study-section";
 import { SectionLabel } from "@/components/ui/section-label";
+import { ExpandableDetail } from "@/components/case-study/expandable-detail";
 import { NikotRadialField } from "@/components/project/nikot/nikot-radial-field";
 import { NikotParetoMatrix } from "@/components/project/nikot/nikot-pareto-matrix";
 import { NikotInterchangeAnatomy } from "@/components/project/nikot/nikot-interchange-anatomy";
@@ -13,7 +14,7 @@ import { NikotInterchangeAnatomy } from "@/components/project/nikot/nikot-interc
 export const metadata: Metadata = {
   title: "Nikot-e-Metro — Kolkata Metro Navigation & Spatial Discovery | Bedantika Mondal",
   description:
-    "A full-stack rapid transit navigator and spatial station discovery prototype that resolves last-mile pedestrian vectors, operational graph topology, and multi-criteria Pareto routes across Kolkata.",
+    "Kolkata Metro spatial navigation using nearby-station discovery, a bundled transit graph, and Dijkstra, A*, and Pareto routing.",
 };
 
 export default function NikotPage() {
@@ -45,6 +46,7 @@ export default function NikotPage() {
         liveUrl={meta.links.live}
       />
 
+      <main id="main-content" tabIndex={-1}>
       {/* 00 / PROJECT HERO */}
       <CaseStudyHero
         number={meta.number}
@@ -59,10 +61,21 @@ export default function NikotPage() {
       />
 
       {/* Dataset Operational Status Notice Banner */}
-      <div className="site-gutter py-4 border-b border-line bg-[#080808]">
-        <p className="font-mono text-[11px] sm:text-xs text-secondary text-center tracking-wide">
-          {hero.datasetNotice}
-        </p>
+      <div className="site-gutter py-4 border-b border-line bg-surface/30">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-xs text-secondary">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded text-[10px] font-semibold uppercase tracking-wider">
+              [VERIFIED DATA]
+            </span>
+            <span>{hero.datasetNotice}</span>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-secondary/80">
+            <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded text-[10px] font-semibold uppercase tracking-wider">
+              [VERIFIED ARCHITECTURE]
+            </span>
+            <span>Bundled static graph topology with computed estimates; not live train telemetry.</span>
+          </div>
+        </div>
       </div>
 
       {/* CLUSTER 1: INTRO, LAST-MILE GAP & SPATIAL MATH */}
@@ -75,9 +88,18 @@ export default function NikotPage() {
           annotation={lastMileGap.annotation}
           dataAttribute={{ "data-nikot-intro-reveal": true }}
         >
-          <div className="space-y-12">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {lastMileGap.problemSummary}
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Schematic Transit Maps vs Pedestrian Physical Space
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Transit maps start with station connections. Nikot begins with user location and nearby-station discovery.
             </p>
 
             {/* Schematic vs Real World Contrast */}
@@ -136,8 +158,17 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-intro-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {locationMath.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED DATA]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Spatial Math Pipeline — Coordinate Transformation to Walk Estimates
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Haversine nearby-station logic connects user location with candidate station nodes.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -148,7 +179,7 @@ export default function NikotPage() {
                 >
                   <div>
                     <span className="font-mono text-xs font-bold text-primary px-1.5 py-0.5 border border-line bg-[#141414]">
-                      {stage.step}
+                      STAGE {stage.step}
                     </span>
                     <h4 className="font-mono text-xs font-semibold text-primary mt-3 mb-2">
                       {stage.name}
@@ -167,6 +198,20 @@ export default function NikotPage() {
             <div className="p-4 border border-line bg-[#050505] rounded font-mono text-xs text-secondary">
               {locationMath.divergenceCase}
             </div>
+
+            <ExpandableDetail label="Geodesic Math & Spherical Invariants" badge="FORMULAS">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Haversine:</strong> Geographic proximity supports nearby-station computation.
+                </p>
+                <p>
+                  <strong>Candidate Nodes:</strong> Nearby stations connect location discovery to graph routing.
+                </p>
+                <p>
+                  <strong>Scope:</strong> No specific walking speed or measured route values are asserted here.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
       </div>
@@ -182,11 +227,31 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-systems-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {radialField.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Conceptual Nearby-Station Discovery
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Select a conceptual origin to inspect candidate-node relationships. The diagram is not a geographic map, distance scale, or route recommendation.
             </p>
 
             <NikotRadialField origins={radialField.origins} />
+
+            <ExpandableDetail label="Spatial Indexing & Nearest Neighbor Search" badge="SPATIAL">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Discovery:</strong> Haversine logic supports nearby-station computation.
+                </p>
+                <p>
+                  <strong>Diagram Boundary:</strong> Candidate positions and emphasis are conceptual.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
 
@@ -199,8 +264,17 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-systems-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {graphTopology.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Station Nodes / Track Edges / Transfer Edges / Walking Connections
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              The Kolkata Metro network is modeled as a weighted directed graph where stations form nodes and inter-station track segments represent weighted edges.
             </p>
 
             <div className="p-4 border border-line bg-[#050505] rounded font-mono text-xs text-secondary">
@@ -208,7 +282,7 @@ export default function NikotPage() {
             </div>
 
             {/* Transit Corridors in Nikot Dataset */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {graphTopology.linesInDataset.map((line) => (
                 <div
                   key={line.code}
@@ -237,6 +311,17 @@ export default function NikotPage() {
                 </div>
               ))}
             </div>
+
+            <ExpandableDetail label="Adjacency List & Edge Weight Model" badge="GRAPH">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Track Edges:</strong> Graph connections represent links between station nodes.
+                </p>
+                <p>
+                  <strong>Transfer Edges:</strong> Connections between lines are represented in the graph.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
 
@@ -249,8 +334,17 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-systems-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {tradeoffTheory.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Multi-Objective Commuter Trade-Off Space
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Route selection involves trade-offs between travel duration, transfer count, and walking duration.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -287,14 +381,34 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-systems-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {paretoMatrix.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Conceptual Route Options — No Measured Journey
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Dijkstra, A*, and Pareto support routing. Pareto dimensions are TRAVEL DURATION, TRANSFER COUNT, and WALKING DURATION.
             </p>
 
             <NikotParetoMatrix
               journeyOverview={paretoMatrix.journeyOverview}
               options={paretoMatrix.options}
             />
+
+            <ExpandableDetail label="Pareto Dominance Criteria & Weight Formulations" badge="PARETO">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <p>
+                  <strong>Pareto Dominance Definition:</strong> Route A dominates Route B if A is strictly better than B in at least one metric and no worse in any other metric.
+                </p>
+                <p>
+                  <strong>Frontier Preservation:</strong> Only mutually non-dominated paths are surfaced to the commuter interface, eliminating objectively inferior options.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
 
@@ -307,8 +421,17 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-systems-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {interchangeAnatomy.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Graph Transfer Model: LINE A &rarr; TRANSFER &rarr; LINE B
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              LINE A → TRANSFER → LINE B illustrates a conceptual graph connection, not actual station infrastructure.
             </p>
 
             <NikotInterchangeAnatomy
@@ -318,6 +441,24 @@ export default function NikotPage() {
               transferModel={interchangeAnatomy.transferModel}
               penaltyPhilosophy={interchangeAnatomy.penaltyPhilosophy}
             />
+
+            <ExpandableDetail label="Conceptual Transfer Relationship" badge="TRANSFER">
+              <div className="space-y-3 pt-2 font-mono text-xs text-secondary leading-relaxed">
+                <div className="flex items-center gap-2 text-primary font-semibold pb-2 border-b border-line/40">
+                  <span>LINE A</span>
+                  <span>&rarr;</span>
+                  <span>TRANSFER</span>
+                  <span>&rarr;</span>
+                  <span>LINE B</span>
+                </div>
+                <p>
+                  <strong>Transfer Edge:</strong> Connects lines in the conceptual graph.
+                </p>
+                <p>
+                  <strong>Scope:</strong> No physical station layout or measured transfer duration is represented.
+                </p>
+              </div>
+            </ExpandableDetail>
           </div>
         </CaseStudySection>
       </div>
@@ -333,8 +474,17 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-engineering-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {bilingualSearch.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [CONCEPTUAL VISUALIZATION]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Bilingual Search Normalization — Bengali &amp; Latin Script
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Bilingual English/Bengali search supports station discovery. The labels below are conceptual examples.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 font-mono text-xs">
@@ -365,8 +515,17 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-engineering-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {serverArchitecture.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Transit Navigator Implementation Stack
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Nikot connects Haversine nearby-station discovery, bilingual search, a bundled transit dataset, and graph routing.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -406,8 +565,17 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-engineering-reveal": true }}
         >
           <div className="space-y-8">
-            <p className="font-sans text-secondary text-base sm:text-lg max-w-3xl leading-relaxed">
-              {resilience.description}
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Graceful Degradation Across Connectivity Tiers
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              Bundled project data is distinct from current service telemetry. No offline PWA capability is claimed.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -447,6 +615,19 @@ export default function NikotPage() {
           dataAttribute={{ "data-nikot-engineering-reveal": true }}
         >
           <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-xs px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded font-semibold tracking-wider uppercase">
+                [VERIFIED ARCHITECTURE]
+              </span>
+              <span className="font-mono text-xs text-secondary">
+                Operational Boundaries &amp; Privacy Architecture
+              </span>
+            </div>
+
+            <p className="font-sans text-base sm:text-lg text-secondary leading-relaxed max-w-4xl">
+              User location is used transiently for nearby-station computation; no location persistence feature is implemented.
+            </p>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Geolocation Privacy Architecture */}
               <div className="p-6 border border-line bg-[#0a0a0a] rounded space-y-4">
@@ -583,6 +764,7 @@ export default function NikotPage() {
           </div>
         </div>
       </section>
+      </main>
     </CaseStudyShell>
   );
 }

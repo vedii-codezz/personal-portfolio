@@ -1,5 +1,7 @@
 "use client";
 
+import { handleTabKeyDown } from "@/lib/tab-keyboard";
+
 import { useState } from "react";
 import type { ParetoRouteOption } from "@/data/projects/nikot";
 
@@ -23,7 +25,7 @@ export function NikotParetoMatrix({ journeyOverview, options }: NikotParetoMatri
       <div className="p-4 sm:p-5 border border-line bg-[#0a0a0a] rounded flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="font-mono text-[10px] text-secondary tracking-widest uppercase block mb-1">
-            TEST CORRIDOR // VERIFIED DATASET JOURNEY
+            [CONCEPTUAL VISUALIZATION] ROUTE OPTIONS
           </span>
           <h3 className="font-sans text-base sm:text-lg font-semibold text-primary">
             {journeyOverview.corridor}
@@ -40,6 +42,7 @@ export function NikotParetoMatrix({ journeyOverview, options }: NikotParetoMatri
       <div
         className="grid grid-cols-1 sm:grid-cols-3 gap-3"
         role="tablist"
+          onKeyDown={handleTabKeyDown}
         aria-label="Multi-Criteria Route Alternatives"
       >
         {options.map((opt) => {
@@ -50,6 +53,7 @@ export function NikotParetoMatrix({ journeyOverview, options }: NikotParetoMatri
               type="button"
               role="tab"
               aria-selected={isSelected}
+                tabIndex={isSelected ? 0 : -1}
               aria-controls={`route-panel-${opt.criteriaId}`}
               id={`route-tab-${opt.criteriaId}`}
               onClick={() => setSelectedCriteria(opt.criteriaId)}
@@ -64,14 +68,14 @@ export function NikotParetoMatrix({ journeyOverview, options }: NikotParetoMatri
                   {opt.criteriaLabel}
                 </span>
                 <span className="font-sans text-xl font-normal text-primary">
-                  {opt.totalDurationMinutes} min
+                  →
                 </span>
               </div>
 
               <div className="flex items-center gap-3 font-mono text-[11px] text-secondary">
-                <span>{opt.walkingDurationMinutes}m walk</span>
+                <span>{opt.priority}</span>
                 <span>•</span>
-                <span>{opt.transferCount} transfers</span>
+                <span></span>
               </div>
             </button>
           );
@@ -89,19 +93,19 @@ export function NikotParetoMatrix({ journeyOverview, options }: NikotParetoMatri
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 border border-line bg-[#050505] rounded font-mono text-xs">
           <div>
             <span className="text-secondary text-[10px] uppercase block mb-1">TOTAL TIME</span>
-            <span className="text-primary font-bold text-base">{activeOption.totalDurationMinutes} min</span>
+            <span className="text-primary font-bold text-base">TRAVEL DURATION</span>
           </div>
           <div>
             <span className="text-secondary text-[10px] uppercase block mb-1">METRO TRANSIT</span>
-            <span className="text-primary font-bold text-base">{activeOption.metroDurationMinutes} min</span>
+            <span className="text-primary font-bold text-base">TRANSIT GRAPH</span>
           </div>
           <div>
             <span className="text-secondary text-[10px] uppercase block mb-1">PEDESTRIAN WALK</span>
-            <span className="text-primary font-bold text-base">{activeOption.walkingDurationMinutes} min</span>
+            <span className="text-primary font-bold text-base">WALKING DURATION</span>
           </div>
           <div>
             <span className="text-secondary text-[10px] uppercase block mb-1">LINE TRANSFERS</span>
-            <span className="text-primary font-bold text-base">{activeOption.transferCount}</span>
+            <span className="text-primary font-bold text-base">TRANSFER COUNT</span>
           </div>
         </div>
 
@@ -137,13 +141,8 @@ export function NikotParetoMatrix({ journeyOverview, options }: NikotParetoMatri
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">
-                  {stage.lineCode && (
-                    <span className="px-1.5 py-0.5 border border-line bg-[#111111] text-secondary text-[10px]">
-                      {stage.lineCode}
-                    </span>
-                  )}
                   <span className="text-primary font-medium">
-                    {stage.durationMinutes} min
+                    →
                   </span>
                 </div>
               </div>

@@ -21,12 +21,10 @@ export function KineticSkillsMarquee({
     const container = containerRef.current;
     if (!track1 || !track2 || !container) return;
 
-    // Check prefers-reduced-motion
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mediaQuery.matches) {
       track1.style.transform = "none";
       track2.style.transform = "none";
-      return;
     }
 
     let pos1 = 0;
@@ -39,6 +37,9 @@ export function KineticSkillsMarquee({
     let isRunning = false;
     let hasActivated = false;
     let activationTimer: ReturnType<typeof setTimeout> | null = null;
+    let intersectionRatio = 0;
+    let isIntersecting = false;
+    const hasObserver = "IntersectionObserver" in window;
 
     const onScroll = () => {
       const currentScrollY = window.scrollY;
@@ -85,7 +86,7 @@ export function KineticSkillsMarquee({
     };
 
     const startAnimation = () => {
-      if (isRunning) return;
+      if (isRunning || mediaQuery.matches) return;
       isRunning = true;
       lastScrollY = window.scrollY;
       window.addEventListener("scroll", onScroll, { passive: true });
@@ -102,72 +103,64 @@ export function KineticSkillsMarquee({
       }
     };
 
-    // Fallback if IntersectionObserver is not available
-    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
-      startAnimation();
-      return () => {
+    const clearActivation = () => {
+      if (activationTimer !== null) clearTimeout(activationTimer);
+      activationTimer = null;
+    };
+
+    const syncVisibility = () => {
+      if (mediaQuery.matches) {
+        clearActivation();
         pauseAnimation();
-      };
-    }
-
-    const targetSection = container.closest("section") || container;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry) return;
-
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
-          // Meaningfully visible in viewport (threshold ~35%)
-          if (!hasActivated) {
-            // First arrival: small intentional delay (450ms) before wake up
-            if (!activationTimer) {
-              activationTimer = setTimeout(() => {
-                hasActivated = true;
-                activationTimer = null;
-                startAnimation();
-              }, 450);
-            }
-          } else {
-            // Subsequent re-entry: resume immediately from existing position
-            if (activationTimer) {
-              clearTimeout(activationTimer);
-              activationTimer = null;
-            }
-            startAnimation();
-          }
-        } else if (!entry.isIntersecting || entry.intersectionRatio < 0.15) {
-          // Substantially outside viewport: pause loop to conserve resources
-          if (activationTimer) {
-            clearTimeout(activationTimer);
-            activationTimer = null;
-          }
-          pauseAnimation();
-        }
-      },
-      {
-        threshold: [0, 0.15, 0.35],
-      }
-    );
-
-    observer.observe(targetSection);
-
-    const onMediaChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        if (activationTimer) clearTimeout(activationTimer);
-        pauseAnimation();
+        scrollVelocity = 0;
         track1.style.transform = "none";
         track2.style.transform = "none";
+        return;
+      }
+      if (!hasObserver) {
+        startAnimation();
+        return;
+      }
+      if (isIntersecting && intersectionRatio >= 0.35) {
+        // Meaningfully visible in viewport (threshold ~35%)
+        if (!hasActivated) {
+          // First arrival: small intentional delay (450ms) before wake up
+          if (activationTimer === null) {
+            activationTimer = setTimeout(() => {
+              activationTimer = null;
+              if (mediaQuery.matches || !isIntersecting || intersectionRatio < 0.15) return;
+              hasActivated = true;
+              startAnimation();
+            }, 450);
+          }
+        } else {
+          // Subsequent re-entry: resume immediately from existing position
+          clearActivation();
+          startAnimation();
+        }
+      } else if (!isIntersecting || intersectionRatio < 0.15) {
+        // Substantially outside viewport: pause loop to conserve resources
+        clearActivation();
+        pauseAnimation();
       }
     };
 
-    mediaQuery.addEventListener("change", onMediaChange);
+    const observer = hasObserver ? new IntersectionObserver(entries => {
+      const entry = entries[0];
+      if (!entry) return;
+      intersectionRatio = entry.intersectionRatio;
+      isIntersecting = entry.isIntersecting;
+      syncVisibility();
+    }, { threshold: [0, 0.15, 0.35] }) : null;
+    observer?.observe(container.closest("section") || container);
+    mediaQuery.addEventListener("change", syncVisibility);
+    syncVisibility();
 
     return () => {
-      if (activationTimer) clearTimeout(activationTimer);
+      clearActivation();
       pauseAnimation();
-      observer.disconnect();
-      mediaQuery.removeEventListener("change", onMediaChange);
+      observer?.disconnect();
+      mediaQuery.removeEventListener("change", syncVisibility);
     };
   }, []);
 
@@ -221,7 +214,7 @@ export function KineticSkillsMarquee({
       {/* Single Compact Status Line: Loud in motion, light in surrounding information */}
       <div className="mt-8 pt-6 border-t border-line/30 flex items-center justify-between gap-4 px-2">
         <div className="flex items-center gap-3">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none" aria-hidden="true" />
           <span className="font-mono text-xs uppercase tracking-widest text-secondary">
             CURRENTLY LEARNING // JAVA / DATA SCIENCE
           </span>

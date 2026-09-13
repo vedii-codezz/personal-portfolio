@@ -231,191 +231,31 @@ describe("Aptly verified repository content and motion invariants", () => {
   });
 });
 
-describe("Veyra verified repository content and motion invariants", () => {
-  it("enforces zero pinned ScrollTriggers on Veyra structure", () => {
-    document.body.innerHTML = `
-      <div id="veyra-test-root">
-        <header data-case-nav></header>
-        <section data-case-hero>
-          <h1 data-hero-headline>VEYRA</h1>
-          <div data-hero-meta-row>Meta</div>
-        </section>
-        <div data-veyra-intro><div data-veyra-intro-reveal>Intro</div></div>
-        <div data-veyra-systems><div data-veyra-systems-reveal>Systems</div></div>
-        <div data-veyra-engineering><div data-veyra-engineering-reveal>Engineering</div></div>
-        <section data-next-project><div data-next-reveal>Next</div></section>
-      </div>
-    `;
 
-    const root = document.querySelector<HTMLElement>("#veyra-test-root")!;
-    cleanup = setupCaseStudyMotion(root);
-
-    const triggers = ScrollTrigger.getAll();
-    const pinnedTriggers = triggers.filter(
-      (t) => (t.vars as { pin?: boolean }).pin === true
-    );
-    expect(pinnedTriggers).toHaveLength(0);
+describe("M9.2B public data and motion boundaries", () => {
+  it.each(["veyra", "nikot"])("keeps %s unpinned", project => {
+    document.body.innerHTML = '<div id="root"><div data-' + project + '-intro><div data-' + project + '-intro-reveal>Intro</div></div></div>';
+    cleanup = setupCaseStudyMotion(document.querySelector<HTMLElement>("#root")!);
+    expect(ScrollTrigger.getAll().filter(t => t.vars.pin)).toHaveLength(0);
   });
 
-  it("verifies all 8 budget categories and mathematical status logic", () => {
-    const categories = veyraData.budgetField.categories;
-    expect(categories).toHaveLength(8);
-
-    const categoryNames = categories.map((c) => c.category);
-    expect(categoryNames).toEqual([
-      "Housing",
-      "Food",
-      "Transport",
-      "Shopping",
-      "Entertainment",
-      "Healthcare",
-      "Utilities",
-      "Education",
-    ]);
-
-    // Check status logic conformance
-    categories.forEach((c) => {
-      const calculatedUtilization = (c.spent / c.allocated) * 100;
-      expect(c.utilization).toBeCloseTo(calculatedUtilization, 1);
-      expect(c.remaining).toBe(c.allocated - c.spent);
-
-      if (c.utilization >= 100) {
-        expect(c.status).toBe("exceeded");
-      } else if (c.utilization >= 80) {
-        expect(c.status).toBe("warning");
-      } else {
-        expect(c.status).toBe("healthy");
-      }
-    });
+  it("retains the approved synthetic totals without publishing category amounts or score weights", () => {
+    expect(veyraData.fixture).toEqual({month:"MARCH 2024", income:95000, spend:58400, savings:36600, savingsRate:"38.5%"});
+    expect(veyraData.fixture.income - veyraData.fixture.spend).toBe(veyraData.fixture.savings);
+    expect(veyraData.budgetField.categories.every(c => Object.keys(c).every(k => ["category", "description"].includes(k)))).toBe(true);
+    expect(veyraData.veyraScore.stages.map(s => s.name)).toEqual(["INPUTS", "FORMULA", "SCORE", "TIER"]);
+    expect(veyraData.veyraScore).not.toHaveProperty("compositeScore");
+    expect(veyraData.veyraScore).not.toHaveProperty("factors");
+    expect(veyraData.cashFlow.description).toContain("not measured channel proportions");
   });
 
-  it("verifies 4-factor VeyraScore weights sum to exactly 100%", () => {
-    const factors = veyraData.veyraScore.factors;
-    expect(factors).toHaveLength(4);
-
-    const totalWeight = factors.reduce((sum, f) => sum + f.weightPercent, 0);
-    expect(totalWeight).toBe(100);
-
-    const weightedScore = factors.reduce(
-      (sum, f) => sum + (f.score * f.weightDecimal),
-      0
-    );
-    expect(Math.round(weightedScore)).toBe(veyraData.veyraScore.compositeScore);
-    expect(veyraData.veyraScore.tier).toBe("STRONG");
-  });
-
-  it("verifies cash-flow streams branch and sum to baseline inflow", () => {
-    const streams = veyraData.cashFlow.streams;
-    expect(streams).toHaveLength(4);
-
-    const totalAmount = streams.reduce((sum, s) => sum + s.amount, 0);
-    expect(totalAmount).toBe(95000);
-
-    const totalPercent = streams.reduce((sum, s) => sum + s.percentage, 0);
-    expect(totalPercent).toBeCloseTo(100.0, 1);
-  });
-
-  it("verifies solo authorship attribution and synthetic fixture notice", () => {
-    expect(veyraData.authorship.attribution).toBe(
-      "DESIGNED AND BUILT BY BEDANTIKA MONDAL"
-    );
-    expect(veyraData.hero.syntheticDataNotice).toContain(
-      "synthetic demonstration fixtures"
-    );
-    expect(veyraData.veyraScore.notice).toContain(
-      "PROJECT-SPECIFIC INTERNAL METRIC"
-    );
+  it("preserves the Judge trace and conceptual transit boundaries", () => {
+    expect(finoraData.trace.sampleTrace.map(t => t.step.split(" // ")[1])).toEqual(["PLAN", "AGENT", "JUDGE", "SYNTHESISE"]);
+    expect(nikotData.interchangeAnatomy.annotation).toContain("[CONCEPTUAL VISUALIZATION]");
+    expect(nikotData.interchangeAnatomy.transferModel.map(t => t.title)).toEqual(["LINE A", "TRANSFER", "LINE B"]);
+    expect(nikotData.paretoMatrix.options.map(o => o.criteriaLabel)).toEqual(["TRAVEL DURATION", "TRANSFER COUNT", "WALKING DURATION"]);
+    expect(nikotData.hero.datasetNotice).toContain("not guaranteed");
+    expect(nikotData.geolocationPrivacy.privacyPoints[0]).toBe("User location is used transiently for nearby-station computation; no location persistence feature is implemented.");
+    expect(projects.find(p => p.slug === "nikot-e-metro")?.links.caseStudy).toBe("/project/nikot-e-metro");
   });
 });
-
-describe("Nikot-e-Metro verified repository content and motion invariants", () => {
-  it("enforces zero pinned ScrollTriggers on Nikot structure", () => {
-    document.body.innerHTML = `
-      <div id="nikot-test-root">
-        <header data-case-nav></header>
-        <section data-case-hero>
-          <h1 data-hero-headline>NIKOT-E-METRO</h1>
-          <div data-hero-meta-row>Meta</div>
-        </section>
-        <div data-nikot-intro><div data-nikot-intro-reveal>Intro</div></div>
-        <div data-nikot-systems><div data-nikot-systems-reveal>Systems</div></div>
-        <div data-nikot-engineering><div data-nikot-engineering-reveal>Engineering</div></div>
-        <section data-next-project><div data-next-reveal>Next</div></section>
-      </div>
-    `;
-
-    const root = document.querySelector<HTMLElement>("#nikot-test-root")!;
-    cleanup = setupCaseStudyMotion(root);
-
-    const triggers = ScrollTrigger.getAll();
-    const pinnedTriggers = triggers.filter(
-      (t) => (t.vars as { pin?: boolean }).pin === true
-    );
-    expect(pinnedTriggers).toHaveLength(0);
-  });
-
-  it("verifies landmark origins with candidate station distances", () => {
-    const origins = nikotData.radialField.origins;
-    expect(origins).toHaveLength(3);
-
-    const names = origins.map((o) => o.name);
-    expect(names).toContain("Victoria Memorial");
-    expect(names).toContain("Howrah Railway Station");
-    expect(names).toContain("Techno India University");
-
-    origins.forEach((o) => {
-      expect(o.candidateStations.length).toBeGreaterThan(0);
-      const nearest = o.candidateStations.filter((s) => s.isNearest);
-      expect(nearest).toHaveLength(1);
-      expect(nearest[0].walkingMinutes).toBeGreaterThan(0);
-      expect(nearest[0].straightLineKm).toBeGreaterThan(0);
-    });
-  });
-
-  it("verifies all three Pareto routing criteria options in verified corridor", () => {
-    const options = nikotData.paretoMatrix.options;
-    expect(options).toHaveLength(3);
-
-    const criteriaIds = options.map((o) => o.criteriaId);
-    expect(criteriaIds).toEqual(["fastest", "fewest_transfers", "least_walking"]);
-
-    options.forEach((opt) => {
-      expect(opt.totalDurationMinutes).toBeGreaterThan(0);
-      expect(opt.stages.length).toBeGreaterThan(0);
-      expect(opt.walkingDurationMinutes).toBeLessThanOrEqual(opt.totalDurationMinutes);
-    });
-  });
-
-  it("verifies Esplanade interchange transfer model with concourse dwell", () => {
-    const interchange = nikotData.interchangeAnatomy;
-    expect(interchange.hubName).toContain("Esplanade");
-    expect(interchange.transferModel.length).toBe(4);
-
-    const totalDwell = interchange.transferModel.reduce(
-      (sum, p) => sum + p.dwellMinutes,
-      0
-    );
-    expect(totalDwell).toBeGreaterThanOrEqual(4);
-    expect(interchange.penaltyPhilosophy).toContain("routing weights");
-  });
-
-  it("verifies explicit absence of live train tracking and solo authorship", () => {
-    expect(nikotData.authorship.attribution).toBe(
-      "DESIGNED AND BUILT BY BEDANTIKA MONDAL"
-    );
-    expect(nikotData.hero.datasetNotice).toContain(
-      "Nikot's bundled routing dataset"
-    );
-
-    const liveBoundary = nikotData.geolocationPrivacy.liveDataBoundary.join(" ");
-    expect(liveBoundary).toContain("NOT REAL-TIME");
-    expect(liveBoundary).toContain("Nikot does NOT receive live GPS telemetry");
-  });
-
-  it("verifies Nikot case study link exists in homepage Selected Work projects data", () => {
-    const nikot = projects.find((p) => p.slug === "nikot-e-metro");
-    expect(nikot).toBeDefined();
-    expect(nikot?.links.caseStudy).toBe("/project/nikot-e-metro");
-  });
-});
-

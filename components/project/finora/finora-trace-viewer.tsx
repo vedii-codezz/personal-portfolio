@@ -22,7 +22,7 @@ export function FinoraTraceViewer() {
             <span className="text-primary font-bold">STATE TRANSITION LOG</span>
           </div>
           <div className="text-[11px]">
-            [ PRIVACY: PRIVATE CHAIN-OF-THOUGHT STRIPPED ]
+            [ VERIFIED ARCHITECTURE ]
           </div>
         </div>
 
@@ -43,8 +43,8 @@ export function FinoraTraceViewer() {
         </div>
 
         <div className="mt-8 pt-4 border-t border-line font-mono text-[11px] text-secondary flex flex-wrap items-center justify-between gap-4">
-          <span>AUDITABLE PROVENANCE: GUARANTEED</span>
-          <span>CLIENT-SIDE EXPLAINABILITY: EMBEDDED IN RESPONSE JSON</span>
+          <span>PLAN → AGENT → JUDGE → SYNTHESISE</span>
+          <span>WORKFLOW STAGES</span>
         </div>
       </div>
     </div>

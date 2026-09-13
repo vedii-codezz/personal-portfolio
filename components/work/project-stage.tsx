@@ -6,7 +6,7 @@ import { ProjectTrack } from "./project-track";
 export function ProjectStage() {
   return <div className="project-stage" data-project-stage>
     <header className="stage-heading">
-      <h2 id="work-title">{portfolio.work.heading}</h2>
+      <h2 id="work-stage-title">{portfolio.work.heading}</h2>
       <span className="metadata text-secondary">{workPresentation.visualCaption}</span>
     </header>
     <ProjectTrack projects={projects} />
