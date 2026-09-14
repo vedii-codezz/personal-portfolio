@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface KineticSkillsMarqueeProps {
   primarySkills: readonly string[];
@@ -14,6 +14,9 @@ export function KineticSkillsMarquee({
   const containerRef = useRef<HTMLDivElement>(null);
   const track1Ref = useRef<HTMLDivElement>(null);
   const track2Ref = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const isPausedRef = useRef(false);
+  const toggleMotionRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     const track1 = track1Ref.current;
@@ -42,6 +45,7 @@ export function KineticSkillsMarquee({
     const hasObserver = "IntersectionObserver" in window;
 
     const onScroll = () => {
+      if (isPausedRef.current) return;
       const currentScrollY = window.scrollY;
       const delta = currentScrollY - lastScrollY;
       lastScrollY = currentScrollY;
@@ -86,7 +90,7 @@ export function KineticSkillsMarquee({
     };
 
     const startAnimation = () => {
-      if (isRunning || mediaQuery.matches) return;
+      if (isRunning || mediaQuery.matches || isPausedRef.current) return;
       isRunning = true;
       lastScrollY = window.scrollY;
       window.addEventListener("scroll", onScroll, { passive: true });
@@ -108,6 +112,22 @@ export function KineticSkillsMarquee({
       activationTimer = null;
     };
 
+    toggleMotionRef.current = () => {
+      if (isPausedRef.current) {
+        isPausedRef.current = false;
+        setIsPaused(false);
+        if (!mediaQuery.matches && (!hasObserver || (isIntersecting && intersectionRatio >= 0.15))) {
+          startAnimation();
+        }
+      } else {
+        isPausedRef.current = true;
+        setIsPaused(true);
+        scrollVelocity = 0;
+        clearActivation();
+        pauseAnimation();
+      }
+    };
+
     const syncVisibility = () => {
       if (mediaQuery.matches) {
         clearActivation();
@@ -115,6 +135,11 @@ export function KineticSkillsMarquee({
         scrollVelocity = 0;
         track1.style.transform = "none";
         track2.style.transform = "none";
+        return;
+      }
+      if (isPausedRef.current) {
+        clearActivation();
+        pauseAnimation();
         return;
       }
       if (!hasObserver) {
@@ -128,7 +153,7 @@ export function KineticSkillsMarquee({
           if (activationTimer === null) {
             activationTimer = setTimeout(() => {
               activationTimer = null;
-              if (mediaQuery.matches || !isIntersecting || intersectionRatio < 0.15) return;
+              if (mediaQuery.matches || isPausedRef.current || !isIntersecting || intersectionRatio < 0.15) return;
               hasActivated = true;
               startAnimation();
             }, 450);
@@ -168,6 +193,11 @@ export function KineticSkillsMarquee({
   const repeatedTrack1 = [...primarySkills, ...primarySkills, ...primarySkills, ...primarySkills];
   const reversedSkills = [...primarySkills].reverse();
   const repeatedTrack2 = [...reversedSkills, ...reversedSkills, ...reversedSkills, ...reversedSkills];
+
+  const learningStatusText =
+    secondaryStatus.length > 0
+      ? `CURRENTLY LEARNING // ${secondaryStatus.map((s) => s.name).join(" / ")}`
+      : "CURRENTLY LEARNING";
 
   return (
     <div className="kinetic-marquee-wrapper overflow-hidden py-6 sm:py-8 border-y border-line my-10 select-none" ref={containerRef}>
@@ -212,13 +242,24 @@ export function KineticSkillsMarquee({
       </div>
 
       {/* Single Compact Status Line: Loud in motion, light in surrounding information */}
-      <div className="mt-8 pt-6 border-t border-line/30 flex items-center justify-between gap-4 px-2">
+      <div className="mt-8 pt-6 border-t border-line/30 flex flex-wrap items-center justify-between gap-4 px-2">
         <div className="flex items-center gap-3">
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse motion-reduce:animate-none" aria-hidden="true" />
           <span className="font-mono text-xs uppercase tracking-widest text-secondary">
-            CURRENTLY LEARNING // JAVA / DATA SCIENCE
+            {learningStatusText}
           </span>
         </div>
+
+        <button
+          type="button"
+          onClick={() => toggleMotionRef.current()}
+          aria-pressed={isPaused}
+          aria-label={isPaused ? "Resume skills marquee motion" : "Pause skills marquee motion"}
+          className="font-mono text-[11px] uppercase tracking-wider text-secondary hover:text-primary transition-colors flex items-center gap-2 py-1 px-2.5 border border-line/40 hover:border-line rounded focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary"
+        >
+          <span>MOTION</span>
+          <span aria-hidden="true" className="text-primary">{isPaused ? "○" : "●"}</span>
+        </button>
       </div>
 
       {/* Accessible Screen-Reader Summary */}

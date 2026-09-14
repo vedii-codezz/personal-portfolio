@@ -72,10 +72,8 @@ export function NikotParetoMatrix({ journeyOverview, options }: NikotParetoMatri
                 </span>
               </div>
 
-              <div className="flex items-center gap-3 font-mono text-[11px] text-secondary">
+              <div className="font-mono text-[11px] text-secondary">
                 <span>{opt.priority}</span>
-                <span>•</span>
-                <span></span>
               </div>
             </button>
           );

@@ -4,6 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Hero } from "@/components/hero/hero";
 import { KineticSkillsMarquee } from "@/components/tech-stack/kinetic-skills-marquee";
+import { Lab } from "@/components/lab/lab";
 
 let root: Root;
 let container: HTMLDivElement;
@@ -149,5 +150,83 @@ describe("M9.1C live motion preferences", () => {
     expect(frames.size).toBe(1);
     preference(true);
     expect(frames.size).toBe(0);
+  });
+
+  it("marquee derives visible status, supports manual pause/resume, survives re-entry, and reduced motion takes precedence", () => {
+    act(() => root.render(<StrictMode><section><KineticSkillsMarquee primarySkills={["PYTHON"]} secondaryStatus={[{ name: "JAVA", status: "LEARNING" }, { name: "DATA SCIENCE", status: "IN PROGRESS" }]} /></section></StrictMode>));
+    expect(container.textContent).toContain("CURRENTLY LEARNING // JAVA / DATA SCIENCE");
+
+    const button = container.querySelector<HTMLButtonElement>("button[aria-label*='skills marquee motion']")!;
+    expect(button).not.toBeNull();
+    expect(button.getAttribute("aria-pressed")).toBe("false");
+    expect(button.textContent).toContain("MOTION");
+    expect(button.textContent).toContain("●");
+
+    // Activate marquee via intersection + delay
+    intersect(0.35);
+    act(() => vi.advanceTimersByTime(450));
+    expect(frames.size).toBe(1);
+
+    // Click pause button
+    act(() => button.click());
+    expect(button.getAttribute("aria-pressed")).toBe("true");
+    expect(button.textContent).toContain("○");
+    expect(frames.size).toBe(0);
+
+    // Scroll while paused should not trigger frames
+    act(() => window.dispatchEvent(new Event("scroll")));
+    expect(frames.size).toBe(0);
+
+    // Offscreen and re-entry should maintain manual pause
+    intersect(0);
+    expect(frames.size).toBe(0);
+    intersect(0.35);
+    act(() => vi.advanceTimersByTime(1000));
+    expect(frames.size).toBe(0);
+
+    // Resume motion
+    act(() => button.click());
+    expect(button.getAttribute("aria-pressed")).toBe("false");
+    expect(button.textContent).toContain("●");
+    expect(frames.size).toBe(1);
+
+    // Repeated toggles do not create duplicate rAF loops
+    act(() => button.click()); // pause
+    expect(frames.size).toBe(0);
+    act(() => button.click()); // resume
+    expect(frames.size).toBe(1);
+
+    // Reduced motion overrides manual state
+    preference(true);
+    expect(frames.size).toBe(0);
+    act(() => button.click()); // attempt resume under reduced-motion
+    expect(frames.size).toBe(0);
+  });
+
+  it("Lab keyboard focus immediately selects experiment, while pointer hover uses intent delay", () => {
+    act(() => root.render(<StrictMode><Lab /></StrictMode>));
+    const controls = [...container.querySelectorAll<HTMLButtonElement>("[id^='lab-control-']")];
+    expect(controls.length).toBeGreaterThan(1);
+    expect(controls[0].getAttribute("aria-pressed")).toBe("true");
+
+    // Keyboard focus: immediate selection
+    act(() => controls[1].focus());
+    expect(controls[1].getAttribute("aria-pressed")).toBe("true");
+    expect(controls[0].getAttribute("aria-pressed")).toBe("false");
+
+    // Mouse hover: delayed selection
+    act(() => controls[0].dispatchEvent(new MouseEvent("mouseover", { bubbles: true })));
+    expect(controls[0].getAttribute("aria-pressed")).toBe("false");
+    act(() => vi.advanceTimersByTime(60));
+    expect(controls[0].getAttribute("aria-pressed")).toBe("false");
+    act(() => vi.advanceTimersByTime(65));
+    expect(controls[0].getAttribute("aria-pressed")).toBe("true");
+
+    // Rapid mouse transit: leave before delay cancels activation
+    act(() => controls[1].dispatchEvent(new MouseEvent("mouseover", { bubbles: true })));
+    act(() => vi.advanceTimersByTime(50));
+    act(() => controls[1].dispatchEvent(new MouseEvent("mouseout", { bubbles: true })));
+    act(() => vi.advanceTimersByTime(100));
+    expect(controls[1].getAttribute("aria-pressed")).toBe("false");
   });
 });

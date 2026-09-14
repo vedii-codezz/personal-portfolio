@@ -14,7 +14,7 @@ export function About() {
         {/* Minimal Section Label */}
         <div className="flex items-baseline justify-between border-b border-[#050505]/15 pb-4 font-mono text-xs tracking-wider">
           <span className="font-bold">03 // ABOUT</span>
-          <span className="opacity-60 uppercase">{about.annotation}</span>
+          <span className="text-[#050505]/75 uppercase">{about.annotation}</span>
         </div>
 
         <div className="about-content pt-16 sm:pt-24 space-y-20 sm:space-y-28" data-about-reveal>
@@ -22,7 +22,7 @@ export function About() {
           <div>
             <h2 id="about-title" className="font-sans font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.92]">
               {about.heading[0]}
-              <span className="block text-[#050505]/45 mt-2 font-medium">
+              <span className="block text-[#050505]/60 mt-2 font-medium">
                 {about.heading[1]}
               </span>
             </h2>
@@ -35,7 +35,7 @@ export function About() {
                 key={pillar.index}
                 className="py-10 sm:py-14 grid grid-cols-1 sm:grid-cols-12 gap-4 sm:gap-8 items-baseline"
               >
-                <span className="font-mono text-xs font-semibold text-[#050505]/50 sm:col-span-2 tracking-widest">
+                <span className="font-mono text-xs font-semibold text-[#050505]/75 sm:col-span-2 tracking-widest">
                   {pillar.index}
                 </span>
                 <h3 className="font-sans text-2xl sm:text-4xl font-bold tracking-tight text-[#050505] sm:col-span-4">

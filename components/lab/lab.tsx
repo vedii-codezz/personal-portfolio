@@ -1,12 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { portfolio } from "@/data/portfolio";
 import { LabPreview } from "./lab-preview";
 
 export function Lab() {
   const { lab } = portfolio;
   const [activeExperimentId, setActiveExperimentId] = useState<string>(lab.experiments[0].id);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearHoverTimer = () => {
+    if (hoverTimerRef.current !== null) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => clearHoverTimer();
+  }, []);
+
+  const handleMouseEnter = (id: string) => {
+    clearHoverTimer();
+    hoverTimerRef.current = setTimeout(() => {
+      setActiveExperimentId(id);
+      hoverTimerRef.current = null;
+    }, 120);
+  };
+
+  const handleMouseLeave = () => {
+    clearHoverTimer();
+  };
+
+  const handleImmediateActivate = (id: string) => {
+    clearHoverTimer();
+    setActiveExperimentId(id);
+  };
 
   const currentExperiment =
     lab.experiments.find((e) => e.id === activeExperimentId) ?? lab.experiments[0];
@@ -33,14 +62,17 @@ export function Lab() {
               return (
                 <button
                   key={exp.id}
+                  id={`lab-control-${exp.id}`}
                   type="button"
-                  onClick={() => setActiveExperimentId(exp.id)}
-                  onMouseEnter={() => setActiveExperimentId(exp.id)}
-                  onFocus={() => setActiveExperimentId(exp.id)}
+                  aria-controls="lab-preview-pane"
+                  aria-pressed={isActive}
+                  onClick={() => handleImmediateActivate(exp.id)}
+                  onFocus={() => handleImmediateActivate(exp.id)}
+                  onMouseEnter={() => handleMouseEnter(exp.id)}
+                  onMouseLeave={handleMouseLeave}
                   className={`lab-item group w-full text-left py-6 px-4 -mx-4 transition-colors duration-150 focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary ${
                     isActive ? "is-active text-primary bg-raised/40" : "text-secondary hover:text-primary"
                   }`}
-                  aria-pressed={isActive}
                 >
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="font-mono text-xs font-semibold tracking-wider text-primary">

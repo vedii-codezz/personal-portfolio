@@ -19,6 +19,9 @@ export function CaseStudyNav({
       className="case-study-nav site-gutter flex items-center justify-between min-h-[84px] border-b border-line bg-canvas sticky top-0 z-40"
       data-case-nav
     >
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <div className="flex items-center gap-6">
         <Link
           href="/"

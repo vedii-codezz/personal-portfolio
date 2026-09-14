@@ -85,6 +85,35 @@ describe("M9.2B rendered source truth", () => {
     expect(dom.querySelector("details")?.open).toBe(false);
     expect(dom.querySelector("summary")?.textContent).toContain("Technical detail");
   });
+
+  it("renders Contact with a single external arrow glyph", () => {
+    const dom = staticPage(<Home />);
+    const contactFooter = dom.querySelector("#contact")!;
+    expect(contactFooter).not.toBeNull();
+    const githubLink = contactFooter.querySelector("a[href*='github.com']")!;
+    expect(githubLink).not.toBeNull();
+    const arrows = (githubLink.textContent || "").match(/↗/g);
+    expect(arrows).toHaveLength(1);
+  });
+
+  it("ensures Nikot Pareto matrix has no orphan bullet points", () => {
+    const dom = staticPage(<Nikot />);
+    const pareto = dom.querySelector("[data-pareto-matrix]")!;
+    expect(pareto).not.toBeNull();
+    const bullets = [...pareto.querySelectorAll("span")].filter(s => s.textContent?.trim() === "•");
+    expect(bullets).toHaveLength(0);
+  });
+
+  it("provides keyboard-accessible skip-to-content on all case study pages targeting #main-content", () => {
+    for (const [name, page] of [["Finora", <Finora />], ["Aptly", <Aptly />], ["Veyra", <Veyra />], ["Nikot", <Nikot />]] as const) {
+      const dom = staticPage(page);
+      const skipLink = dom.querySelector<HTMLAnchorElement>("a.skip-link");
+      expect(skipLink, `${name} missing skip link`).not.toBeNull();
+      expect(skipLink!.getAttribute("href")).toBe("#main-content");
+      const main = dom.querySelector("main#main-content");
+      expect(main, `${name} missing main#main-content`).not.toBeNull();
+    }
+  });
 });
 
 const inspectors = [

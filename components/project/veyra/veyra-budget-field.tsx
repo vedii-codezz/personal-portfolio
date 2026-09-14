@@ -56,9 +56,6 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
         >
           {categories.map((cat) => {
             const isSelected = selectedCategory.category === cat.category;
-            
-            
-            
 
             return (
               <button
@@ -87,7 +84,7 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
                       {cat.category}
                     </span>
                     <span
-                      className={`font-mono text-[10px] px-1.5 py-0.5 border `}
+                      className="font-mono text-[10px] px-1.5 py-0.5 border border-line rounded text-secondary"
                     >
                       CATEGORY
                     </span>
@@ -140,7 +137,7 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
             </div>
             <div className="text-right">
               <span
-                className={`font-mono text-xs px-2.5 py-1 border uppercase tracking-wider inline-block `}
+                className="font-mono text-xs px-2.5 py-1 border border-line uppercase tracking-wider inline-block text-secondary rounded"
               >
                 STRUCTURE
               </span>
@@ -166,7 +163,7 @@ export function VeyraBudgetField({ categories, statusLegend }: VeyraBudgetFieldP
             <div className="p-3 border border-line bg-[#050505] rounded">
               <span className="text-secondary text-[10px] uppercase block mb-1">VARIANCE DELTA</span>
               <span
-                className={`font-medium text-sm `}
+                className="font-medium text-sm text-primary"
               >
                 ALLOCATION − SPEND
               </span>

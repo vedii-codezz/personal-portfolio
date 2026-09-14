@@ -7,7 +7,12 @@ interface LabPreviewProps {
 
 export function LabPreview({ type, experimentId }: LabPreviewProps) {
   return (
-    <div className="lab-instrument-frame flex flex-col justify-between border border-line bg-canvas p-6">
+    <div
+      id="lab-preview-pane"
+      role="region"
+      aria-label={`Interactive schematic preview for experiment ${experimentId}`}
+      className="lab-instrument-frame flex flex-col justify-between border border-line bg-canvas p-6"
+    >
       <div className="instrument-bar flex items-center justify-between border-b border-line pb-4">
         <span className="metadata text-primary">INSTRUMENT // {experimentId}</span>
         <span className="metadata text-secondary">PREVIEW / STATIC SCHEMATIC</span>
@@ -22,7 +27,9 @@ export function LabPreview({ type, experimentId }: LabPreviewProps) {
 
       <div className="instrument-status flex items-center justify-between border-t border-line pt-4">
         <span className="metadata text-xs text-secondary">SAMPLING: MONOCHROME 2D/SVG</span>
-        <span className="metadata text-xs text-primary">STATE: ACTIVE</span>
+        <span className="metadata text-xs text-primary" aria-live="polite">
+          STATE: ACTIVE // {experimentId}
+        </span>
       </div>
     </div>
   );
