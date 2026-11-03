@@ -1,10 +1,12 @@
 import { education } from "@/data/education";
+import { Lotus } from "./Brand";
 
 export function MyStory() {
   return (
     <section className="story section-pad" id="story" aria-labelledby="story-title">
       <div className="section-eyebrow mono" data-reveal><span><i /> 01 / MY STORY</span><span>ALWAYS A WORK IN PROGRESS</span></div>
       <div className="story-heading" data-reveal><h2 id="story-title">My Story<span className="gold">.</span></h2><p>The Journey<br /><em>So Far.</em></p></div>
+      <div className="story-ornament" data-reveal><Lotus ornamental /></div>
       <ol className="education-timeline">
         {education.map((entry) => <li className="education-entry" key={entry.id} data-reveal>
           <div className="education-date mono"><span className="timeline-dot" aria-hidden="true" /><p>{entry.dates}</p><span className="ongoing"><i /> {entry.status}</span></div>

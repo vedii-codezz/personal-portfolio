@@ -28,7 +28,7 @@ export function Hero() {
           <div className="portrait-stamp" aria-hidden="true"><span>LOGIC</span><b>×</b><span>A LITTLE MAGIC</span></div>
         </figure>
       </div>
-      <div className="hero-bottom mono"><a className="scroll-cue" href="#story"><span className="scroll-line" aria-hidden="true" />SCROLL TO DISCOVER <span aria-hidden="true">↓</span></a><span>THOUGHTFULLY ENGINEERED. PERSONALLY EXPRESSED.</span><span aria-hidden="true">[ 01 — 03 ]</span></div>
+      <div className="hero-bottom mono"><a className="scroll-cue" href="#work"><span className="scroll-line" aria-hidden="true" />SCROLL TO DISCOVER <span aria-hidden="true">↓</span></a><span>THOUGHTFULLY ENGINEERED. PERSONALLY EXPRESSED.</span><span aria-hidden="true">[ KEEP EXPLORING ]</span></div>
     </section>
   );
 }

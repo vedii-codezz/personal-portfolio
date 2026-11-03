@@ -1,7 +1,7 @@
 export type Project = {
   slug: "finora" | "veyra" | "aptly" | "nikot-e-metro";
   name: string; category: string; title: string; description: string;
-  technologies: readonly string[]; github: string; live: string | null;
+  technologies: readonly string[]; github: string; live: string;
 };
 
 // Public project facts verified against the adjacent original portfolio and project source.
@@ -12,14 +12,14 @@ export const projects: readonly Project[] = [
     title: "Many minds. One financial perspective.",
     description: "A multi-agent personal CFO exploration. Specialized agents handle budgeting, affordability, loans, bills, investments, tax, and fraud analysis, while deterministic Python tools handle calculations and guardrails.",
     technologies: ["Python", "Multi-agent orchestration", "Language models"],
-    github: "https://github.com/Adhirajsingh2507/Error-404-Not-Found", live: null,
+    github: "https://github.com/Adhirajsingh2507/Error-404-Not-Found", live: "https://vibeforge-cyan.vercel.app/",
   },
   {
     slug: "veyra", name: "VEYRA", category: "CREATIVE FRONTEND / FINANCIAL VISUALIZATION",
     title: "Make sense of the flow.",
     description: "A frontend-focused budget analysis experience. Transactions become categories, calculations, and financial observations through a considered visual interface and client-side state.",
     technologies: ["Next.js", "TypeScript", "Zustand", "GSAP"],
-    github: "https://github.com/vedii-codezz/budget-analysis-veyra", live: null,
+    github: "https://github.com/vedii-codezz/budget-analysis-veyra", live: "https://budget-analysis-veyra.vercel.app/",
   },
   {
     slug: "aptly", name: "APTLY", category: "AI / EXPLAINABLE OPPORTUNITY INTELLIGENCE",
@@ -33,6 +33,6 @@ export const projects: readonly Project[] = [
     title: "A city, more connected.",
     description: "A Kolkata Metro navigation experience connecting user location, nearby stations, routes, and interchanges. Spatial discovery and graph-based routing help make the journey easier to understand.",
     technologies: ["Next.js", "TypeScript", "MapLibre", "Drizzle ORM"],
-    github: "https://github.com/vedii-codezz/nikot-e-metro", live: null,
+    github: "https://github.com/vedii-codezz/nikot-e-metro", live: "https://nikot-e-metro.vercel.app/",
   },
 ];

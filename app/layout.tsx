@@ -17,5 +17,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" className={`${geist.variable} ${mono.variable}`}><body>{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${geist.variable} ${mono.variable}`}><head><script dangerouslySetInnerHTML={{ __html: `(function(){try{var p=localStorage.getItem('bedantika-theme');document.documentElement.dataset.theme=p==='light'||p==='dark'?p:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}})()` }} /></head><body>{children}</body></html>;
 }
