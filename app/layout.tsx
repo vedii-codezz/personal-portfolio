@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { lotusBootstrap } from "@/components/lotus-lifecycle";
 
 const geist = localFont({
   src: "../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2",
@@ -17,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning className={`${geist.variable} ${mono.variable}`}><head><script dangerouslySetInnerHTML={{ __html: `(function(){try{var p=localStorage.getItem('bedantika-theme');document.documentElement.dataset.theme=p==='light'||p==='dark'?p:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}})()` }} /></head><body>{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning className={`${geist.variable} ${mono.variable}`}><head><script dangerouslySetInnerHTML={{ __html: `(function(){try{var p=localStorage.getItem('bedantika-theme');document.documentElement.dataset.theme=p==='light'||p==='dark'?p:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}})()` }} /><script dangerouslySetInnerHTML={{ __html: lotusBootstrap }} /></head><body>{children}</body></html>;
 }

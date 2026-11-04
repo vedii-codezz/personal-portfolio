@@ -5,10 +5,13 @@ import { PortfolioMotion } from "@/components/PortfolioMotion";
 import { FunProjects } from "@/components/FunProjects";
 import { Brand } from "@/components/Brand";
 import { ThemeControl } from "@/components/ThemeControl";
+import { LoaderLotus } from "@/components/LoaderLotus";
 
 export default function Home() {
   return (
     <>
+      <LoaderLotus />
+      <div id="portfolio-content">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="site-header">
         <a className="wordmark" href="#home" aria-label="Bedantika Mondal, home"><Brand /></a>
@@ -31,6 +34,7 @@ export default function Home() {
         <p className="mono">BEDANTIKA MONDAL <span>© 2026</span></p>
         <a className="back-top" href="#home">Back to top <span aria-hidden="true">↑</span></a>
       </footer>
+      </div>
       <PortfolioMotion />
     </>
   );

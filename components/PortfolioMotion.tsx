@@ -7,11 +7,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 export function PortfolioMotion() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    const media = gsap.matchMedia();
+    // Keep selectors scoped to the page even when the loader dispatches reveal
+    // from inside its own GSAP context.
+    const media = gsap.matchMedia(document.getElementById("portfolio-content") ?? undefined);
+    const start = () => {
     media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.from("[data-headline]", { yPercent: 110, rotate: 3, duration: 1.2, stagger: 0.14, ease: "power3.out", clearProps: "all" });
-      gsap.from("[data-hero-reveal]", { y: 22, opacity: 0, duration: 0.9, stagger: 0.15, delay: 0.2, clearProps: "all" });
-      gsap.from("[data-portrait]", { scale: 0.94, clipPath: "inset(8% 0% 0% 0%)", duration: 1.5, ease: "power3.out", clearProps: "all" });
       gsap.from("[data-play-reveal]", { y: 28, opacity: 0, stagger: 0.16, duration: 0.8, clearProps: "all", scrollTrigger: { trigger: ".playground-heading", start: "top 90%", once: true } });
       gsap.from(".pengu-doodle", { scale: 0.5, opacity: 0, stagger: 0.2, duration: 0.7, ease: "back.out(1.8)", clearProps: "all", scrollTrigger: { trigger: ".pengu-stage", start: "top 80%", once: true } });
       const float = gsap.to(".pengu-float", { y: -12, rotation: 2, duration: 2.2, ease: "sine.inOut", repeat: -1, yoyo: true, paused: true });
@@ -50,7 +50,26 @@ export function PortfolioMotion() {
       });
       return () => cleanups.forEach(cleanup => cleanup());
     });
-    return () => media.revert();
+    };
+    let started = false;
+    let startFrame = 0;
+    const startOnce = () => {
+      if (started) return;
+      started = true;
+      // Start outside the loader timeline's callback/context, so its cleanup
+      // cannot also revert the page's entrance and ScrollTriggers.
+      startFrame = requestAnimationFrame(start);
+    };
+    const waiting = document.documentElement.dataset.lotusLoading === "pending";
+    if (!waiting) startOnce();
+    window.addEventListener("portfolio:reveal", startOnce);
+    window.addEventListener("portfolio:ready", startOnce);
+    return () => {
+      cancelAnimationFrame(startFrame);
+      window.removeEventListener("portfolio:reveal", startOnce);
+      window.removeEventListener("portfolio:ready", startOnce);
+      media.revert();
+    };
   }, []);
   return null;
 }
