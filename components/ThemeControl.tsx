@@ -1,5 +1,6 @@
 "use client";
-import { useSyncExternalStore } from "react";
+import { useRef, useSyncExternalStore, type CSSProperties } from "react";
+import "./theme-lotus.css";
 type Preference = "light" | "dark" | "system";
 const key = "bedantika-theme";
 let current: Preference | undefined;
@@ -18,7 +19,8 @@ function subscribe(callback: () => void) {
   return () => { media.removeEventListener("change", sync); window.removeEventListener("storage", storage); window.removeEventListener("portfolio-theme", sync); };
 }
 function snapshot() { return `${preference()}:${document.documentElement.dataset.theme || "light"}`; }
-function select(value: Preference) {
+function select(value: "light" | "dark") {
+  if (value !== "light" && value !== "dark") throw new Error("Theme must be light or dark");
   current = value;
   try { localStorage.setItem(key, value); } catch { /* In-memory preference works without storage. */ }
   apply(value); window.dispatchEvent(new Event("portfolio-theme"));
@@ -26,11 +28,48 @@ function select(value: Preference) {
 export function ThemeControl() {
   const state = useSyncExternalStore(subscribe, snapshot, () => "system:light");
   const dark = state.endsWith(":dark");
+  const gesture = useRef<{ x: number; y: number; id: number } | null>(null);
+  const suppressClick = useRef(false);
   return <div className="theme-control">
-    <button className="theme-toggle" type="button" onClick={() => select(dark ? "light" : "dark")} aria-label={dark ? "Switch to Bloom light theme" : "Switch to After Dark theme"}>
-      <span className="theme-thumb" aria-hidden="true"><svg className="theme-flower" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 3C7 8 7 12 12 16C17 12 17 8 12 3ZM9 11C5 7 2 9 3 13C4 18 9 20 12 16C15 20 20 18 21 13C22 9 19 7 15 11" /></svg><svg className="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M16 3A9 9 0 1 0 21 16A8 8 0 0 1 16 3Z" /><path d="M6 4v4M4 6h4" /></svg></span>
-      <span className="bloom-label">Bloom</span><span className="dark-label">After Dark</span>
+    <button className="theme-toggle" type="button" role="switch" aria-checked={dark}
+      onClick={event => {
+        if (suppressClick.current && event.detail !== 0) { suppressClick.current = false; return; }
+        suppressClick.current = false;
+        select(dark ? "light" : "dark");
+      }}
+      onPointerDown={event => {
+        if (!event.isPrimary || event.button !== 0) return;
+        event.currentTarget.setPointerCapture(event.pointerId);
+        gesture.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
+        suppressClick.current = false;
+      }}
+      onPointerCancel={event => {
+        gesture.current = null;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+      }}
+      onLostPointerCapture={() => { gesture.current = null; }}
+      onPointerUp={event => {
+        const start = gesture.current;
+        gesture.current = null;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+        if (!start || start.id !== event.pointerId) return;
+        const dx = event.clientX - start.x, dy = event.clientY - start.y;
+        if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)) { suppressClick.current = true; return; }
+        if (Math.abs(dx) > 24 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          suppressClick.current = true;
+          select(dx > 0 ? "dark" : "light");
+        }
+      }}
+      aria-label="After Dark theme">
+      <span className="theme-thumb" aria-hidden="true">
+        <svg viewBox="0 0 64 56" fill="none" className="theme-lotus">
+          {[-72, -48, -24, 0, 24, 48, 72].map((angle, i) => <g key={angle} className="theme-lotus-petal" style={{ "--open-angle": `${angle}deg`, "--closed-angle": `${angle * .055}deg`, "--petal-delay": `${i * 9}ms` } as CSSProperties}>
+            <path d="M32 49C13 38 14 23 32 5C50 23 51 38 32 49Z" fill={i % 2 === 0 ? "#E5938F" : "#FFD2BE"} stroke="currentColor" strokeWidth="1.2" />
+            <path d="M32 46C27 31 28 19 32 9" stroke="currentColor" strokeWidth=".7" opacity=".4" />
+          </g>)}
+        </svg>
+      </span>
+      <span className="bloom-label" aria-hidden="true">Bloom</span><span className="dark-label" aria-hidden="true">After Dark</span>
     </button>
-    <details className="theme-options" onKeyDown={event => { if (event.key === "Escape") { event.currentTarget.open = false; event.currentTarget.querySelector("summary")?.focus(); } }}><summary aria-label="Theme preferences">⌄</summary><div className="theme-menu" role="group" aria-label="Theme preference">{(["system", "light", "dark"] as const).map(value => <button key={value} type="button" aria-pressed={state.startsWith(`${value}:`)} onClick={event => { select(value); const details = event.currentTarget.closest("details"); if (details) { details.open = false; details.querySelector("summary")?.focus(); } }}>{value === "system" ? "Use system" : value === "light" ? "Bloom" : "After Dark"}</button>)}</div></details>
   </div>;
 }

@@ -5,6 +5,8 @@ import { gsap } from "gsap";
 import { LoaderPetals, lotusPetals } from "./LoaderPetals";
 import { completeLotus, lockPortfolio, shouldPlayLotus } from "./lotus-lifecycle";
 import { heroEntrance } from "./hero-entrance";
+import { FloralCoverage } from "./FloralCoverage";
+import { floralCoverage } from "./floral-coverage";
 import "./loader-lotus.css";
 
 export function LoaderLotus() {
@@ -74,6 +76,8 @@ export function LoaderLotus() {
       if (!window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       try {
         context = gsap.context(() => {
+          // Include the reserved scrollbar gutter in the fixed transition canvas.
+          gsap.set(overlay, { width: window.innerWidth, height: window.innerHeight });
           const petals = gsap.utils.toArray<HTMLElement>("[data-lotus-petal]", overlay);
           gsap.set(content, { opacity: 0 });
           gsap.set(petals, { xPercent: -50, yPercent: -100, transformOrigin: "50% 97%" });
@@ -112,6 +116,19 @@ export function LoaderLotus() {
 
           // Ordered curved trajectories and a few foreground petals create depth.
           const radius = Math.hypot(window.innerWidth, window.innerHeight) * .8;
+          const cover = overlay.querySelector<HTMLElement>("[data-floral-cover]");
+          const panels = Array.from(overlay.querySelectorAll<HTMLElement>("[data-floral-panel]"));
+          const dimensions = floralCoverage(window.innerWidth, window.innerHeight);
+          panels.forEach((panel, i) => gsap.set(panel, { clipPath: dimensions.panels[i].clip }));
+          gsap.set(cover, { clipPath: "circle(0px at 50% 50%)", opacity: 0 });
+          timeline.to(cover, { opacity: 1, duration: .16, ease: "sine.in" }, 2.1)
+            .to(cover, { clipPath: `circle(${dimensions.radius}px at 50% 50%)`, duration: .4, ease: "power2.inOut" }, 2.1);
+          panels.forEach((panel, i) => {
+            const angle = dimensions.panels[i].angle;
+            timeline.to(panel, { x: Math.cos(angle) * dimensions.travel, y: Math.sin(angle) * dimensions.travel,
+              rotation: i % 2 === 0 ? 5 : -5, duration: .76, ease: "power2.inOut" }, 2.7 + (i % 3) * .025)
+              .to(panel, { opacity: 0, duration: .16 }, 3.35 + (i % 3) * .025);
+          });
           petals.forEach((petal, i) => {
             const angle = (i / petals.length) * Math.PI * 2;
             const at = 2.3 + (i % 3) * .035;
@@ -128,12 +145,12 @@ export function LoaderLotus() {
                 duration: .6, ease: "power2.inOut" }, at + .48)
               .to(petal, { opacity: 0, duration: .32, ease: "sine.in" }, at + .85);
           });
-          timeline.call(reveal, [], 2.48)
-            .to("[data-loader-backdrop]", { opacity: 0, duration: .46, ease: "sine.inOut" }, 2.4)
-            .to(content, { opacity: 1, duration: .5, ease: "sine.inOut" }, 2.48)
-            .to("[data-loader-veil]", { opacity: 0, duration: .58, ease: "sine.inOut" }, 2.48)
-            .add(heroEntrance(content, false), 2.52)
-            .to(overlay, { opacity: 0, duration: .16 }, 3.47);
+          timeline.call(reveal, [], 2.64)
+            .to("[data-loader-backdrop]", { opacity: 0, duration: .25, ease: "sine.inOut" }, 2.6)
+            .to(content, { opacity: 1, duration: .3, ease: "sine.inOut" }, 2.64)
+            .to("[data-loader-veil]", { opacity: 0, duration: .3, ease: "sine.inOut" }, 2.64)
+            .add(heroEntrance(content, false), 2.73)
+            .to(overlay, { opacity: 0, duration: .14 }, 3.57);
         }, overlay);
       } catch {
         // Content takes priority if animation setup fails.
@@ -154,5 +171,6 @@ export function LoaderLotus() {
     <div className="loader-theme-veil" data-loader-veil />
     <div className="loader-backdrop" data-loader-backdrop />
     <LoaderPetals />
+    <FloralCoverage />
   </div>;
 }

@@ -1,0 +1,18 @@
+.theme-control { flex-shrink:0; margin-left:0; }
+.theme-toggle { --pill-width:158px; position:relative; display:block; width:var(--pill-width); height:46px; min-height:44px; padding:0; border:1px solid var(--border); border-radius:999px; background:#FFF1E9; color:#762937; font:inherit; font-size:11px; cursor:pointer; isolation:isolate; touch-action:pan-y; user-select:none; transition:background-color .5s .08s,color .45s,border-color .45s,box-shadow .3s; }
+.theme-toggle:hover { box-shadow:0 3px 15px var(--shadow); }
+.theme-toggle:focus-visible { outline:2px solid var(--accent); outline-offset:5px; }
+.theme-thumb { position:absolute; left:5px; top:2px; width:44px; height:40px; display:grid; place-items:center; pointer-events:none; transition:transform .5s cubic-bezier(.4,0,.2,1); }
+.theme-lotus { width:44px; height:40px; display:block; overflow:visible; }
+.theme-lotus-petal { transform-origin:32px 48px; transform:rotate(var(--open-angle)) scale(.72,.78); transition:transform .48s cubic-bezier(.22,.7,.3,1); transition-delay:calc(.1s + var(--petal-delay)); }
+.theme-toggle .bloom-label,.theme-toggle .dark-label { position:absolute; top:0; height:44px; display:flex; align-items:center; justify-content:center; transition:opacity .22s .15s,transform .4s; pointer-events:none; }
+.theme-toggle .bloom-label { left:62px; right:16px; opacity:1; }
+.theme-toggle .dark-label { left:15px; right:53px; opacity:0; transform:translateX(4px); }
+[data-theme="dark"] .theme-toggle { background:#38242A; color:#FFD2BE; border-color:#65454B; }
+[data-theme="dark"] .theme-thumb { transform:translateX(calc(var(--pill-width) - 56px)); transition-delay:.13s; }
+[data-theme="dark"] .theme-lotus-petal { transform:rotate(var(--closed-angle)) scale(.43,.82); transition-duration:.34s; transition-delay:var(--petal-delay); }
+[data-theme="dark"] .theme-toggle .bloom-label { opacity:0; transform:translateX(-4px); }
+[data-theme="dark"] .theme-toggle .dark-label { opacity:1; transform:translateX(0); }
+@media(max-width:760px) { .theme-control { margin-left:auto; } .theme-toggle { --pill-width:146px; } }
+@media(max-width:360px) { .theme-toggle { --pill-width:138px; font-size:10px; } }
+@media(prefers-reduced-motion:reduce) { .theme-toggle,.theme-thumb,.theme-lotus-petal,.theme-toggle .bloom-label,.theme-toggle .dark-label { transition:none!important; } }
