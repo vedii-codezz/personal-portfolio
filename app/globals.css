@@ -268,6 +268,37 @@ button:active { scale:.98; }
 .story-ornament { display:flex; justify-content:center; margin:-12px 0 20px; }
 .lotus-ornament { width:250px; height:auto; color:var(--accent); opacity:.8; }
 .project-links .text-link { min-height:44px; }
+/* The botanical rail owns its space, including at narrow phone widths. */
+.story-journey { display:grid; grid-template-columns:clamp(110px,18vw,240px) minmax(0,1fr); gap:clamp(20px,3vw,48px); align-items:stretch; }
+.story-chapters { min-width:0; }
+.lotus-journey { display:block; width:100%; height:100%; min-height:490px; max-height:740px; align-self:center; color:var(--accent); pointer-events:none; }
+.journey-primary { stroke-width:2.3; }
+.journey-petals { fill:var(--background); stroke-width:2; }
+.journey-curls { color:var(--accent-secondary); stroke-width:1.2; }
+.journey-leaves { fill:var(--accent-secondary); }
+[data-theme="dark"] .lotus-journey { color:var(--accent-secondary); }
+[data-theme="dark"] .journey-curls { color:var(--accent); }
+.story-journey .story-heading { gap:24px; flex-wrap:wrap; padding-bottom:38px; }
+.story-journey .story-heading h2 { font-size:clamp(56px,6vw,98px); }
+.story-journey .story-heading>p { padding-right:0; }
+.story-journey .education-entry { grid-template-columns:minmax(0,1fr) auto; gap:24px; }
+.story-journey .education-date { grid-column:1/-1; }
+.story-journey .education-score { grid-column:2; flex-direction:column; align-items:flex-start; margin:0; }
+@media(max-width:600px) {
+  .story-journey { grid-template-columns:64px minmax(0,1fr); gap:16px; }
+  .lotus-journey { min-height:0; max-height:none; }
+  .journey-curls { display:none; }
+  .lotus-journey [data-draw] { vector-effect:non-scaling-stroke; stroke-width:1; }
+  .story-journey .story-heading { padding-top:36px; gap:20px; }
+  .story-journey .story-heading h2 { font-size:clamp(37px,9vw,54px); }
+  .story-journey .story-heading>p { font-size:25px; }
+  .story-journey .education-entry { grid-template-columns:minmax(0,1fr); padding-left:16px; gap:24px; }
+  .story-journey .education-date,.story-journey .education-score { grid-column:1; }
+  .story-journey .timeline-dot { left:-18px; }
+  .story-journey .education-content h3 { font-size:24px; overflow-wrap:break-word; }
+  .story-journey .education-content>p { font-size:14px; }
+  .story-journey .education-score strong { font-size:65px; }
+}
 @media(max-width:1150px) { .header-note { display:none; } .site-header nav { gap:20px; } }
 @media(max-width:760px) { .site-header { height:auto; min-height:122px; flex-wrap:wrap; padding:16px 0 8px; gap:10px; } .site-header>.wordmark { font-size:24px; gap:7px; } .site-header .lotus-mark { width:30px; height:32px; } .lotus-mark { width:38px; height:36px; } .site-header nav { order:3; width:100%; justify-content:space-between; gap:12px; margin:0; } .theme-control { margin-left:auto; } .hero { min-height:calc(100svh - 122px); } .site-footer .wordmark { font-size:26px; } }
 @media(max-width:360px) { .site-header>.wordmark { font-size:21px; gap:5px; } .site-header .lotus-mark { width:30px; } .theme-toggle { width:108px; font-size:10px; } .theme-options summary { width:26px; } [data-theme="dark"] .theme-thumb { transform:translateX(64px) rotate(12deg); } }
