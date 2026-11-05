@@ -1,16 +1,23 @@
 export function floralCoverage(width: number, height: number) {
   const diagonal = Math.hypot(width, height);
   return {
-    radius: Math.ceil(diagonal / 2) + 4,
+    radius: Math.ceil(diagonal / 2) + 6,
     travel: diagonal * 1.15,
     panels: Array.from({ length: 8 }, (_, i) => {
-      const angle = i * Math.PI / 4;
-      const point = (a: number) => [width / 2 + Math.cos(a) * diagonal * 2, height / 2 + Math.sin(a) * diagonal * 2];
-      // A small angular overlap prevents subpixel seams at the panel boundaries.
-      const start = point(angle - Math.PI / 8 - .004);
-      const end = point(angle + Math.PI / 8 + .004);
-      return { angle, start, end,
-        clip: `polygon(50% 50%, ${start[0] / width * 100}% ${start[1] / height * 100}%, ${end[0] / width * 100}% ${end[1] / height * 100}%)` };
+      return { angle: i * 45 + (i % 2 ? 1 : -1) };
     }),
   };
 }
+
+export function floralPose(geometry: ReturnType<typeof floralCoverage>, index: number, expansion: number, exit: number) {
+  const angle = geometry.panels[index].angle * Math.PI / 180;
+  const bend = (index % 2 ? -1 : 1) * exit * geometry.radius * .12;
+  return {
+    x: Math.sin(angle) * geometry.travel * exit + Math.cos(angle) * bend,
+    y: -Math.cos(angle) * geometry.travel * exit + Math.sin(angle) * bend,
+    scale: expansion,
+    rotation: geometry.panels[index].angle + (index % 2 ? -3 : 3) * exit,
+  };
+}
+
+export const floralPetalPath = "M0 20C-140-25-120-140 0-200C120-140 140-25 0 20Z";

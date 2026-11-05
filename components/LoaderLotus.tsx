@@ -6,7 +6,8 @@ import { LoaderPetals, lotusPetals } from "./LoaderPetals";
 import { completeLotus, lockPortfolio, shouldPlayLotus } from "./lotus-lifecycle";
 import { heroEntrance } from "./hero-entrance";
 import { FloralCoverage } from "./FloralCoverage";
-import { floralCoverage } from "./floral-coverage";
+import { floralCoverage, floralPose } from "./floral-coverage";
+import { observeLoaderViewport, readLoaderViewport } from "./loader-viewport";
 import "./loader-lotus.css";
 
 export function LoaderLotus() {
@@ -34,6 +35,9 @@ export function LoaderLotus() {
     let disposed = false;
     let completed = false;
     let context: gsap.Context | undefined;
+    let stopViewport = () => {};
+    let viewport = readLoaderViewport(window);
+    let renderGeometry = () => {};
     const release = lockPortfolio(content);
     const finish = () => {
       if (disposed || completed) return;
@@ -61,6 +65,8 @@ export function LoaderLotus() {
     let skippedFrame = 0;
     const teardown = () => {
       window.clearTimeout(safety);
+      stopViewport();
+      ["--loader-width", "--loader-height", "--loader-left", "--loader-top"].forEach(property => overlay.style.removeProperty(property));
       cancelAnimationFrame(skippedFrame);
       window.removeEventListener("portfolio:ready", finish);
       window.removeEventListener("keydown", onKey);
@@ -76,8 +82,14 @@ export function LoaderLotus() {
       if (!window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       try {
         context = gsap.context(() => {
-          // Include the reserved scrollbar gutter in the fixed transition canvas.
-          gsap.set(overlay, { width: window.innerWidth, height: window.innerHeight });
+          stopViewport = observeLoaderViewport(window, next => {
+            viewport = next;
+            overlay.style.setProperty("--loader-width", `${next.width}px`);
+            overlay.style.setProperty("--loader-height", `${next.height}px`);
+            overlay.style.setProperty("--loader-left", `${next.left}px`);
+            overlay.style.setProperty("--loader-top", `${next.top}px`);
+            renderGeometry();
+          });
           const petals = gsap.utils.toArray<HTMLElement>("[data-lotus-petal]", overlay);
           gsap.set(content, { opacity: 0 });
           gsap.set(petals, { xPercent: -50, yPercent: -100, transformOrigin: "50% 97%" });
@@ -115,18 +127,36 @@ export function LoaderLotus() {
             .to("[data-lotus-aura], [data-lotus-heart]", { opacity: 0, duration: .32 }, 2.28);
 
           // Ordered curved trajectories and a few foreground petals create depth.
-          const radius = Math.hypot(window.innerWidth, window.innerHeight) * .8;
-          const cover = overlay.querySelector<HTMLElement>("[data-floral-cover]");
           const panels = Array.from(overlay.querySelectorAll<HTMLElement>("[data-floral-panel]"));
-          const dimensions = floralCoverage(window.innerWidth, window.innerHeight);
-          panels.forEach((panel, i) => gsap.set(panel, { clipPath: dimensions.panels[i].clip }));
-          gsap.set(cover, { clipPath: "circle(0px at 50% 50%)", opacity: 0 });
-          timeline.to(cover, { opacity: 1, duration: .16, ease: "sine.in" }, 2.1)
-            .to(cover, { clipPath: `circle(${dimensions.radius}px at 50% 50%)`, duration: .4, ease: "power2.inOut" }, 2.1);
+          let dimensions = floralCoverage(viewport.width, viewport.height);
+          let radius = Math.hypot(viewport.width, viewport.height) * .8;
+          const coverage = panels.map(() => ({ expansion: .015, exit: 0 }));
+          const foregroundMotion = petals.map(() => ({ x: 0, y: 0 }));
+          const setters = panels.map(panel => ({ x: gsap.quickSetter(panel, "x", "px"), y: gsap.quickSetter(panel, "y", "px"), scaleX: gsap.quickSetter(panel, "scaleX"), scaleY: gsap.quickSetter(panel, "scaleY"), rotation: gsap.quickSetter(panel, "rotation", "deg") }));
+          const foregroundSetters = petals.map(petal => ({ x: gsap.quickSetter(petal, "x", "px"), y: gsap.quickSetter(petal, "y", "px") }));
+          const renderPanel = (i: number) => {
+            const pose = floralPose(dimensions, i, coverage[i].expansion, coverage[i].exit);
+            setters[i].x(pose.x); setters[i].y(pose.y); setters[i].scaleX(pose.scale); setters[i].scaleY(pose.scale); setters[i].rotation(pose.rotation);
+          };
+          const renderForeground = (i: number) => {
+            foregroundSetters[i].x(foregroundMotion[i].x * radius);
+            foregroundSetters[i].y(foregroundMotion[i].y * radius);
+          };
+          renderGeometry = () => {
+            dimensions = floralCoverage(viewport.width, viewport.height);
+            radius = Math.hypot(viewport.width, viewport.height) * .8;
+            panels.forEach((panel, i) => {
+              gsap.set(panel, { width: dimensions.radius * 3, height: dimensions.radius * 2.4, xPercent: -50, yPercent: -87.5, transformOrigin: "50% 87.5%" });
+              renderPanel(i);
+            });
+            petals.forEach((_, i) => renderForeground(i));
+          };
+          renderGeometry();
+          gsap.set(panels, { opacity: 0 });
           panels.forEach((panel, i) => {
-            const angle = dimensions.panels[i].angle;
-            timeline.to(panel, { x: Math.cos(angle) * dimensions.travel, y: Math.sin(angle) * dimensions.travel,
-              rotation: i % 2 === 0 ? 5 : -5, duration: .76, ease: "power2.inOut" }, 2.7 + (i % 3) * .025)
+            timeline.to(panel, { opacity: 1, duration: .14 }, 2.1 + (i % 2) * .015)
+              .to(coverage[i], { expansion: 1, duration: .42, ease: "power2.inOut", onUpdate: () => renderPanel(i) }, 2.1 + (i % 3) * .018)
+              .to(coverage[i], { exit: 1, duration: .76, ease: i % 2 ? "power2.inOut" : "power3.inOut", onUpdate: () => renderPanel(i) }, 2.7 + (i % 3) * .025)
               .to(panel, { opacity: 0, duration: .16 }, 3.35 + (i % 3) * .025);
           });
           petals.forEach((petal, i) => {
@@ -135,21 +165,21 @@ export function LoaderLotus() {
             const foreground = i % 5 === 0;
             const bend = angle + (i % 2 === 0 ? .12 : -.12);
             timeline.to(petal, { scaleX: 2.1, scaleY: 2.1, rotationX: 0, duration: .25, ease: "power2.in" }, at)
-              .to(petal, { x: Math.sin(angle) * radius * .24, y: Math.cos(angle) * radius * .24,
-                rotation: angle * 180 / Math.PI + 12, rotationY: foreground ? -12 : 10,
+              .to(petal, { rotation: angle * 180 / Math.PI + 12, rotationY: foreground ? -12 : 10,
                 scaleX: foreground ? 2.9 : 2.1, scaleY: foreground ? 2.9 : 2.1,
                 duration: .36, ease: "sine.in" }, at + .12)
-              .to(petal, { x: Math.sin(bend) * radius * 1.2, y: Math.cos(bend) * radius * 1.2,
-                rotation: angle * 180 / Math.PI + (i % 2 === 0 ? 32 : -24), rotationY: foreground ? -22 : 18,
+              .to(petal, { rotation: angle * 180 / Math.PI + (i % 2 === 0 ? 32 : -24), rotationY: foreground ? -22 : 18,
                 scaleX: foreground ? 4.4 : 2.9, scaleY: foreground ? 4.4 : 2.9,
                 duration: .6, ease: "power2.inOut" }, at + .48)
               .to(petal, { opacity: 0, duration: .32, ease: "sine.in" }, at + .85);
+            timeline.to(foregroundMotion[i], { x: Math.sin(angle) * .24, y: Math.cos(angle) * .24, duration: .36, ease: "sine.in", onUpdate: () => renderForeground(i) }, at + .12)
+              .to(foregroundMotion[i], { x: Math.sin(bend) * 1.2, y: Math.cos(bend) * 1.2, duration: .6, ease: "power2.inOut", onUpdate: () => renderForeground(i) }, at + .48);
           });
           timeline.call(reveal, [], 2.64)
             .to("[data-loader-backdrop]", { opacity: 0, duration: .25, ease: "sine.inOut" }, 2.6)
             .to(content, { opacity: 1, duration: .3, ease: "sine.inOut" }, 2.64)
             .to("[data-loader-veil]", { opacity: 0, duration: .3, ease: "sine.inOut" }, 2.64)
-            .add(heroEntrance(content, false), 2.73)
+            .add(heroEntrance(content, false).timeScale(1.25), 2.92)
             .to(overlay, { opacity: 0, duration: .14 }, 3.57);
         }, overlay);
       } catch {
