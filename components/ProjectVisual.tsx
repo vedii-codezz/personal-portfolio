@@ -79,8 +79,8 @@ function MetroArtwork() {
   </>;
 }
 
-export function ProjectVisual({ slug }: { slug: Project["slug"] }) {
-  return <div className={`project-visual visual-${slug} ${styles.frame}`} aria-hidden="true">
+export function ProjectVisual({ slug, compact = false }: { slug: Project["slug"]; compact?: boolean }) {
+  return <div className={`project-visual visual-${slug} ${styles.frame} ${compact ? styles.compact : ""}`} aria-hidden="true">
     <div className={styles.texture} />
     <div className="project-settle"><div className="project-parallax"><div className="project-pointer">
       <div className={`${styles.study} ${studyNames[slug]}`}>

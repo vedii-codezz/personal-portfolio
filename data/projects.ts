@@ -36,3 +36,11 @@ export const projects: readonly Project[] = [
     github: "https://github.com/vedii-codezz/nikot-e-metro", live: "https://nikot-e-metro.vercel.app/",
   },
 ];
+
+// Concise exhibition copy; the original, longer project descriptions remain intact.
+export const carouselDescriptions: Record<Project["slug"], string> = {
+  finora: "A multi-agent personal CFO combining specialized agents for smarter financial decisions.",
+  veyra: "An interactive finance dashboard that makes budgeting and spending easier to understand.",
+  aptly: "An AI-powered opportunity assistant that explains eligibility, skill gaps, and career fit.",
+  "nikot-e-metro": "An interactive Kolkata Metro guide for discovering stations, routes, and connections.",
+};

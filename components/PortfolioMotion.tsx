@@ -63,17 +63,6 @@ export function PortfolioMotion() {
         gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach(element => {
           gsap.from(element, { y: 32, opacity: 0, duration: 0.85, ease: "power2.out", clearProps: "all", scrollTrigger: { trigger: element, start: "top 92%", once: true } });
         });
-        gsap.utils.toArray<HTMLElement>("[data-project]").forEach(project => {
-          const find = (selector: string) => project.querySelectorAll(selector);
-          const rise = { y: 24, opacity: 0, duration: .75, ease: "power2.out", clearProps: "transform,opacity" };
-          gsap.timeline({ scrollTrigger: { trigger: project, start: "top 88%", once: true } })
-            .from(find(".project-top"), rise, 0)
-            .from(find(".project-title"), rise, .12)
-            .from(find(".project-visual"), { clipPath: "inset(7% 0% 7% 0%)", opacity: 0, duration: .95, ease: "power3.out", clearProps: "clipPath,opacity" }, .24)
-            .from(find(".project-settle"), { scale: 1.035, duration: 1.05, ease: "power3.out", clearProps: "transform" }, .24)
-            .from(find(".project-subtitle, .project-detail>p, .tech-list"), { ...rise, stagger: .08 }, .48)
-            .from(find(".project-links"), rise, .68);
-        });
         return () => {
           document.removeEventListener("visibilitychange", onVisibility);
           button?.removeEventListener("click", react);
@@ -113,17 +102,11 @@ export function PortfolioMotion() {
         if (stage && character) follow(stage, character, 10, true);
         const email = document.querySelector<HTMLElement>(".contact-email");
         if (email) follow(email, email, 6);
-        gsap.utils.toArray<HTMLElement>(".project-visual").forEach(visual => {
-          const artwork = visual.querySelector<HTMLElement>(".project-pointer");
-          if (artwork) follow(visual, artwork, 5);
-        });
         return () => cleanups.forEach(cleanup => cleanup());
       });
       media.add("(min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
         gsap.to(".portrait-image", { yPercent: 4, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
-        gsap.utils.toArray<HTMLElement>(".project-parallax").forEach(layer => {
-          gsap.fromTo(layer, { y: -5 }, { y: 5, ease: "none", scrollTrigger: { trigger: layer.closest("[data-project]"), start: "top bottom", end: "bottom top", scrub: .8 } });
-        });
+
       });
     };
     let started = false;

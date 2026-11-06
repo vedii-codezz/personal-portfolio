@@ -89,3 +89,19 @@
  .evidenceRow b { font-size:10px; }
  .evidenceTrail { font-size:10px; }
 }
+
+/* Exhibition cards keep the complete illustration within a shorter artwork field. */
+.compact .study { padding:16px; gap:9px; }
+.compact .studyNote { flex-direction:row; gap:4px 8px; font-size:8px; letter-spacing:.02em; }
+.compact .footnote { font-size:8px; padding-top:7px; letter-spacing:.02em; }
+.compact .agent { padding:6px 7px; font-size:11px; }
+.compact .documentBrand,.compact .wordmark { font-size:36px; }
+.compact .documentComposition { gap:9px; }
+.compact .evidence { padding:9px; }
+.compact .sheetHeading { font-size:9px; padding-bottom:6px; }
+.compact .evidenceRow { padding:6px 0; font-size:11px; gap:6px; }
+.compact .evidenceRow b { font-size:9px; }
+.compact .evidenceTrail { font-size:9px; padding-top:7px; }
+.compact .flowWords { font-size:11px; }
+.compact .metroIdentity>span { font-size:28px; }
+.compact .transitComposition { gap:10px; }
