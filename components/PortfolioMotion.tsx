@@ -68,11 +68,11 @@ export function PortfolioMotion() {
           const rise = { y: 24, opacity: 0, duration: .75, ease: "power2.out", clearProps: "transform,opacity" };
           gsap.timeline({ scrollTrigger: { trigger: project, start: "top 88%", once: true } })
             .from(find(".project-top"), rise, 0)
-            .from(find(".project-visual"), { clipPath: "inset(7% 0% 7% 0%)", opacity: 0, duration: .95, ease: "power3.out", clearProps: "clipPath,opacity" }, .1)
-            .from(find(".project-settle"), { scale: 1.035, duration: 1.05, ease: "power3.out", clearProps: "transform" }, .1)
-            .from(find(".project-title"), rise, .3)
-            .from(find(".project-detail>p, .tech-list"), { ...rise, stagger: .08 }, .4)
-            .from(find(".project-links"), rise, .58);
+            .from(find(".project-title"), rise, .12)
+            .from(find(".project-visual"), { clipPath: "inset(7% 0% 7% 0%)", opacity: 0, duration: .95, ease: "power3.out", clearProps: "clipPath,opacity" }, .24)
+            .from(find(".project-settle"), { scale: 1.035, duration: 1.05, ease: "power3.out", clearProps: "transform" }, .24)
+            .from(find(".project-detail>p, .tech-list"), { ...rise, stagger: .08 }, .48)
+            .from(find(".project-links"), rise, .68);
         });
         return () => {
           document.removeEventListener("visibilitychange", onVisibility);
