@@ -26,7 +26,7 @@ try {
   const result=await evaluate(`(()=>{const c=document.querySelector('[data-active="true"]');const p=c.querySelector('.carousel-editorial p'); const l=c.querySelector('.carousel-links');return {width:innerWidth,scroll:document.documentElement.scrollWidth,cards:document.querySelectorAll('.carousel-card').length,links:[...c.querySelectorAll('a')].map(a=>({href:a.href,target:a.target,rel:a.rel})),descriptionBottom:p.getBoundingClientRect().bottom,linksTop:l.getBoundingClientRect().top,cardBottom:c.getBoundingClientRect().bottom,linksBottom:l.getBoundingClientRect().bottom,transform:document.querySelectorAll('.carousel-card')[1].style.transform}})()`);
   assert.equal(result.cards,4); assert.ok(result.scroll<=result.width,`no overflow at ${w}: ${result.scroll}/${result.width}`);
   assert.ok(result.descriptionBottom<=result.linksTop+2,`copy fits at ${w}`);assert.ok(result.linksBottom<=result.cardBottom,`links fit at ${w}`);
-  assert.ok(result.transform.includes('rotateY(60deg)')); assert.ok(result.links.every(a=>a.target==='_blank'&&a.rel.includes('noopener')));
+  assert.ok(result.transform.includes('rotateY(90deg)')&&result.transform.includes('translateZ(')); assert.ok(result.links.every(a=>a.target==='_blank'&&a.rel.includes('noopener')));
   for(const name of ['VEYRA','APTLY','Nikot-e-Metro','Finora']) {
    await evaluate(`document.querySelector('[aria-label="Show ${name}"]').click()`);await delay(900);
    const fit=await evaluate(`(()=>{const c=document.querySelector('[data-active="true"]');return {p:c.querySelector('.carousel-editorial p').getBoundingClientRect().bottom,l:c.querySelector('.carousel-links').getBoundingClientRect().top,b:c.getBoundingClientRect().bottom,lb:c.querySelector('.carousel-links').getBoundingClientRect().bottom}})()`);
@@ -46,13 +46,13 @@ try {
  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:edge.x-3,y:edge.y,buttons:1});
  await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:edge.x-3,y:edge.y,button:'left',clickCount:1});
  await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:edge.center,y:edge.y,buttons:0});await delay(100);
- assert.equal(await evaluate(`document.querySelector('[data-active="true"]').style.transform`),'translate3d(0px, 0px, 0px) rotateY(0deg)','Release outside before drag threshold must not leave a pending gesture');
+ assert.equal(await evaluate(`document.querySelector('.carousel-cylinder').style.transform`),'rotateY(0deg)','Release outside before drag threshold must not leave a pending gesture');
  console.log('PASS release outside before drag threshold');
  await evaluate(`document.querySelector('[aria-label="Next project"]').click()`);await delay(1000);assert.equal(await active(),'VEYRA');
  await evaluate(`document.querySelector('[aria-label="Previous project"]').click()`);await delay(1000);assert.equal(await active(),'Finora');
  await evaluate(`document.querySelector('.carousel-stage').focus()`);
  await send('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39});await delay(1000);assert.equal(await active(),'VEYRA');
- await evaluate(`document.querySelector('.carousel-preview-next').click()`);await delay(1000);assert.equal(await active(),'APTLY');
+ await evaluate(`document.querySelector('.carousel-card[data-project="aptly"]').click()`);await delay(1400);assert.equal(await active(),'APTLY');
  await evaluate(`document.querySelector('[aria-label="Show Finora"]').click();document.querySelector('.carousel-stage').scrollIntoView({block:'center'})`);await delay(1000);
  const box=await evaluate(`(()=>{let r=document.querySelector('.carousel-stage').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+170}})()`);
  await send('Input.dispatchMouseEvent',{type:'mousePressed',x:box.x,y:box.y,button:'left',clickCount:1});
@@ -73,7 +73,7 @@ try {
  await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await delay(1200);assert.notEqual(await active(),'Finora');
  console.log('PASS touch swipe and snap');
  const before=await active();
- assert.equal(await evaluate(`document.querySelectorAll('.carousel-card:not([inert])').length`),1,'Only active slide is in keyboard/accessibility navigation');
+ assert.equal(await evaluate(`document.querySelectorAll('.carousel-live:not([inert])').length`),1,'Only active slide is in keyboard/accessibility navigation');
  for (const linkIndex of [0,1]) {
  const link=await evaluate(`(()=>{const a=document.querySelectorAll('[data-active="true"] a')[${linkIndex}];let r=a.getBoundingClientRect();return {x:r.x+15,y:r.y+15,href:a.href}})()`);
  const originalTargets=(await send('Target.getTargets')).targetInfos;
