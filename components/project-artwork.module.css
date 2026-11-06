@@ -1,0 +1,91 @@
+/* Internal artwork only: the shared project grid, dimensions and frame shadow stay global. */
+.frame { container-type:inline-size; --art-safe:clamp(16px,4cqw,30px); }
+.texture { position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(currentColor 1px,transparent 1px),linear-gradient(90deg,currentColor 1px,transparent 1px); background-size:40px 40px; opacity:.045; }
+.study { position:relative; width:100%; height:100%; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:clamp(14px,3cqw,22px); padding:var(--art-safe); }
+.studyNote { display:flex; justify-content:space-between; gap:8px 24px; flex-wrap:wrap; font-size:11px; font-weight:500; line-height:1.3; letter-spacing:.07em; text-transform:uppercase; }
+.studyNote>span:last-child { opacity:.8; }
+.footnote { font-size:11px; font-weight:500; line-height:1.45; letter-spacing:.06em; text-transform:uppercase; padding-top:12px; border-top:1px solid color-mix(in srgb,currentColor 25%,transparent); }
+/* Finora: quiet rings and four balanced, readable agent plaques. */
+.orbit { position:relative; min-height:0; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto 1fr auto; gap:10px; }
+.orbitLines { position:absolute; width:100%; height:100%; inset:0; }
+.orbitLines circle,.orbitLines path { vector-effect:non-scaling-stroke; }
+.orbitConnectors { stroke:#91a884; stroke-width:1; opacity:.25; }
+.outerOrbit { stroke:#8da482; stroke-width:1; stroke-dasharray:3 7; opacity:.5; }
+.innerOrbit { stroke:#a7bb98; stroke-width:1.2; opacity:.6; }
+.goldOrbit { stroke:#d6ad68; stroke-width:1; opacity:.65; }
+.orbitNode { fill:#d6ad68; }
+.agent { position:relative; z-index:1; align-self:start; padding:10px 14px; background:#202d23; border:1px solid #708969; color:#dce4d4; font-size:clamp(12px,2.2cqw,14px); line-height:1.2; text-align:center; letter-spacing:.025em; }
+.agentBudget { grid-area:1/1; justify-self:start; }
+.agentInvestment { grid-area:1/2; justify-self:end; }
+.agentAffordability { grid-area:3/1; justify-self:start; }
+.agentFraud { grid-area:3/2; justify-self:end; }
+.core { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:clamp(84px,23cqw,138px); aspect-ratio:1; border:1px solid #a9ba97; border-radius:50%; background:#304333; box-shadow:0 0 0 8px #91a8840c; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.core>span { font-family:var(--font-display),Georgia,serif; font-style:italic; font-size:clamp(64px,15cqw,98px); line-height:.8; padding-right:.08em; }
+.coreDot { color:#dfb96f; }
+.core small { font-size:11px; letter-spacing:.15em; margin-top:12px; color:#e0e8d6; }
+/* Veyra: two directed families of curves, rather than overlapping ellipses. */
+.flowComposition { display:grid; grid-template-rows:auto minmax(0,1fr); min-height:0; gap:12px; }
+.flowHeading { display:flex; justify-content:space-between; align-items:start; gap:14px; }
+.wordmark { font-family:var(--font-display),Georgia,serif; font-size:clamp(42px,9cqw,68px); line-height:1; letter-spacing:-.03em; }
+.wordmark sup { font-family:var(--font-body),Georgia,serif; font-size:12px; margin-left:5px; vertical-align:top; }
+.flowWords { font-size:12px; line-height:1.6; text-align:right; color:#efc79d; }
+.flowWords span { display:block; }
+.ribbons { width:100%; height:100%; overflow:visible; align-self:center; }
+.ribbonFill { fill:#b77d45; opacity:.12; }
+.ribbonBack { stroke:#b77d68; stroke-width:1; opacity:.5; }
+.ribbonFront { stroke:#e3b879; stroke-width:1.2; opacity:.9; }
+/* Aptly: paper stays in flow, so evidence and disclaimer never collide. */
+.documentComposition { display:grid; grid-template-rows:auto minmax(0,1fr); gap:clamp(12px,3cqw,26px); min-height:0; }
+.documentBrand { font-family:var(--font-display),Georgia,serif; font-size:clamp(42px,9cqw,68px); line-height:1; letter-spacing:-.035em; }
+.documentBrand>span { color:#61734f; }
+.paperStack { position:relative; align-self:center; width:94%; margin:0 auto; isolation:isolate; }
+.paperStack::before { content:""; position:absolute; inset:0; background:#d8ddcb; border:1px solid #bcc5ad; transform:translate(6px,7px) rotate(1.5deg); z-index:-1; }
+.evidence { position:relative; transform:rotate(-2deg); padding:clamp(12px,3cqw,23px); background:#faf9f1; border:1px solid #bac3ad; box-shadow:0 10px 22px #26311e12; }
+.sheetHeading,.evidenceRow { display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:12px; align-items:center; border-bottom:1px solid #c9cfbf; }
+.sheetHeading { font-size:11px; line-height:1.3; padding-bottom:12px; color:#49533e; }
+.evidenceRow { padding:clamp(10px,2.5cqw,17px) 0; font-size:clamp(13px,2.7cqw,17px); line-height:1.3; }
+.evidenceRow b { font-size:11px; font-weight:600; letter-spacing:.035em; white-space:nowrap; }
+.evidenceRow b>span { margin-left:5px; }
+.matched { color:#39542f; }
+.partial { color:#765322; }
+.unknown { color:#555d4b; }
+.evidenceTrail { font-size:11px; line-height:1.4; padding-top:14px; color:#49533e; }
+/* Metro: contained route geometry and explicit interchange markers. */
+.transitComposition { display:grid; grid-template-rows:auto minmax(0,1fr); gap:18px; min-height:0; }
+.metroIdentity>span { display:block; font-family:var(--font-bengali),"Nirmala UI",serif; font-size:clamp(29px,6.4cqw,43px); line-height:1.5; color:#d1e7dc; }
+.metroIdentity small { display:block; font-size:11px; letter-spacing:.13em; margin-top:5px; }
+.network { width:100%; height:100%; min-height:0; overflow:visible; }
+.network path { stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+.routeSage { stroke:#a8c7b5; }
+.routeGold { stroke:#d0ae70; }
+.routeBlue { stroke:#83afb8; }
+.station { fill:#1a292b; stroke:#dce9dc; stroke-width:3; }
+.interchange circle:first-child { fill:#1a292b; stroke:#edf2df; stroke-width:3; }
+.interchange circle:last-child { fill:#edf2df; }
+@container(max-width:420px) {
+ .study { gap:14px; }
+ .studyNote { flex-direction:column; gap:4px; font-size:11px; letter-spacing:.035em; }
+ .agent { padding:8px 10px; }
+ .flowWords { font-size:12px; }
+ .paperStack { width:96%; }
+ .evidence { padding:12px; }
+ .sheetHeading { font-size:11px; padding-bottom:8px; }
+ .evidenceRow { font-size:13px; padding:9px 0; }
+ .evidenceTrail { padding-top:10px; }
+ .evidenceRow b>span { display:none; }
+}
+@container(max-width:290px) {
+ .study { gap:10px; }
+ .footnote { font-size:11px; letter-spacing:.02em; padding-top:9px; }
+ .agent { padding:7px 8px; font-size:12px; }
+ .wordmark { font-size:38px; }
+ .flowHeading { flex-direction:column; gap:10px; }
+ .flowWords { display:flex; flex-wrap:wrap; text-align:left; gap:3px 12px; font-size:12px; }
+ .documentComposition { gap:10px; }
+ .paperStack { width:100%; }
+ .evidence { padding:10px; }
+ .sheetHeading { font-size:10px; column-gap:8px; }
+ .evidenceRow { font-size:12px; column-gap:8px; padding:8px 0; }
+ .evidenceRow b { font-size:10px; }
+ .evidenceTrail { font-size:10px; }
+}
