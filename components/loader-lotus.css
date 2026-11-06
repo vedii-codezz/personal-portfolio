@@ -12,6 +12,7 @@ html[data-lotus-loading="revealing"] .lotus-loader {
 .loader-backdrop { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 53%,#3b202c 0%,#24151d 38%,#140e15 80%); }
 .loader-theme-veil { position:absolute; inset:0; background:var(--background); }
 .loader-floral-cover { position:absolute; inset:0; pointer-events:none; }
+.loader-floral-underlay { position:absolute; inset:0; opacity:0; background:radial-gradient(ellipse at 48% 58%,#FFE9DF,#FFD2BE 62%,#E5938F); }
 .loader-floral-panel { position:absolute; left:50%; top:50%; opacity:0; will-change:transform,opacity; }
 .loader-floral-panel svg { display:block; width:100%; height:100%; }
 .loader-lotus { position:relative; width:min(calc(var(--loader-width,100vw) * .74),390px); aspect-ratio:1.2; opacity:0; perspective:1000px; }

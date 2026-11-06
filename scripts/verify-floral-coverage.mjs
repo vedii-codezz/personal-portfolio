@@ -15,6 +15,11 @@ const shape=[];
 const coordinates=context.exports.floralPetalPath.match(/-?\d*\.?\d+/g).map(Number);
 assert.equal(coordinates.length,14,'The rendered silhouette contains one move and two cubic curves');
 const pair=index=>coordinates.slice(index*2,index*2+2);
+// At the far end, a pointed return creates the old radial wedge silhouette.
+const tipIn = [pair(3)[0]-pair(2)[0], pair(3)[1]-pair(2)[1]];
+const tipOut = [pair(4)[0]-pair(3)[0], pair(4)[1]-pair(3)[1]];
+const alignment = (tipIn[0]*tipOut[0]+tipIn[1]*tipOut[1]) / (Math.hypot(...tipIn)*Math.hypot(...tipOut));
+assert.ok(alignment > .98, 'Coverage petals have a continuous rounded crown, not a pointed wedge');
 for(const curve of [[pair(0),pair(1),pair(2),pair(3)],[pair(3),pair(4),pair(5),pair(6)]]) {
   for(let i=0;i<=80;i++) { const t=i/80,u=1-t;
     shape.push([0,1].map(axis=>u*u*u*curve[0][axis]+3*u*u*t*curve[1][axis]+3*u*t*t*curve[2][axis]+t*t*t*curve[3][axis]));
@@ -47,5 +52,14 @@ for(const [w,h] of [[390,844],[844,390],[320,640],[3440,1440]]) {
   assert.equal(p.scale,1);
   assert.ok(Number.isFinite(p.x)&&Number.isFinite(p.y));
   assert.equal(pose.exit,.37,'Resize preserves current animation progress');
+}
+for (const [w,h] of sizes) {
+  const geometry=context.exports.floralCoverage(w,h);
+  for(let i=0;i<geometry.panels.length;i++) {
+    const end=context.exports.floralPose(geometry,i,1.06,1);
+    // Every point in the SVG's bounding box must clear the viewport before cleanup.
+    const reach=geometry.radius*2.1*end.scale;
+    assert.ok(Math.hypot(end.x,end.y)>Math.hypot(w/2,h/2)+reach,'Petals physically clear the viewport before fading');
+  }
 }
 console.log('Curved petal coverage passed at all requested sizes, including repeated resize and portrait/landscape changes.');

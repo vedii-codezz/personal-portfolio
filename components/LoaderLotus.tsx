@@ -122,15 +122,15 @@ export function LoaderLotus() {
               duration: 1.25, ease: "sine.inOut",
             }, .35 + Math.floor(i / 7) * .12 + Math.abs(shape.angle) * .0015);
           });
-          timeline.to("[data-loader-lotus]", { scale: 1.13, y: -9, duration: .65, ease: "sine.inOut" }, 1.65)
+          timeline.to("[data-loader-lotus]", { scale: 1.32, y: -12, duration: .85, ease: "sine.inOut" }, 1.65)
             .to("[data-lotus-heart]", { opacity: .8, scale: 1.2, duration: .6 }, 1.5)
             .to("[data-lotus-aura], [data-lotus-heart]", { opacity: 0, duration: .32 }, 2.28);
 
-          // Ordered curved trajectories and a few foreground petals create depth.
+          // Carry the bloom into broad overlapping surfaces, then pass beyond them.
           const panels = Array.from(overlay.querySelectorAll<HTMLElement>("[data-floral-panel]"));
           let dimensions = floralCoverage(viewport.width, viewport.height);
           let radius = Math.hypot(viewport.width, viewport.height) * .8;
-          const coverage = panels.map(() => ({ expansion: .015, exit: 0 }));
+          const coverage = panels.map(() => ({ expansion: .035, exit: 0 }));
           const foregroundMotion = petals.map(() => ({ x: 0, y: 0 }));
           const setters = panels.map(panel => ({ x: gsap.quickSetter(panel, "x", "px"), y: gsap.quickSetter(panel, "y", "px"), scaleX: gsap.quickSetter(panel, "scaleX"), scaleY: gsap.quickSetter(panel, "scaleY"), rotation: gsap.quickSetter(panel, "rotation", "deg") }));
           const foregroundSetters = petals.map(petal => ({ x: gsap.quickSetter(petal, "x", "px"), y: gsap.quickSetter(petal, "y", "px") }));
@@ -154,33 +154,32 @@ export function LoaderLotus() {
           renderGeometry();
           gsap.set(panels, { opacity: 0 });
           panels.forEach((panel, i) => {
-            timeline.to(panel, { opacity: 1, duration: .14 }, 2.1 + (i % 2) * .015)
-              .to(coverage[i], { expansion: 1, duration: .42, ease: "power2.inOut", onUpdate: () => renderPanel(i) }, 2.1 + (i % 3) * .018)
-              .to(coverage[i], { exit: 1, duration: .76, ease: i % 2 ? "power2.inOut" : "power3.inOut", onUpdate: () => renderPanel(i) }, 2.7 + (i % 3) * .025)
-              .to(panel, { opacity: 0, duration: .16 }, 3.35 + (i % 3) * .025);
+            const delay = [0, .035, .012, .055, .025, .065, .018, .045][i];
+            timeline.to(panel, { opacity: 1, duration: .3, ease: "sine.inOut" }, 1.94 + delay)
+              .to(coverage[i], { expansion: 1, duration: .68, ease: "sine.inOut", onUpdate: () => renderPanel(i) }, 1.94 + delay)
+              // The camera keeps approaching while the layers begin to part.
+              .to(coverage[i], { expansion: 1.06, duration: .7, ease: "sine.out", onUpdate: () => renderPanel(i) }, 2.62 + delay)
+              .to(coverage[i], { exit: 1, duration: .92, ease: "sine.inOut", onUpdate: () => renderPanel(i) }, 2.66 + delay);
           });
+          timeline.to("[data-floral-underlay]", { opacity: 1, duration: .2, ease: "sine.inOut" }, 2.4)
+            .to("[data-floral-underlay]", { opacity: 0, duration: .44, ease: "sine.inOut" }, 2.7);
           petals.forEach((petal, i) => {
-            const angle = (i / petals.length) * Math.PI * 2;
-            const at = 2.3 + (i % 3) * .035;
-            const foreground = i % 5 === 0;
-            const bend = angle + (i % 2 === 0 ? .12 : -.12);
-            timeline.to(petal, { scaleX: 2.1, scaleY: 2.1, rotationX: 0, duration: .25, ease: "power2.in" }, at)
-              .to(petal, { rotation: angle * 180 / Math.PI + 12, rotationY: foreground ? -12 : 10,
-                scaleX: foreground ? 2.9 : 2.1, scaleY: foreground ? 2.9 : 2.1,
-                duration: .36, ease: "sine.in" }, at + .12)
-              .to(petal, { rotation: angle * 180 / Math.PI + (i % 2 === 0 ? 32 : -24), rotationY: foreground ? -22 : 18,
-                scaleX: foreground ? 4.4 : 2.9, scaleY: foreground ? 4.4 : 2.9,
-                duration: .6, ease: "power2.inOut" }, at + .48)
-              .to(petal, { opacity: 0, duration: .32, ease: "sine.in" }, at + .85);
-            timeline.to(foregroundMotion[i], { x: Math.sin(angle) * .24, y: Math.cos(angle) * .24, duration: .36, ease: "sine.in", onUpdate: () => renderForeground(i) }, at + .12)
-              .to(foregroundMotion[i], { x: Math.sin(bend) * 1.2, y: Math.cos(bend) * 1.2, duration: .6, ease: "power2.inOut", onUpdate: () => renderForeground(i) }, at + .48);
+            const shape = lotusPetals[i];
+            const angle = shape.angle * Math.PI / 180;
+            const at = 2.16 + (i % 3) * .028;
+            // Keep the original bloom orientation; avoid re-fanning into a pinwheel.
+            timeline.to(petal, { scaleX: shape.size * 2.65, scaleY: shape.size * 2.65,
+              rotationX: 0, duration: .72, ease: "sine.inOut" }, at)
+              .to(petal, { opacity: 0, duration: .3, ease: "sine.inOut" }, 2.55 + (i % 3) * .025);
+            timeline.to(foregroundMotion[i], { x: Math.sin(angle) * .35, y: -Math.cos(angle) * .35,
+              duration: .8, ease: "sine.inOut", onUpdate: () => renderForeground(i) }, at);
           });
-          timeline.call(reveal, [], 2.64)
-            .to("[data-loader-backdrop]", { opacity: 0, duration: .25, ease: "sine.inOut" }, 2.6)
-            .to(content, { opacity: 1, duration: .3, ease: "sine.inOut" }, 2.64)
-            .to("[data-loader-veil]", { opacity: 0, duration: .3, ease: "sine.inOut" }, 2.64)
-            .add(heroEntrance(content, false).timeScale(1.25), 2.92)
-            .to(overlay, { opacity: 0, duration: .14 }, 3.57);
+          timeline.call(reveal, [], 2.58)
+            .to("[data-loader-backdrop]", { opacity: 0, duration: .24, ease: "sine.inOut" }, 2.56)
+            .to(content, { opacity: 1, duration: .24, ease: "sine.inOut" }, 2.58)
+            .to("[data-loader-veil]", { opacity: 0, duration: .24, ease: "sine.inOut" }, 2.58)
+            .add(heroEntrance(content, false).timeScale(1.25), 3.02)
+            .to(overlay, { opacity: 0, duration: .1 }, 3.7);
         }, overlay);
       } catch {
         // Content takes priority if animation setup fails.
