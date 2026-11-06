@@ -12,7 +12,7 @@ type Props = {
 
 // Card wrappers own all spatial transforms. Artwork and the page's GSAP timelines
 // never write to these nodes. Autoplay is deliberately absent: reading comes first.
-export default function CircularCarousel({ items, cardWidth = 360, gap = 25, perspective = 2500, momentum = .6, depthFade = .35, cornerRadius = 12 }: Props) {
+export default function CircularCarousel({ items, cardWidth = 276, gap = 25, perspective = 2500, momentum = .6, depthFade = .35, cornerRadius = 12 }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const cards = useRef<(HTMLDivElement | null)[]>([]);
   const position = useRef(0);
@@ -27,7 +27,7 @@ export default function CircularCarousel({ items, cardWidth = 360, gap = 25, per
   const paint = () => {
     cards.current.forEach((card, index) => {
       if (!card) return;
-      const p = cylinderPosition(index, position.current, items.length, width.current, width.current <= 300 ? -45 : gap);
+      const p = cylinderPosition(index, position.current, items.length, width.current, width.current <= 260 ? -45 : gap);
       const visible = Math.abs(p.angle) < 100;
       card.style.transform = reduced.current
         ? `translate3d(${(index === wrapIndex(Math.round(position.current), items.length) ? 0 : Math.sign(p.x) * (width.current + gap))}px,0,0)`
