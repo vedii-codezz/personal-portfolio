@@ -17,12 +17,12 @@ export function ContactCTA() {
           <a className="contact-email" href="mailto:bedantikamondal28@gmail.com">Let&apos;s Talk <span aria-hidden="true">↗</span></a>
         </div>
       </div>
-      <div className="contact-socials" data-contact-reveal>
-        <a href="https://github.com/vedii-codezz" target="_blank" rel="noopener noreferrer">
+      <div className="contact-socials">
+        <a data-contact-reveal href="https://github.com/vedii-codezz" target="_blank" rel="noopener noreferrer">
           <span className="mono contact-platform">GitHub<span className="sr-only"> (opens in a new tab)</span></span>
           <span className="contact-social-action">Explore My Code <span aria-hidden="true">↗</span></span>
         </a>
-        <a href="https://www.linkedin.com/in/bedantikamondal2007/" target="_blank" rel="noopener noreferrer">
+        <a data-contact-reveal href="https://www.linkedin.com/in/bedantikamondal2007/" target="_blank" rel="noopener noreferrer">
           <span className="mono contact-platform">LinkedIn<span className="sr-only"> (opens in a new tab)</span></span>
           <span className="contact-social-action">Connect With Me <span aria-hidden="true">↗</span></span>
         </a>

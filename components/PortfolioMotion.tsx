@@ -11,51 +11,120 @@ export function PortfolioMotion() {
     // from inside its own GSAP context.
     const media = gsap.matchMedia(document.getElementById("portfolio-content") ?? undefined);
     const start = () => {
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.utils.toArray<HTMLElement>("[data-stack-category]").forEach(category => {
-        gsap.timeline({ scrollTrigger: { trigger: category, start: "top 90%", once: true } })
-          .from(category, { y: 20, opacity: 0, duration: .6, ease: "power2.out", clearProps: "transform,opacity" })
-          .from(category.querySelectorAll("[data-stack-badge]"), { y: 8, opacity: 0, duration: .4, stagger: .04, ease: "sine.out", clearProps: "transform,opacity" }, .15);
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        // Match the botanical rail's scroll range. These entrances only play once,
+        // while the illustration remains freely reversible on its own timeline.
+        const education = gsap.from(".education-date, .education-content", { y: 20, opacity: 0, duration: .75, stagger: .1, ease: "power2.out", clearProps: "transform,opacity", paused: true });
+        const score = gsap.from(".education-score", { y: 12, opacity: 0, duration: .65, ease: "power2.out", clearProps: "transform,opacity", paused: true });
+        let educationShown = false;
+        let scoreShown = false;
+        const revealStory = (progress: number) => {
+          if (progress >= .48 && !educationShown) { educationShown = true; education.play(); }
+          if (progress >= .72 && !scoreShown) { scoreShown = true; score.play(); }
+        };
+        ScrollTrigger.create({ trigger: ".journey-rail",
+          start: () => `clamp(top ${Math.round(window.innerHeight * .84)}px)`,
+          end: () => `clamp(bottom ${Math.round(Math.min(window.innerHeight * .3, 220))}px)`,
+          invalidateOnRefresh: true, onUpdate: self => revealStory(self.progress), onRefresh: self => revealStory(self.progress),
+        });
+        gsap.utils.toArray<HTMLElement>("[data-stack-category]").forEach((category, index) => {
+          gsap.timeline({ delay: index % 2 * .1, scrollTrigger: { trigger: category, start: "top 90%", once: true } })
+            .from(category, { y: 20, opacity: 0, duration: .6, ease: "power2.out", clearProps: "transform,opacity" })
+            .from(category.querySelectorAll("[data-stack-badge]"), { y: 8, opacity: 0, duration: .4, stagger: .04, ease: "sine.out", clearProps: "transform,opacity" }, .15);
+        });
+        gsap.timeline({ scrollTrigger: { trigger: "#contact", start: "top 85%", once: true } })
+          .from("#contact .section-eyebrow", { opacity: 0, duration: .6, clearProps: "opacity" }, 0)
+          .from(".contact-line>[data-contact-reveal]", { yPercent: 105, duration: .85, stagger: .12, ease: "power3.out", clearProps: "transform" }, .1)
+          .from(".contact-description, .contact-composition>div, .contact-socials>a", { y: 18, opacity: 0, duration: .7, stagger: .12, ease: "power2.out", clearProps: "transform,opacity" }, .42);
+        gsap.from("[data-play-reveal]", { y: 28, opacity: 0, stagger: 0.16, duration: 0.8, clearProps: "all", scrollTrigger: { trigger: ".playground-heading", start: "top 90%", once: true } });
+        // CSS owns doodle hover transforms; their entrance only owns opacity.
+        gsap.from(".pengu-doodle", { opacity: 0, stagger: 0.2, duration: 0.7, clearProps: "opacity", scrollTrigger: { trigger: ".pengu-stage", start: "top 80%", once: true } });
+        const float = gsap.to(".pengu-float", { y: -12, rotation: 2, duration: 2.2, ease: "sine.inOut", repeat: -1, yoyo: true, paused: true });
+        const cue = gsap.to(".scroll-line", { y: 5, duration: 1.2, ease: "sine.inOut", repeat: -1, yoyo: true, paused: true });
+        const visibleMotion = (trigger: string, tween: gsap.core.Tween) => ScrollTrigger.create({ trigger, start: "top bottom", end: "bottom top", onToggle: self => { tween.paused(!self.isActive || document.hidden); } });
+        const penguTrigger = visibleMotion(".pengu-stage", float);
+        const heroTrigger = visibleMotion(".hero", cue);
+        const onVisibility = () => { float.paused(document.hidden || !penguTrigger.isActive); cue.paused(document.hidden || !heroTrigger.isActive); };
+        document.addEventListener("visibilitychange", onVisibility);
+        // Prebuilt in this context; repeated clicks never stack animations.
+        const reaction = gsap.timeline({ paused: true })
+          .to(".pengu-reaction", { y: -10, rotation: -3, duration: .2, ease: "power2.out" })
+          .to(".pengu-reaction", { y: 0, rotation: 0, duration: .5, ease: "back.out(1.5)" })
+          .to(".spark-one", { opacity: .35, duration: .2, repeat: 1, yoyo: true }, 0);
+        const react = () => { if (!reaction.isActive()) reaction.restart(); };
+        const button = document.querySelector(".pengu-reaction");
+        button?.addEventListener("click", react);
+        const stage = document.querySelector(".pengu-stage");
+        const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+        const enter = () => { if (fine.matches) float.timeScale(1.3); };
+        const leave = () => { float.timeScale(1); };
+        stage?.addEventListener("pointerenter", enter);
+        stage?.addEventListener("pointerleave", leave);
+        gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach(element => {
+          gsap.from(element, { y: 32, opacity: 0, duration: 0.85, ease: "power2.out", clearProps: "all", scrollTrigger: { trigger: element, start: "top 92%", once: true } });
+        });
+        gsap.utils.toArray<HTMLElement>("[data-project]").forEach(project => {
+          const find = (selector: string) => project.querySelectorAll(selector);
+          const rise = { y: 24, opacity: 0, duration: .75, ease: "power2.out", clearProps: "transform,opacity" };
+          gsap.timeline({ scrollTrigger: { trigger: project, start: "top 88%", once: true } })
+            .from(find(".project-top"), rise, 0)
+            .from(find(".project-visual"), { clipPath: "inset(7% 0% 7% 0%)", opacity: 0, duration: .95, ease: "power3.out", clearProps: "clipPath,opacity" }, .1)
+            .from(find(".project-settle"), { scale: 1.035, duration: 1.05, ease: "power3.out", clearProps: "transform" }, .1)
+            .from(find(".project-title"), rise, .3)
+            .from(find(".project-detail>p, .tech-list"), { ...rise, stagger: .08 }, .4)
+            .from(find(".project-links"), rise, .58);
+        });
+        return () => {
+          document.removeEventListener("visibilitychange", onVisibility);
+          button?.removeEventListener("click", react);
+          stage?.removeEventListener("pointerenter", enter);
+          stage?.removeEventListener("pointerleave", leave);
+        };
       });
-      gsap.from("[data-contact-reveal]", { y: 18, opacity: 0, duration: .7, stagger: .1, ease: "power2.out", clearProps: "transform,opacity", scrollTrigger: { trigger: "#contact", start: "top 80%", once: true } });
-      gsap.from("[data-play-reveal]", { y: 28, opacity: 0, stagger: 0.16, duration: 0.8, clearProps: "all", scrollTrigger: { trigger: ".playground-heading", start: "top 90%", once: true } });
-      gsap.from(".pengu-doodle", { scale: 0.5, opacity: 0, stagger: 0.2, duration: 0.7, ease: "back.out(1.8)", clearProps: "all", scrollTrigger: { trigger: ".pengu-stage", start: "top 80%", once: true } });
-      const float = gsap.to(".pengu-float", { y: -12, rotation: 2, duration: 2.2, ease: "sine.inOut", repeat: -1, yoyo: true, paused: true });
-      ScrollTrigger.create({ trigger: ".pengu-stage", start: "top bottom", end: "bottom top", onToggle: self => { if (self.isActive) float.play(); else float.pause(); } });
-      gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach(element => {
-        gsap.from(element, { y: 32, opacity: 0, duration: 0.85, ease: "power2.out", clearProps: "all", scrollTrigger: { trigger: element, start: "top 92%", once: true } });
+      media.add("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
+        const cleanups: (() => void)[] = [];
+        const follow = (surface: HTMLElement, target: HTMLElement, amount: number, tilt = false) => {
+          let bounds = surface.getBoundingClientRect();
+          let active = false;
+          const measure = () => { if (active) bounds = surface.getBoundingClientRect(); };
+          const enter = () => { active = true; measure(); };
+          const x = gsap.quickTo(target, "x", { duration: .5, ease: "power3.out" });
+          const y = gsap.quickTo(target, tilt ? "rotation" : "y", { duration: .5, ease: "power3.out" });
+          const move = (event: PointerEvent) => {
+            x(gsap.utils.clamp(-1, 1, (event.clientX - bounds.left) / bounds.width * 2 - 1) * amount);
+            y(gsap.utils.clamp(-1, 1, tilt ? (event.clientX - bounds.left) / bounds.width * 2 - 1 : (event.clientY - bounds.top) / bounds.height * 2 - 1) * (tilt ? 3 : amount));
+          };
+          const reset = () => { active = false; x(0); y(0); };
+          surface.addEventListener("pointerenter", enter);
+          surface.addEventListener("pointermove", move);
+          surface.addEventListener("pointerleave", reset);
+          window.addEventListener("scroll", measure, { passive: true });
+          window.addEventListener("resize", measure);
+          cleanups.push(() => {
+            surface.removeEventListener("pointerenter", enter);
+            surface.removeEventListener("pointermove", move);
+            surface.removeEventListener("pointerleave", reset);
+            window.removeEventListener("scroll", measure);
+            window.removeEventListener("resize", measure);
+          });
+        };
+        const stage = document.querySelector<HTMLElement>(".pengu-stage");
+        const character = document.querySelector<HTMLElement>(".pengu-character");
+        if (stage && character) follow(stage, character, 10, true);
+        const email = document.querySelector<HTMLElement>(".contact-email");
+        if (email) follow(email, email, 6);
+        gsap.utils.toArray<HTMLElement>(".project-visual").forEach(visual => {
+          const artwork = visual.querySelector<HTMLElement>(".project-pointer");
+          if (artwork) follow(visual, artwork, 5);
+        });
+        return () => cleanups.forEach(cleanup => cleanup());
       });
-      gsap.utils.toArray<HTMLElement>("[data-project]").forEach(project => {
-        gsap.from(project.querySelector(".project-visual"), { clipPath: "inset(5% 0% 5% 0%)", duration: 1.1, ease: "power2.out", clearProps: "all", scrollTrigger: { trigger: project, start: "top 88%", once: true } });
+      media.add("(min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
+        gsap.to(".portrait-image", { yPercent: 4, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
+        gsap.utils.toArray<HTMLElement>(".project-parallax").forEach(layer => {
+          gsap.fromTo(layer, { y: -5 }, { y: 5, ease: "none", scrollTrigger: { trigger: layer.closest("[data-project]"), start: "top bottom", end: "bottom top", scrub: .8 } });
+        });
       });
-    });
-    media.add("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
-      const stage = document.querySelector<HTMLElement>(".pengu-stage");
-      if (!stage) return;
-      const x = gsap.quickTo(".pengu-character", "x", { duration: 0.65, ease: "power3.out" });
-      const rotate = gsap.quickTo(".pengu-character", "rotation", { duration: 0.65, ease: "power3.out" });
-      const move = (event: PointerEvent) => { const bounds = stage.getBoundingClientRect(); const offset = (event.clientX - bounds.left) / bounds.width - 0.5; x(offset * 24); rotate(offset * 8); };
-      const reset = () => { x(0); rotate(0); };
-      stage.addEventListener("pointermove", move);
-      stage.addEventListener("pointerleave", reset);
-      return () => { stage.removeEventListener("pointermove", move); stage.removeEventListener("pointerleave", reset); };
-    });
-    media.add("(min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
-      gsap.to(".portrait-image", { yPercent: 5, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1 } });
-      const cleanups: (() => void)[] = [];
-      gsap.utils.toArray<HTMLElement>(".project-visual").forEach(visual => {
-        const artwork = visual.querySelector<HTMLElement>(".finora-study, .veyra-study, .aptly-study, .metro-study");
-        if (!artwork) return;
-        const x = gsap.quickTo(artwork, "x", { duration: 0.8, ease: "power3.out" });
-        const y = gsap.quickTo(artwork, "y", { duration: 0.8, ease: "power3.out" });
-        const move = (event: PointerEvent) => { const bounds = visual.getBoundingClientRect(); x((event.clientX - bounds.left - bounds.width/2) * 0.018); y((event.clientY - bounds.top - bounds.height/2) * 0.018); };
-        const reset = () => { x(0); y(0); };
-        visual.addEventListener("pointermove", move);
-        visual.addEventListener("pointerleave", reset);
-        cleanups.push(() => { visual.removeEventListener("pointermove", move); visual.removeEventListener("pointerleave", reset); });
-      });
-      return () => cleanups.forEach(cleanup => cleanup());
-    });
     };
     let started = false;
     let startFrame = 0;

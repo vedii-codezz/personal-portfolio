@@ -64,7 +64,7 @@ export function LotusJourney() {
     if (!rail) return;
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
-    media.add({ compact: "(max-width:1199px)", motion: "(prefers-reduced-motion: no-preference)" }, context => {
+    const start = () => media.add({ compact: "(max-width:1199px)", motion: "(prefers-reduced-motion: no-preference)" }, context => {
       if (!context.conditions?.motion) return;
       const svgs = Array.from(rail.querySelectorAll<SVGSVGElement>(context.conditions.compact ? ".journey-flower, .journey-vine" : ".journey-desktop"));
       const find = (selector: string) => svgs.flatMap(svg => Array.from(svg.querySelectorAll<SVGElement>(selector)));
@@ -128,7 +128,22 @@ export function LotusJourney() {
       void document.fonts.ready.then(queueRefresh);
       return () => { disposed = true; observer.disconnect(); cancelAnimationFrame(refreshFrame); };
     }, rail);
-    return () => media.revert();
+    let started = false;
+    let frame = 0;
+    const startOnce = () => {
+      if (started) return;
+      started = true;
+      frame = requestAnimationFrame(start);
+    };
+    if (document.documentElement.dataset.lotusLoading !== "pending") startOnce();
+    window.addEventListener("portfolio:reveal", startOnce);
+    window.addEventListener("portfolio:ready", startOnce);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("portfolio:reveal", startOnce);
+      window.removeEventListener("portfolio:ready", startOnce);
+      media.revert();
+    };
   }, []);
   return <div ref={ref} className="journey-rail" aria-hidden="true">
     <JourneyArtwork variant="desktop" />

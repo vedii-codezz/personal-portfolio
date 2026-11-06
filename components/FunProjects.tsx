@@ -26,7 +26,7 @@ export function FunProjects() {
           <span className="pengu-doodle doodle-sleep" aria-hidden="true">zzzz</span>
           <span className="pengu-spark spark-one" aria-hidden="true">✳</span>
           <span className="pengu-spark spark-two" aria-hidden="true">✧</span>
-          <div className="pengu-character"><div className="pengu-float"><Image src={pengu} alt="Pengu, a round blue voxel penguin with rosy cheeks and golden feet" sizes="(max-width: 600px) 85vw, 45vw" /></div></div>
+          <div className="pengu-character"><div className="pengu-float"><button type="button" className="pengu-reaction" aria-label="Say hello to Pengu"><Image src={pengu} alt="Pengu, a round blue voxel penguin with rosy cheeks and golden feet" sizes="(max-width: 600px) 85vw, 45vw" /></button></div></div>
           <span className="pengu-ground" aria-hidden="true" />
           <span className="pengu-stage-note mono">A TINY FRIEND. AN ENTIRE MOOD.</span>
         </div>

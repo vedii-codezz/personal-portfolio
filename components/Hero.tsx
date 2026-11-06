@@ -9,11 +9,11 @@ export function Hero() {
         <div className="hero-copy">
           <p className="hero-greeting" data-hero-reveal>Hey, I&apos;m Bedantika.</p>
           <h1 id="hero-name" aria-label="Bedantika Mondal"><span className="headline-mask"><span data-headline>Bedantika</span></span><span className="headline-mask surname"><span data-headline>Mondal<span className="name-period">.</span></span></span></h1>
-          <div className="hero-intro" data-hero-reveal>
+          <div className="hero-intro">
             <span className="tiny-cross" aria-hidden="true">✳</span>
-            <div><h2>Built to think.<br /><em>Made to feel.</em></h2>
-              <p>I explore the intersection of artificial intelligence and creative technology, building intelligent systems and expressive digital experiences.</p>
-              <a className="text-link" href="#work">Explore my work <span aria-hidden="true">↗</span></a>
+            <div><h2 data-hero-reveal>Built to think.<br /><em>Made to feel.</em></h2>
+              <p data-hero-reveal>I explore the intersection of artificial intelligence and creative technology, building intelligent systems and expressive digital experiences.</p>
+              <a className="text-link" href="#work" data-hero-reveal>Explore my work <span aria-hidden="true">↗</span></a>
             </div>
           </div>
         </div>
