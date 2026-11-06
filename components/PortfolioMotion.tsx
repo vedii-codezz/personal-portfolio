@@ -71,7 +71,7 @@ export function PortfolioMotion() {
             .from(find(".project-title"), rise, .12)
             .from(find(".project-visual"), { clipPath: "inset(7% 0% 7% 0%)", opacity: 0, duration: .95, ease: "power3.out", clearProps: "clipPath,opacity" }, .24)
             .from(find(".project-settle"), { scale: 1.035, duration: 1.05, ease: "power3.out", clearProps: "transform" }, .24)
-            .from(find(".project-detail>p, .tech-list"), { ...rise, stagger: .08 }, .48)
+            .from(find(".project-subtitle, .project-detail>p, .tech-list"), { ...rise, stagger: .08 }, .48)
             .from(find(".project-links"), rise, .68);
         });
         return () => {
