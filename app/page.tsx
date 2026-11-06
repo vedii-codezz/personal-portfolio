@@ -6,6 +6,8 @@ import { FunProjects } from "@/components/FunProjects";
 import { Brand } from "@/components/Brand";
 import { ThemeControl } from "@/components/ThemeControl";
 import { LoaderLotus } from "@/components/LoaderLotus";
+import { TechStack } from "@/components/TechStack";
+import { ContactCTA } from "@/components/ContactCTA";
 
 export default function Home() {
   return (
@@ -20,6 +22,8 @@ export default function Home() {
           <a href="#work">Selected work <span>04</span></a>
           <a href="#playground">Playground <span aria-hidden="true">✳</span></a>
           <a href="#story">My story <span aria-hidden="true">↗</span></a>
+          <a href="#stack">Tech stack</a>
+          <a href="#contact">Contact <span aria-hidden="true">↗</span></a>
         </nav>
         <ThemeControl />
       </header>
@@ -28,6 +32,8 @@ export default function Home() {
         <SelectedWork />
         <FunProjects />
         <MyStory />
+        <TechStack />
+        <ContactCTA />
       </main>
       <footer className="site-footer">
         <a className="wordmark" href="#home" aria-label="Bedantika Mondal, back to top"><Brand /></a>

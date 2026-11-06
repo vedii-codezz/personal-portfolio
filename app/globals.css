@@ -312,3 +312,85 @@ button:active { scale:.98; }
 @media(max-width:760px) { .site-header { height:auto; min-height:122px; flex-wrap:wrap; padding:16px 0 8px; gap:10px; } .site-header>.wordmark { font-size:24px; gap:7px; } .site-header .lotus-mark { width:30px; height:32px; } .lotus-mark { width:38px; height:36px; } .site-header nav { order:3; width:100%; justify-content:space-between; gap:12px; margin:0; } .theme-control { margin-left:auto; } .hero { min-height:calc(100svh - 122px); } .site-footer .wordmark { font-size:26px; } }
 @media(max-width:360px) { .site-header>.wordmark { font-size:21px; gap:5px; } .site-header .lotus-mark { width:30px; } }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; animation:none!important; } .wordmark:hover .lotus-mark { transform:none; } }
+
+/* The closing chapters share the portfolio's existing semantic palette. */
+.toolkit { padding-bottom:90px; }
+.toolkit .section-eyebrow,.contact-cta .section-eyebrow { color:var(--muted-foreground); border-color:var(--border); }
+.toolkit-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:48px; padding:48px 0 52px; }
+.toolkit-heading h2 { font-size:clamp(58px,7.4vw,118px); font-weight:400; letter-spacing:-.065em; line-height:1; }
+.toolkit-heading h2 em { color:var(--accent); }
+.toolkit-heading>p { max-width:340px; font-size:14px; line-height:1.85; color:var(--muted-foreground); padding-bottom:5px; }
+.toolkit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.toolkit-category { min-width:0; padding:30px; background:var(--surface); border:1px solid var(--border); border-radius:4px 28px 4px 4px; }
+.toolkit-category:nth-child(2),.toolkit-category:nth-child(3) { background:var(--card); }
+.toolkit-category-heading { display:flex; align-items:baseline; gap:18px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+.toolkit-number { flex-shrink:0; color:var(--accent); }
+.toolkit-category h3 { font-size:clamp(20px,2vw,28px); font-weight:450; line-height:1.25; letter-spacing:-.035em; max-width:300px; }
+.toolkit-badges { display:flex; flex-wrap:wrap; gap:10px; list-style:none; padding:0; margin:25px 0 0; }
+.toolkit-badges li { max-width:100%; }
+.toolkit-badges li>span { display:block; padding:10px 14px; border:1px solid var(--border); border-radius:30px; font-size:12px; line-height:1.4; color:var(--foreground); overflow-wrap:anywhere; transition:transform .2s,background-color .2s,border-color .2s; }
+.contact-cta { background:var(--surface); padding-bottom:50px; }
+.contact-cta .section-eyebrow { align-items:center; }
+.contact-cta .section-eyebrow>.lotus-mark { width:32px; height:30px; color:var(--accent); }
+.contact-composition { padding:60px 0 58px; }
+.contact-composition h2 { font-size:clamp(54px,7.4vw,132px); font-weight:400; letter-spacing:-.065em; line-height:1.08; color:var(--button-primary); }
+.contact-line { display:block; padding:0 .08em .12em 0; }
+.contact-line>[data-contact-reveal] { display:block; }
+.contact-line em { color:var(--accent); letter-spacing:-.06em; }
+.contact-description { max-width:470px; font-size:14px; line-height:1.85; color:var(--muted-foreground); margin:25px 0 30px; }
+.contact-email { display:inline-flex; align-items:center; justify-content:space-between; gap:54px; min-height:56px; padding:16px 26px; border-radius:40px; background:var(--button-primary); color:var(--button-primary-text); font-size:15px; transition:background-color .2s,transform .2s; }
+.contact-email>span { font-size:23px; line-height:1; transition:transform .2s; }
+.contact-email:focus-visible { outline:2px solid var(--foreground); outline-offset:5px; }
+.contact-socials { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:50px; }
+.contact-socials>a { min-width:0; display:flex; flex-direction:column; gap:12px; padding:22px 0; border-top:1px solid var(--border); }
+.contact-platform { color:var(--muted-foreground); }
+.contact-social-action { display:flex; justify-content:space-between; gap:20px; font-size:clamp(18px,2vw,26px); letter-spacing:-.035em; }
+.contact-social-action>span { color:var(--accent); transition:transform .2s; }
+.contact-socials>a:focus-visible { outline-offset:5px; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .toolkit-badges li:hover>span { transform:translateY(-3px); background:var(--background); border-color:var(--accent); }
+  .contact-email:hover { background:var(--hover-accent); transform:translateY(-2px); }
+  [data-theme="dark"] .contact-email:hover { color:var(--background); }
+  .contact-email:hover>span,.contact-socials>a:hover .contact-social-action>span { transform:translate(3px,-3px); }
+}
+@media(min-width:1151px) and (max-width:1450px) { .site-header .header-note { display:none; } }
+@media(min-width:761px) and (max-width:1100px) {
+  .site-header { height:auto; min-height:122px; flex-wrap:wrap; padding:16px 0 8px; gap:10px; }
+  .site-header nav { order:3; width:100%; margin:0; gap:28px; }
+  .site-header nav a { min-height:44px; display:flex; align-items:center; }
+  .site-header .theme-control { margin-left:auto; }
+}
+@media(max-width:900px) {
+  .toolkit-heading { gap:28px; }
+  .toolkit-heading>p { max-width:280px; font-size:13px; }
+  .toolkit-category { padding:24px; }
+  .toolkit-category-heading { gap:12px; }
+}
+@media(max-width:760px) {
+  .site-header nav { flex-wrap:wrap; justify-content:flex-start; column-gap:22px; row-gap:0; }
+  .site-header nav a { display:flex; align-items:center; min-height:44px; }
+  .toolkit-heading { flex-direction:column; align-items:flex-start; padding:36px 0; gap:24px; }
+  .toolkit-heading>p { max-width:430px; }
+  .toolkit-grid { grid-template-columns:minmax(0,1fr); gap:16px; }
+  .toolkit-category { min-height:180px; }
+  .toolkit-category h3 { font-size:24px; }
+  .contact-socials { gap:28px; }
+}
+@media(max-width:600px) {
+  .toolkit { padding-top:48px; padding-bottom:50px; }
+  .toolkit>.section-eyebrow>span:last-child { display:none; }
+  .toolkit-heading h2 { font-size:clamp(49px,12vw,72px); }
+  .toolkit-category { padding:24px 20px; }
+  .toolkit-category h3 { font-size:22px; }
+  .toolkit-badges { gap:8px; margin-top:22px; }
+  .toolkit-badges li>span { padding:9px 12px; font-size:11px; }
+  .contact-cta { padding-top:42px; padding-bottom:28px; }
+  .contact-composition { padding:38px 0; }
+  .contact-composition h2 { font-size:clamp(42px,10.8vw,65px); line-height:1.12; }
+  .contact-description { font-size:13px; margin-top:22px; }
+  .contact-socials { grid-template-columns:minmax(0,1fr); gap:0; }
+  .contact-socials>a { flex-direction:row; align-items:center; gap:20px; min-height:78px; }
+  .contact-social-action { flex:1; font-size:18px; }
+  .contact-platform { min-width:55px; font-size:9px; }
+}

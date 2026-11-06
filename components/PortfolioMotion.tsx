@@ -12,6 +12,12 @@ export function PortfolioMotion() {
     const media = gsap.matchMedia(document.getElementById("portfolio-content") ?? undefined);
     const start = () => {
     media.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.utils.toArray<HTMLElement>("[data-stack-category]").forEach(category => {
+        gsap.timeline({ scrollTrigger: { trigger: category, start: "top 90%", once: true } })
+          .from(category, { y: 20, opacity: 0, duration: .6, ease: "power2.out", clearProps: "transform,opacity" })
+          .from(category.querySelectorAll("[data-stack-badge]"), { y: 8, opacity: 0, duration: .4, stagger: .04, ease: "sine.out", clearProps: "transform,opacity" }, .15);
+      });
+      gsap.from("[data-contact-reveal]", { y: 18, opacity: 0, duration: .7, stagger: .1, ease: "power2.out", clearProps: "transform,opacity", scrollTrigger: { trigger: "#contact", start: "top 80%", once: true } });
       gsap.from("[data-play-reveal]", { y: 28, opacity: 0, stagger: 0.16, duration: 0.8, clearProps: "all", scrollTrigger: { trigger: ".playground-heading", start: "top 90%", once: true } });
       gsap.from(".pengu-doodle", { scale: 0.5, opacity: 0, stagger: 0.2, duration: 0.7, ease: "back.out(1.8)", clearProps: "all", scrollTrigger: { trigger: ".pengu-stage", start: "top 80%", once: true } });
       const float = gsap.to(".pengu-float", { y: -12, rotation: 2, duration: 2.2, ease: "sine.inOut", repeat: -1, yoyo: true, paused: true });
