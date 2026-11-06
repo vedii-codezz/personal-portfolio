@@ -11,6 +11,7 @@ const require = createRequire(import.meta.url);
 function load(file) {
   const exports = {};
   const localRequire = name => {
+    if (name.endsWith('.css')) return {};
     if (!name.startsWith('.') && !name.startsWith('@/')) return require(name);
     const target = name.startsWith('@/') ? name.slice(2) : path.join(path.dirname(file), name);
     return load(['.ts', '.tsx'].map(extension => target + extension).find(candidate => fs.existsSync(candidate)));
@@ -47,6 +48,8 @@ const page = fs.readFileSync('app/page.tsx', 'utf8');
 assert.ok(page.indexOf('<MyStory />') < page.indexOf('<TechStack />'));
 assert.ok(page.indexOf('<TechStack />') < page.indexOf('<ContactCTA />'));
 assert.ok(page.indexOf('<ContactCTA />') < page.indexOf('<footer'));
-for (const anchor of ['stack', 'contact']) assert.ok(page.includes(`href="#${anchor}"`));
+const navigation = load('data/navigation.ts');
+const menu = renderToStaticMarkup(createElement(load('components/StaggeredMenu.tsx').default, { items: navigation.menuItems, socialItems: navigation.socialItems }));
+for (const anchor of ['stack', 'contact']) assert.ok(menu.includes(`href="#${anchor}"`));
 console.log('Closing sections passed: server-rendered HTML, exact 19 technologies, four ordered categories, headings, page order, navigation anchors, and all three contact destinations.');
 
