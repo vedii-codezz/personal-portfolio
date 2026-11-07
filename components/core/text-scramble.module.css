@@ -1,0 +1,8 @@
+.word { display:inline-block; position:relative; white-space:pre; }
+.output { display:none; position:absolute; left:0; top:0; width:max-content; transform-origin:left center; pointer-events:none; }
+.word[data-scrambling] > .original { opacity:0; }
+.word[data-scrambling] > .output { display:block; }
+@media (prefers-reduced-motion:reduce) {
+  .word[data-scrambling] > .original { opacity:1; }
+  .word[data-scrambling] > .output { display:none; }
+}
