@@ -29,8 +29,7 @@ export function PortfolioMotion() {
         });
         gsap.utils.toArray<HTMLElement>("[data-stack-category]").forEach((category, index) => {
           gsap.timeline({ delay: index % 2 * .1, scrollTrigger: { trigger: category, start: "top 90%", once: true } })
-            .from(category, { y: 20, opacity: 0, duration: .6, ease: "power2.out", clearProps: "transform,opacity" })
-            .from(category.querySelectorAll("[data-stack-badge]"), { y: 8, opacity: 0, duration: .4, stagger: .04, ease: "sine.out", clearProps: "transform,opacity" }, .15);
+            .from(category, { y: 20, opacity: 0, duration: .6, ease: "power2.out", clearProps: "transform,opacity" });
         });
         gsap.timeline({ scrollTrigger: { trigger: "#contact", start: "top 85%", once: true } })
           .from("#contact .section-eyebrow", { opacity: 0, duration: .6, clearProps: "opacity" }, 0)
