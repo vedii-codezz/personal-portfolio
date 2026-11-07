@@ -1,6 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ringRadius, bendTiles, advanceRing, releaseTarget, nearestProject, wrapIndex } from '../components/carousel-geometry.ts';
+import { ringRadius, bendTiles, advanceRing, releaseTarget, nearestProject, wrapIndex, angularFocus } from '../components/carousel-geometry.ts';
+
+test('angular focus is crisp at the camera and progressively softens with wrapped distance',()=>{
+ assert.deepEqual(angularFocus(0), { blur:0, opacity:1 });
+ assert.deepEqual(angularFocus(360), angularFocus(0));
+ assert.deepEqual(angularFocus(-72), angularFocus(72));
+ assert.ok(angularFocus(30).blur < angularFocus(72).blur);
+ assert.ok(angularFocus(72).blur < angularFocus(144).blur);
+ assert.ok(angularFocus(72).opacity > angularFocus(144).opacity);
+ assert.ok(angularFocus(72,true).blur < angularFocus(72).blur);
+ assert.ok(angularFocus(72,true).opacity > angularFocus(72).opacity);
+});
+
+test('five projects loop in both directions across repeated revolutions',()=>{
+ for(let turn=-20;turn<=20;turn++) for(let index=0;index<5;index++) {
+  assert.equal(nearestProject(-72*index+turn*360,5),index);
+ }
+ assert.ok(ringRadius(5,270,58)>ringRadius(5,270,25));
+});
 
 test('four curved cards use a complete 90-degree ring and arc-based radius',()=>{
  assert.ok(Math.abs(ringRadius(4,270,25,1)-187.8028)<.001);

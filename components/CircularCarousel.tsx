@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { advanceRing, bendTiles, clamp, nearestProject, releaseTarget, ringRadius, wrapDegrees, type RingMotion } from "./carousel-geometry";
+import { useEffect, useRef, useLayoutEffect, type CSSProperties, type ReactNode } from "react";
+import { angularFocus, advanceRing, bendTiles, clamp, nearestProject, releaseTarget, ringRadius, wrapDegrees, type RingMotion } from "./carousel-geometry";
 
-export type CircularCarouselItem = { id: string; title: string; artwork: ReactNode; content: ReactNode };
+export type CircularCarouselItem = { id: string; title: string; artwork: ReactNode };
 type Props = {
   items: readonly CircularCarouselItem[];
+  selectedIndex: number;
+  onChange: (index: number) => void;
+  onPreview: (index: number | null) => void;
   cardWidth?: number; gap?: number; perspective?: number; momentum?: number;
   depthFade?: number; cornerRadius?: number; curve?: number; tilt?: number;
   parallax?: number; stretch?: number; innerShade?: number; intro?: "rise" | "none";
@@ -13,15 +16,25 @@ type Props = {
 type Press = { id: number; x: number; y: number; origin: number; angle: number; moved: boolean; samples: { angle: number; time: number }[] };
 
 // Motion and eight-strip bending follow React Bits' cylinder preset. Only
-// decorative artwork is repeated; each project's live editorial content is unique.
-export default function CircularCarousel({ items, cardWidth = 276, gap = 25, perspective = 2500, momentum = .6, depthFade = .35, cornerRadius = 12, curve = 1, tilt = -5, parallax = .3, stretch = .5, innerShade = .3, intro = "rise" }: Props) {
+// decorative artwork is repeated; every project has one interactive wrapper.
+export default function CircularCarousel({ items, selectedIndex, onChange, onPreview, cardWidth = 270, gap = 58, perspective = 2500, momentum = .6, depthFade = .35, cornerRadius = 12, curve = 1, tilt = -5, parallax = .3, stretch = .5, innerShade = .3, intro = "rise" }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const camera = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const cards = useRef<(HTMLDivElement | null)[]>([]);
-  const controller = useRef<{ focus: (index: number) => void; step: (delta: number) => void } | null>(null);
-  const [active, setActive] = useState(0);
+  const controller = useRef<{ focus: (index: number) => void; step: (delta: number) => void; refresh: () => void } | null>(null);
+  const active = selectedIndex;
+  const callbacks = useRef({ onChange, onPreview });
+  useLayoutEffect(() => { callbacks.current = { onChange, onPreview }; });
+  const preview = useRef<number | null>(null);
+  const dragging = useRef(false);
+  const previewItem = (index: number | null) => {
+    if (dragging.current) return;
+    preview.current = index;
+    callbacks.current.onPreview(index);
+    controller.current?.refresh();
+  };
   const count = items.length;
   const tileCount = curve > .001 ? 8 : 1;
 
@@ -38,7 +51,7 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
     let yaw = 0, pitch = 0, aimX = 0, aimY = 0;
     const step = 360 / count;
     const rad = Math.PI / 180;
-    const setActiveIndex = (index: number) => { if (index !== current) { current = index; setActive(index); } };
+    const setActiveIndex = (index: number) => { if (index !== current) { current = index; callbacks.current.onChange(index); } };
     const render = (now: number) => {
       const swell = reduced ? 1 : 1 + stretch * .12 * Math.min(1, Math.abs(motion.velocity) / 420);
       const r = radius * swell;
@@ -59,9 +72,14 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
           : `rotateY(${index * step}deg) translateZ(${r}px) translateY(${lift}px)`;
         card.style.visibility = reduced && index !== current ? "hidden" : "visible";
         card.style.setProperty("--card-depth", String(reduced ? 0 : depthFade * Math.pow((1 - Math.cos(world * rad)) / 2, 1.25)));
+        const treatment = angularFocus(world, preview.current === index);
+        card.style.setProperty("--focus-blur", `${reduced ? 0 : treatment.blur}px`);
+        card.style.setProperty("--focus-opacity", String(reduced ? 1 : treatment.opacity));
+        card.style.pointerEvents = !reduced && Math.abs(world) > 100 ? "none" : "auto";
+        card.tabIndex = index === current ? 0 : -1;
         card.dataset.worldAngle = String(world);
       });
-      setActiveIndex(nearestProject(motion.angle, count));
+      if (!press?.moved && motion.target === null && Math.abs(motion.velocity) < .03) setActiveIndex(nearestProject(motion.angle, count));
     };
     const measure = () => {
       width = cards.current[0]?.offsetWidth || cardWidth;
@@ -113,22 +131,31 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
       shell.dataset.motion = "running";
       raf = requestAnimationFrame(frame);
     };
+    const commit = (index: number) => {
+      preview.current = null; callbacks.current.onPreview(null);
+      setActiveIndex(index);
+    };
     const focus = (index: number) => {
+      introDone = true;
+      commit(index);
       const base = -index * step;
       motion.target = base + 360 * Math.round((motion.angle - base) / 360);
       if (reduced) { motion.angle = motion.target; motion.target = null; motion.velocity = 0; setActiveIndex(nearestProject(motion.angle, count)); render(performance.now()); }
       wake();
     };
     const stepBy = (delta: number) => {
+      introDone = true;
       motion.target = (motion.target ?? Math.round(motion.angle / step) * step) - delta * step;
+      commit(nearestProject(motion.target, count));
       if (reduced) { motion.angle = motion.target; motion.target = null; motion.velocity = 0; setActiveIndex(nearestProject(motion.angle, count)); render(performance.now()); }
       wake();
     };
-    controller.current = { focus, step: stepBy };
+    controller.current = { focus, step: stepBy, refresh: () => render(performance.now()) };
     const finishPress = (cancelled = false) => {
       const gesture = press;
       press = null;
       delete shell.dataset.dragging;
+      dragging.current = false;
       if (!gesture?.moved) return;
       suppressClick = true;
       const first = gesture.samples[0], end = gesture.samples[gesture.samples.length - 1];
@@ -157,6 +184,7 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
         if (Math.abs(dy) > Math.abs(dx) * 1.2 && Math.abs(dy) > 5) { press = null; wake(); return; }
         if (Math.abs(dx) < 5) return;
         press.moved = true;
+        dragging.current = true; preview.current = null; callbacks.current.onPreview(null);
         press.angle = motion.angle; press.origin = dx;
         press.samples = [{ angle: motion.angle, time: performance.now() }];
         motion.target = null; motion.velocity = 0;
@@ -183,7 +211,7 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
     const wheel = (event: WheelEvent) => {
       if (event.ctrlKey || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
       event.preventDefault();
-      introDone = true;
+      introDone = true; preview.current = null; callbacks.current.onPreview(null);
       const delta = event.deltaX * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? surface.clientWidth : 1);
       motion.target = null;
       motion.angle -= delta * 180 / (Math.PI * radius);
@@ -217,6 +245,8 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
     resize.observe(shell); intersection.observe(surface); measure();
     shell.dataset.ringReady = "true";
     return () => {
+      if (press && surface.hasPointerCapture(press.id)) surface.releasePointerCapture(press.id);
+      dragging.current = false;
       pause(); clearTimeout(wheelTimer); resize.disconnect(); intersection.disconnect(); controller.current = null;
       surface.removeEventListener("pointerdown", down); surface.removeEventListener("pointermove", move);
       surface.removeEventListener("pointerup", up); surface.removeEventListener("pointercancel", up);
@@ -232,7 +262,6 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
     <p className="carousel-instruction" id="carousel-help">Drag to explore · or use the arrows</p>
     <div ref={stage} className="carousel-stage" tabIndex={0} aria-label="Project gallery" aria-describedby="carousel-help"
       onKeyDown={event => {
-        if (event.target !== event.currentTarget) return;
         if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
           event.preventDefault();
           if (event.key === "Home" || event.key === "End") controller.current?.focus(event.key === "Home" ? 0 : count - 1);
@@ -241,9 +270,13 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
       }}>
       <div ref={camera} className="carousel-camera"><div ref={ring} className="carousel-cylinder">
         {items.map((item, index) => <div key={item.id} ref={element => { cards.current[index] = element; }}
-          className="carousel-card" data-active={index === active} data-project={item.id} role="group" aria-roledescription="slide" aria-hidden={index !== active}
+          className="carousel-card" data-active={index === active} data-project={item.id} role="button" tabIndex={index === active ? 0 : -1} aria-pressed={index === active}
           aria-label={`${index + 1} of ${count}: ${item.title}`}
-          onClick={event => { if (!(event.target as Element).closest("a,button") && index !== active) controller.current?.focus(index); }}>
+          onPointerEnter={event => { if (event.pointerType === "mouse") previewItem(index); }}
+          onPointerLeave={event => { if (event.pointerType === "mouse" && preview.current === index) previewItem(null); }}
+          onFocus={() => previewItem(index)} onBlur={() => previewItem(null)}
+          onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); controller.current?.focus(index); } }}
+          onClick={() => controller.current?.focus(index)}>
           <div className="carousel-tiled-surface" aria-hidden="true">
             {Array.from({ length: tileCount }, (_, tile) => <div className="carousel-art-tile" data-art-tile key={tile} data-edge={tile === 0 ? "first" : tile === tileCount - 1 ? "last" : undefined}>
               <div className="carousel-tile-frame"><div className="carousel-tile-art">{item.artwork}</div><div className="carousel-tile-shade" /></div>
@@ -252,7 +285,7 @@ export default function CircularCarousel({ items, cardWidth = 276, gap = 25, per
               <div className="carousel-tile-frame"><div className={`carousel-tile-art visual-${item.id}`} /><div className="carousel-tile-shade" /></div>
             </div>)}
           </div>
-          <div className="carousel-live" inert={index !== active}>{item.content}</div>
+
         </div>)}
       </div></div>
     </div>

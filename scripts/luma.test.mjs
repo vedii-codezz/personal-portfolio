@@ -22,16 +22,19 @@ function load(file){
  };
  vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,require:localRequire});return exports;
 }
-test('Selected Work renders five unique live cards and the data-driven project count',()=>{
+test('Selected Work renders five artwork-only cards with one initial details panel',()=>{
  const html=renderToStaticMarkup(createElement(load('components/SelectedWork.tsx').SelectedWork));
- assert.equal((html.match(/class="carousel-project"/g)??[]).length,5);
- assert.equal((html.match(/<a /g)??[]).length,10);
+ assert.equal((html.match(/class="carousel-card"/g)??[]).length,5);
+ assert.equal((html.match(/<a /g)??[]).length,2);
  assert.match(html,/class="work-count">05/);
- assert.deepEqual([...html.matchAll(/<h3 id="title-([^"]+)"/g)].map(match=>match[1]),['finora','veyra','aptly','nikot-e-metro','luma']);
- assert.match(html,/href="https:\/\/luma-rust-beta.vercel.app\/" target="_blank" rel="noopener noreferrer"/);
- assert.match(html,/href="https:\/\/github.com\/vedii-codezz\/luma" target="_blank" rel="noopener noreferrer"/);
- assert.ok(html.includes(carouselDescriptions.luma));
- assert.ok(html.includes('05 / SELECTED WORK'));
+ assert.deepEqual([...html.matchAll(/data-project="([^"]+)"/g)].map(match=>match[1]),projects.map(project=>project.slug));
+ assert.ok(!html.includes('carousel-editorial'));
+ assert.ok(html.includes(carouselDescriptions.finora));
+ for(const [index,project] of projects.entries()) {
+  const details=renderToStaticMarkup(createElement(load('components/ProjectDetailsPanel.tsx').ProjectDetailsPanel,{project,index}));
+  assert.ok(details.includes(project.live)); assert.ok(details.includes(project.github));
+  assert.ok(details.includes(carouselDescriptions[project.slug]));
+ }
 });
 test('five-card ring advances through LUMA and wraps to Finora without geometry changes',()=>{
  assert.equal(projects.length,5);

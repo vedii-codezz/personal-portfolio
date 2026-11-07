@@ -5,6 +5,12 @@ export const wrapIndex = (value: number, count: number) => ((value % count) + co
 export const wrapDegrees = (value: number) => wrapIndex(value + 180, 360) - 180;
 export const nearestProject = (angle: number, count: number) => wrapIndex(Math.round(-angle / (360 / count)), count);
 
+export function angularFocus(angle: number, hovered = false) {
+  const distance = Math.abs(wrapDegrees(angle)) / 180;
+  return { blur: Math.max(0, 4 * distance - (hovered ? 1.2 : 0)),
+    opacity: Math.min(1, 1 - .55 * distance + (hovered ? .16 : 0)) };
+}
+
 export function ringRadius(count: number, width: number, gap: number, curve = 1) {
   const n = Math.max(count, 3);
   const pitch = width + gap;
