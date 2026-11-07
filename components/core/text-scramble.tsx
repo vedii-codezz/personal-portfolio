@@ -12,11 +12,12 @@ type TextScrambleProps = Omit<HTMLAttributes<HTMLElement>, "children"> & {
   onScrambleComplete?: () => void;
 };
 
-export function TextScramble({ children, as: Tag = "span", speed = .01, trigger = false,
-  onHoverStart, onScrambleComplete, className, onPointerEnter, ...props }: TextScrambleProps) {
+export function TextScramble({ children, as: Tag = "span", speed = .01, trigger = true,
+  onHoverStart, onScrambleComplete, className, onPointerEnter, onPointerLeave, ...props }: TextScrambleProps) {
   const root = useRef<HTMLElement>(null);
   const output = useRef<HTMLSpanElement>(null);
   const [restart, setRestart] = useState(0);
+  const cancel = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const element = root.current;
@@ -36,6 +37,7 @@ export function TextScramble({ children, as: Tag = "span", speed = .01, trigger 
       text.style.removeProperty("transform");
     };
     const finish = () => { restore(); onScrambleComplete?.(); };
+    cancel.current = finish;
     const tick = (now: number) => {
       started ??= now;
       const step = Math.floor((now - started) / interval);
@@ -54,7 +56,7 @@ export function TextScramble({ children, as: Tag = "span", speed = .01, trigger 
     if (media.matches) { finish(); return; }
     media.addEventListener("change", finish);
     frame = requestAnimationFrame(tick);
-    return () => { restore(); media.removeEventListener("change", finish); };
+    return () => { restore(); cancel.current = null; media.removeEventListener("change", finish); };
   }, [children, speed, trigger, restart, onScrambleComplete]);
 
   return <Tag {...props} ref={root as React.Ref<HTMLDivElement & HTMLSpanElement>}
@@ -64,6 +66,10 @@ export function TextScramble({ children, as: Tag = "span", speed = .01, trigger 
       if (event.pointerType === "touch") return;
       if (trigger) setRestart(value => value + 1);
       onHoverStart?.();
+    }}
+    onPointerLeave={event => {
+      onPointerLeave?.(event);
+      cancel.current?.();
     }}>
     <span className={styles.original}>{children}</span>
     <span ref={output} className={styles.output} aria-hidden="true">{children}</span>

@@ -1,17 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { TextScramble } from "@/components/core/text-scramble";
 import portrait from "@/public/images/bedantika.jpeg";
 
+function subscribeToEntrance(callback: () => void) {
+  window.addEventListener("portfolio:ready", callback);
+  return () => window.removeEventListener("portfolio:ready", callback);
+}
+const entranceFinished = () => document.documentElement.dataset.lotusLoading === "complete";
+const serverEntranceFinished = () => false;
+
 export function Hero() {
-  const [firstTrigger, setFirstTrigger] = useState(false);
-  const [surnameTrigger, setSurnameTrigger] = useState(false);
-  const finishFirst = useCallback(() => setFirstTrigger(false), []);
-  const finishSurname = useCallback(() => setSurnameTrigger(false), []);
-  const canScramble = () => document.documentElement.dataset.lotusLoading === "complete"
-    && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ready = useSyncExternalStore(subscribeToEntrance, entranceFinished, serverEntranceFinished);
   return (
     <section className="hero" id="home" aria-labelledby="hero-name">
       <div className="hero-topline mono"><span>PERSONAL PORTFOLIO / CREATIVE LAB</span><span className="hero-discipline"><i /> AI / ML & CREATIVE DEVELOPMENT</span></div>
@@ -19,8 +21,8 @@ export function Hero() {
         <div className="hero-copy">
           <p className="hero-greeting" data-hero-reveal>Hey, I&apos;m Bedantika.</p>
           <h1 id="hero-name" aria-label="Bedantika Mondal">
-            <span className="headline-mask"><span data-headline><TextScramble as="span" speed={0.05} trigger={firstTrigger} onHoverStart={() => { if (canScramble()) setFirstTrigger(true); }} onScrambleComplete={finishFirst}>Bedantika</TextScramble></span></span>
-            <span className="headline-mask surname"><span data-headline><TextScramble as="span" speed={0.05} trigger={surnameTrigger} onHoverStart={() => { if (canScramble()) setSurnameTrigger(true); }} onScrambleComplete={finishSurname}>Mondal</TextScramble><span className="name-period">.</span></span></span>
+            <span className="headline-mask"><span data-headline><TextScramble as="span" speed={0.05} trigger={ready ? undefined : false}>Bedantika</TextScramble></span></span>
+            <span className="headline-mask surname"><span data-headline><TextScramble as="span" speed={0.05} trigger={ready ? undefined : false}>Mondal</TextScramble><span className="name-period">.</span></span></span>
           </h1>
           <div className="hero-intro">
             <span className="tiny-cross" aria-hidden="true">✳</span>
