@@ -5,7 +5,7 @@ import CircularCarousel from "./CircularCarousel";
 export function SelectedWork() {
   return <section className="work section-pad" id="work" aria-labelledby="work-title">
     <div className="section-eyebrow mono" data-reveal><span><i /> 02 / SELECTED WORK</span><span>A FEW THINGS I&apos;VE PUT MY MIND INTO</span></div>
-    <div className="work-heading" data-reveal><h2 id="work-title">Curiosity,<br /><em>put to work.</em></h2><div><span className="work-count">04<span> / PROJECTS</span></span><p>Intelligent at the core.<br />Expressive on the surface.</p></div></div>
+    <div className="work-heading" data-reveal><h2 id="work-title">Curiosity,<br /><em>put to work.</em></h2><div><span className="work-count">{String(projects.length).padStart(2, "0")}<span> / PROJECTS</span></span><p>Intelligent at the core.<br />Expressive on the surface.</p></div></div>
     <CircularCarousel items={projects.map((project, index) => ({
       id: project.slug, title: project.name, artwork: <ProjectVisual slug={project.slug} compact />,
       content: <article className="carousel-project" aria-labelledby={`title-${project.slug}`}>

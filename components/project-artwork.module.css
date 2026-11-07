@@ -111,3 +111,20 @@
 .compact .metroIdentity>span { font-size:24px; line-height:1.3; }
 .compact .metroIdentity small { font-size:9px; }
 .compact .transitComposition { gap:6px; }
+
+/* LUMA: a quiet subject rail and document canvas, rather than an AI chat mockup. */
+.lumaComposition { display:grid; grid-template-rows:auto minmax(0,1fr); gap:10px; min-height:0; }
+.lumaMasthead { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.lumaWordmark { font-family:var(--font-display),Georgia,serif; font-size:clamp(36px,12cqw,58px); line-height:1; letter-spacing:-.025em; color:#eeeadd; }
+.lumaWordmark>span { color:#a5baa0; margin-left:2px; }
+.lumaMasthead small { font-size:7px; letter-spacing:.08em; line-height:1.4; max-width:85px; color:#aab9a7; text-align:right; }
+.lumaWorkspace { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.4fr); min-height:0; border:1px solid #526a59; border-radius:5px; background:#1b2b23; }
+.lumaSidebar { display:flex; flex-direction:column; gap:6px; padding:10px 7px; border-right:1px solid #435c4b; min-width:0; }
+.lumaSidebar small { font-size:7px; letter-spacing:.1em; color:#a6b7a2; margin-bottom:2px; }
+.lumaSidebar>span { font-size:9px; line-height:1.3; color:#d4dccb; }
+.lumaSidebar>span:nth-child(2) { padding:4px 3px; background:#344c3b; border-radius:3px; color:#edf0e5; }
+.lumaSidebar i { display:inline-block; width:3px; height:3px; background:#aec4a3; border-radius:50%; vertical-align:middle; margin-right:2px; }
+.lumaCanvas { display:flex; flex-direction:column; gap:5px; padding:9px 7px; min-width:0; min-height:0; }
+.lumaCanvasLabel { display:flex; justify-content:space-between; gap:5px; color:#e5e8dc; font-size:10px; line-height:1.3; }
+.lumaCanvasLabel>span:last-child { color:#a8bba0; }
+.lumaDocuments { width:100%; height:100%; min-height:0; }

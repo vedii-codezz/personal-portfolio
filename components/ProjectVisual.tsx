@@ -1,7 +1,7 @@
 import type { Project } from "@/data/projects";
 import styles from "./project-artwork.module.css";
 
-const studyNames = { finora: "finora-study", veyra: "veyra-study", aptly: "aptly-study", "nikot-e-metro": "metro-study" };
+const studyNames = { finora: "finora-study", veyra: "veyra-study", aptly: "aptly-study", "nikot-e-metro": "metro-study", luma: "luma-study" };
 
 function StudyNote() {
   return <div className={styles.studyNote}><span>Original visual study</span><span>Not a product screenshot</span></div>;
@@ -79,6 +79,30 @@ function MetroArtwork() {
   </>;
 }
 
+function LumaArtwork() {
+  return <>
+    <StudyNote />
+    <div className={styles.lumaComposition}>
+      <div className={styles.lumaMasthead}><span className={styles.lumaWordmark}>LUMA<span>·</span></span><small>A CLEARER SPACE TO LEARN</small></div>
+      <div className={styles.lumaWorkspace}>
+        <div className={styles.lumaSidebar}><small>SUBJECTS</small><span><i /> Computer Sci.</span><span>Mathematics</span><span>Physics</span></div>
+        <div className={styles.lumaCanvas}>
+          <div className={styles.lumaCanvasLabel}><span>Your library</span><span aria-hidden="true">↗</span></div>
+          <svg className={styles.lumaDocuments} viewBox="0 0 160 80" fill="none">
+            <rect x="45" y="5" width="75" height="62" rx="3" fill="#304638" stroke="#687f6e" />
+            <path d="M34 13H95L109 27V74H34Z" fill="#edeade" stroke="#a8b7a0" />
+            <path d="M95 13V27H109" fill="#c4d0bc" stroke="#a8b7a0" />
+            <path d="M45 36H92M45 43H83M45 50H92M45 57H76" stroke="#78927d" strokeWidth="2" strokeLinecap="round" />
+            <path d="M124 23H139M124 30H135M124 52H139M124 59H135" stroke="#768d7d" strokeLinecap="round" />
+            <circle cx="130" cy="42" r="3" fill="#a5baa0" />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <p className={styles.footnote}>Conceptual workspace / Sample materials</p>
+  </>;
+}
+
 export function ProjectVisual({ slug, compact = false }: { slug: Project["slug"]; compact?: boolean }) {
   return <div className={`project-visual visual-${slug} ${styles.frame} ${compact ? styles.compact : ""}`} aria-hidden="true">
     <div className={styles.texture} />
@@ -88,6 +112,7 @@ export function ProjectVisual({ slug, compact = false }: { slug: Project["slug"]
         {slug === "veyra" && <VeyraArtwork />}
         {slug === "aptly" && <AptlyArtwork />}
         {slug === "nikot-e-metro" && <MetroArtwork />}
+        {slug === "luma" && <LumaArtwork />}
       </div>
     </div></div></div>
   </div>;

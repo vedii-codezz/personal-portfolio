@@ -1,5 +1,5 @@
 export type Project = {
-  slug: "finora" | "veyra" | "aptly" | "nikot-e-metro";
+  slug: "finora" | "veyra" | "aptly" | "nikot-e-metro" | "luma";
   name: string; category: string; title: string; description: string;
   technologies: readonly string[]; github: string; live: string;
 };
@@ -35,6 +35,13 @@ export const projects: readonly Project[] = [
     technologies: ["Next.js", "TypeScript", "MapLibre", "Drizzle ORM"],
     github: "https://github.com/vedii-codezz/nikot-e-metro", live: "https://nikot-e-metro.vercel.app/",
   },
+  {
+    slug: "luma", name: "LUMA", category: "FULL-STACK / STUDY WORKSPACE",
+    title: "A clearer space to learn.",
+    description: "An editorial study workspace with a sample study experience, subject organization, and implemented Supabase authentication and private PDF upload/download flows. Live mode requires backend configuration; AI tutoring and generated practice remain planned.",
+    technologies: ["Next.js", "TypeScript", "Supabase", "Tailwind CSS", "Framer Motion"],
+    github: "https://github.com/vedii-codezz/luma", live: "https://luma-rust-beta.vercel.app/",
+  },
 ];
 
 // Concise exhibition copy; the original, longer project descriptions remain intact.
@@ -43,4 +50,5 @@ export const carouselDescriptions: Record<Project["slug"], string> = {
   veyra: "An interactive finance dashboard that makes budgeting and spending easier to understand.",
   aptly: "An AI-powered opportunity assistant that explains eligibility, skill gaps, and career fit.",
   "nikot-e-metro": "An interactive Kolkata Metro guide for discovering stations, routes, and connections.",
+  luma: "A thoughtfully designed study workspace for organizing subjects, managing learning materials, and staying focused.",
 };

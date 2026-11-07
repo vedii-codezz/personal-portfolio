@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { projects } from '../data/projects.ts';
 const browser = spawn(`${process.env.LOCALAPPDATA}/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-win64/chrome-headless-shell.exe`, ['--remote-debugging-port=9338', '--no-sandbox', '--disable-gpu', 'about:blank'], { windowsHide:true, stdio:'ignore' });
 const delay = ms => new Promise(resolve => setTimeout(resolve,ms));
 let socket;
@@ -74,6 +75,6 @@ try {
  assert.ok(await evaluate(`(()=>{const p=document.querySelector('.staggered-panel');p.scrollTop=p.scrollHeight;const a=p.querySelector('.staggered-socials a:last-child').getBoundingClientRect();return a.bottom<=innerHeight&&a.top>=0})()`),'Social links reachable by internal scroll on a short screen');await close();
  for(let i=0;i<6;i++){await click('.menu-toggle');await delay(35);}await until(`document.querySelector('.navigation-shell').dataset.menuState==='closed'`);assert.equal(await evaluate(`document.querySelector('main').inert`),false);
  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});await click('.menu-toggle');await delay(50);assert.equal(await evaluate(`document.querySelector('.navigation-shell').dataset.menuState`),'open');await click('.menu-toggle');await delay(50);assert.equal(await evaluate(`document.querySelector('.navigation-shell').dataset.menuState`),'closed');
- assert.equal(await evaluate(`document.querySelectorAll('.carousel-card').length`),4);assert.deepEqual(errors,[],'No browser exceptions');
+ assert.equal(await evaluate(`document.querySelectorAll('.carousel-card').length`),projects.length);assert.deepEqual(errors,[],'No browser exceptions');
  console.log('PASS short mobile scrolling, rapid toggles, reduced motion, carousel preservation, no browser exceptions');
 } finally {socket?.close();browser.kill();}

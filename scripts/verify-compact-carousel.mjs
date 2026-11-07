@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { projects } from '../data/projects.ts';
 const baseline=process.argv.includes('--baseline');
 const browser=spawn(`${process.env.LOCALAPPDATA}/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-win64/chrome-headless-shell.exe`,['--remote-debugging-port=9339','--no-sandbox','--disable-gpu','about:blank'],{windowsHide:true,stdio:'ignore'});
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -16,7 +17,7 @@ try {
  await send('Page.enable');await send('Runtime.enable');
  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
  await send('Page.navigate',{url:'http://127.0.0.1:3001/'});await until(`document.documentElement?.dataset.lotusLoading==='complete'&&!!document.querySelector('.carousel-card')`);
- const folder=`docs/${process.argv.includes('--ring')?'ring-carousel-verification':'compact-carousel-verification'}/${baseline?'before':'after'}`;await fs.mkdir(folder,{recursive:true});
+ const folder=`docs/${process.argv.includes('--luma')?'luma-verification':process.argv.includes('--ring')?'ring-carousel-verification':'compact-carousel-verification'}/${baseline?'before':'after'}`;await fs.mkdir(folder,{recursive:true});
  const results=[];
  for(const [width,height] of (process.argv.includes('--scroll-only')?[]:[[320,640],[390,844],[768,1024],[1366,768],[1440,900],[1920,1080]])){
   await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<768});await delay(150);
@@ -30,10 +31,10 @@ try {
   if(baseline){console.log(`BASELINE ${width}x${height}: card ${dimensions.card.width}x${dimensions.card.height}, stage ${dimensions.stage.height}, controls bottom ${Math.round(dimensions.controls.bottom)}`);continue;}
   assert.ok(dimensions.card.width<=280&&dimensions.card.height<=450,'Cards use compact actual dimensions');
   assert.ok(dimensions.pageWidth<=dimensions.viewport,'No horizontal page overflow');
-  assert.ok(dimensions.side.includes('rotateY(90deg)')&&dimensions.side.includes('translateZ('),'Neighbors retain complete ring placement');
+  assert.ok(dimensions.side.includes(`rotateY(${360/projects.length}deg)`)&&dimensions.side.includes('translateZ('),'Neighbors retain complete ring placement');
   if(width===1440){assert.ok(dimensions.eyebrow.top>=0&&dimensions.controls.bottom<=height,'Eyebrow, heading, whole card, and controls fit together at 1440x900');}
   if(width===1366){assert.ok(dimensions.heading.top>=0&&dimensions.card.bottom<height+40,'Heading and most of carousel fit a 1366x768 laptop');}
-  for(const name of ['Finora','VEYRA','APTLY','Nikot-e-Metro']){
+  for(const name of projects.map(project=>project.name)){
    await evaluate(`document.querySelector('[aria-label="Show ${name}"]').click()`);await delay(1000);
    const fit=await evaluate(`(()=>{const c=document.querySelector('[data-active="true"]'),art=c.querySelector('.project-visual'),p=c.querySelector('.carousel-editorial p'),h=c.querySelector('h3'),links=c.querySelector('.carousel-links');const b=c.getBoundingClientRect(),l=links.getBoundingClientRect(),d=p.getBoundingClientRect(),t=h.getBoundingClientRect();const content=art.querySelector('.project-pointer').firstElementChild;const keyArt=content.children[1];return {copyFits:d.bottom<=l.top+1&&t.bottom<=d.top+1&&l.bottom<=b.bottom,titleFits:h.scrollWidth<=h.clientWidth,artFits:keyArt.offsetTop>=0&&keyArt.offsetTop+keyArt.offsetHeight<=art.clientHeight+1,artHeight:art.clientHeight,cardHeight:c.clientHeight,linkRects:[...links.querySelectorAll('a')].map(a=>{const r=a.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,href:a.href}})}})()`);
    assert.ok(fit.copyFits,`${name} description and links fit at ${width}`);assert.ok(fit.titleFits,`${name} title fits at ${width}`);assert.ok(fit.artFits,`${name} key artwork fits at ${width}`);
@@ -41,7 +42,7 @@ try {
    if(width===1440){const shot=await send('Page.captureScreenshot',{format:'png'});await fs.writeFile(`${folder}/${name}-artwork.png`,Buffer.from(shot.data,'base64'));}
   }
   await evaluate(`document.querySelector('[aria-label="Show Finora"]').click()`);await delay(1000);
-  console.log(`PASS ${width}x${height}: compact dimensions, four complete cards/artworks, genuine 3D, no overflow, both themes`);
+  console.log(`PASS ${width}x${height}: compact dimensions, ${projects.length} complete cards/artworks, genuine 3D, no overflow, both themes`);
  }
  if(results.length) await fs.writeFile(`${folder}/measurements.json`,JSON.stringify(results,null,2)+'\n');
  if(!baseline){

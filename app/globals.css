@@ -126,6 +126,7 @@ h1 { font-size:clamp(84px,10.6vw,180px); font-weight:450; letter-spacing:-.085em
 .visual-veyra { background:#25201c; color:#e5b47d; }
 .visual-aptly { background:#e7e5dc; color:#232a23; }
 .visual-nikot-e-metro { background:#1a292b; color:#afd1c6; }
+.visual-luma { background:#14221d; color:#eeeadd; }
 
 .work-end { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:0 0 20px; color:var(--muted); font-size:8px; }
 .work-end>span:nth-child(2) { color:var(--gold); font-size:25px; }
