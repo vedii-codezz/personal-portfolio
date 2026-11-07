@@ -1,69 +1,83 @@
-type AlponaProps = { variant: string; back?: boolean };
+import type { ReactNode } from "react";
 
-// Original line drawings: shared rice-paste strokes, four different compositions.
-function PetalFan({ x, y, radius = 44, count = 9 }: { x: number; y: number; radius?: number; count?: number }) {
-  return <g transform={`translate(${x} ${y})`}>
-    <path d={`M${-radius} 0 A${radius} ${radius} 0 0 1 ${radius} 0 M${-radius + 5} 0 A${radius - 5} ${radius - 5} 0 0 1 ${radius - 5} 0`} />
-    {Array.from({ length: count }, (_, index) => <g key={index} transform={`rotate(${-82 + index * 164 / (count - 1)})`}>
-      <path d={`M0 ${-radius - 2} C-9 ${-radius - 12} -6 ${-radius - 25} 0 ${-radius - 29} C7 ${-radius - 23} 9 ${-radius - 12} 0 ${-radius - 2} Z`} />
-      <path d={`M0 ${-radius - 5} Q-2 ${-radius - 15} 0 ${-radius - 23}`} />
-      <circle cy={-radius - 36} r="1.4" className="alpona-dot" />
-    </g>)}
-  </g>;
-}
+type OrnamentProps = { back?: boolean };
+type AlponaProps = OrnamentProps & { variant: string };
 
 function Lotus({ x, y, scale = 1 }: { x: number; y: number; scale?: number }) {
   return <g transform={`translate(${x} ${y}) scale(${scale})`}>
     <path d="M0 0 C-14-12-12-24 0-34 C12-23 14-12 0 0 Z M0 0 C-22-2-28-15-27-24 C-13-22-4-12 0 0 M0 0 C21-3 29-15 27-24 C13-21 4-12 0 0 M-30-10 Q-19 7 0 3 Q19 7 30-10" />
+    <path strokeWidth=".7" d="M0-6 Q-3-17 0-27 M-5-4 Q-18-9-23-18 M5-4 Q18-9 23-18" />
     <circle cy="-42" r="1.8" className="alpona-dot" />
   </g>;
 }
 
-export function TechStackAlpona({ variant, back = false }: AlponaProps) {
-  return <svg className={`toolkit-alpona${back ? " toolkit-alpona-back" : ""}`} viewBox="0 0 360 380"
-    preserveAspectRatio="none" aria-hidden="true" focusable="false" fill="none" stroke="currentColor"
-    strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round">
-    {/* Broken edge rules leave the editorial center open. */}
-    <g className="alpona-edge">
-      <path d="M14 83 V32 Q14 15 32 15 H91 M269 365 H328 Q346 365 346 348 V302" />
-      <path d="M20 69 V33 Q20 21 33 21 H71 M290 359 H327 Q340 359 340 346 V323" />
-      <circle cx="98" cy="15" r="1.6" className="alpona-dot" />
-      <circle cx="262" cy="365" r="1.6" className="alpona-dot" />
-    </g>
-    {variant === "01" && <g>
-      <g className="alpona-upper">
-      <path d="M265 102 C305 108 342 87 331 62 C324 46 304 56 311 69 C315 76 324 73 323 67 M265 102 C290 92 278 72 291 59 C299 51 306 47 305 36 C331 48 352 68 342 91 C331 118 287 120 265 102 Z M278 103 C295 100 302 88 300 78" />
-      <Lotus x={282} y={103} scale={.56} />
-      </g>
-      <PetalFan x={103} y={315} radius={31} count={7} />
-      <path d="M148 312 Q190 296 224 307 Q240 312 248 303 C254 295 242 291 240 298" />
-      {[0, 1, 2, 3].map(index => <circle key={index} cx={174 + index * 14} cy={318} r="1.6" className="alpona-dot" />)}
-    </g>}
-    {variant === "02" && <g>
-      <g className="alpona-upper">
-      <path d="M196 77 C221 49 247 61 256 82 C263 100 291 106 310 91 C329 76 317 53 303 60 C291 66 301 80 308 72 M211 68 C227 68 232 56 229 48 C216 47 211 57 211 68 Z M253 77 C268 74 273 63 270 55 C258 55 251 65 253 77 Z M281 96 C285 80 296 80 299 84 C295 95 288 98 281 96" />
-      </g>
-      <path d="M33 295 C58 313 74 295 94 286 C120 273 143 286 138 299 C135 307 122 307 123 298 M49 300 Q52 283 66 283 Q67 296 49 300 M82 292 Q81 278 92 273 Q98 286 82 292 M101 284 Q115 272 126 277 Q120 290 101 284" />
-      <Lotus x={284} y={310} scale={.64} />
-      <path d="M213 311 Q235 301 253 306 M317 306 Q324 309 332 305" />
-    </g>}
-    {variant === "03" && <g>
-      <g className="alpona-upper">
-      <PetalFan x={278} y={105} radius={30} count={9} />
-      <path d="M234 109 H322 M244 114 H312" />
-      </g>
-      <PetalFan x={180} y={315} radius={36} count={11} />
-      <Lotus x={180} y={311} scale={.56} />
-      <path d="M50 306 H103 M257 306 H310" />
-      <circle cx="114" cy="306" r="2" className="alpona-dot" /><circle cx="246" cy="306" r="2" className="alpona-dot" />
-    </g>}
-    {variant === "04" && <g>
-      <g className="alpona-upper">
-      <path d="M242 67 H322 V117 M248 73 H316 V111 M275 77 Q296 78 304 96 Q286 98 275 77 Z M311 105 Q293 112 289 124 Q308 126 311 105 Z M301 78 Q306 85 310 87 M274 67 Q278 58 286 58 Q288 66 280 67" />
-      </g>
-      <path d="M39 266 V310 H91 M45 274 V304 H83 M49 287 Q66 285 71 298 Q56 303 49 287 Z M45 267 Q59 266 62 279 Q48 280 45 267" />
-      <Lotus x={271} y={311} scale={.65} />
-      {[0, 1, 2, 3, 4, 5].map(index => <circle key={index} cx={121 + index * 15} cy="309" r="1.6" className="alpona-dot" />)}
-    </g>}
+function Drawing({ children, back = false, name }: OrnamentProps & { children: ReactNode; name: string }) {
+  return <svg className={`toolkit-alpona alpona-${name}${back ? " toolkit-alpona-back" : ""}`}
+    viewBox="0 0 360 380" preserveAspectRatio={name === "border" ? "xMidYMid meet" : "xMidYMid slice"} aria-hidden="true" focusable="false"
+    fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+    {children}
   </svg>;
+}
+
+export function PaisleyAlpona({ back = false }: OrnamentProps) {
+  return <Drawing name="paisley" back={back}>
+    <g transform={back ? "translate(30 -68)" : undefined}>
+      <path strokeWidth="1.6" d="M369 254 C297 219 334 169 292 137 C251 106 250 65 280 38 C302 18 333 25 329 47 C326 65 304 61 309 48 C312 40 321 44 319 49 M292 137 C345 147 371 110 352 77 C341 58 336 40 344 17 C295 14 258 31 247 63 C233 105 261 133 292 137 Z" />
+      <path strokeWidth=".8" d="M292 127 C330 135 357 109 344 84 C330 61 330 44 333 29 C291 24 261 43 256 70 C250 94 266 118 292 127 M350 222 C330 194 347 168 323 147" />
+      <Lotus x={292} y={117} scale={.68} />
+      <path d="M329 172 C302 169 296 152 304 146 C320 148 329 158 329 172 Z M334 198 C352 186 357 171 350 161 C336 165 329 183 334 198 M348 232 C324 227 314 215 319 204 C337 207 348 219 348 232" />
+      {Array.from({ length: 13 }, (_, i) => { const angle = (154 + i * 13) * Math.PI / 180; return <circle key={i} cx={304 + 65 * Math.cos(angle)} cy={80 + 65 * Math.sin(angle)} r={i % 3 === 0 ? 2 : 1.2} className="alpona-dot" />; })}
+    </g>
+    {back ? <g><path strokeWidth=".75" d="M30 108 H93 M114 108 H178" /><Lotus x={104} y={111} scale={.21} />{[40, 56, 72, 136, 152, 168].map(x => <circle key={x} cx={x} cy={113} r="1" className="alpona-dot" />)}</g> : <g><Lotus x={39} y={323} scale={.65} /><path d="M14 325 Q43 340 68 323 M19 332 Q42 342 62 332" /></g>}
+  </Drawing>;
+}
+
+export function SemicircleAlpona({ back = false }: OrnamentProps) {
+  return <Drawing name="semicircle" back={back}>
+    <g transform="translate(414 178)">
+      {[112, 123, 152].map((r, i) => <circle key={r} r={r} strokeWidth={i === 1 ? 1.5 : .8} />)}
+      {Array.from({ length: 17 }, (_, i) => <g key={i} transform={`rotate(${i * 14 + 70})`}>
+        <path d="M0-127 C-12-135-11-146 0-150 C10-144 13-135 0-127 Z" />
+        <path strokeWidth=".65" d="M0-132 Q-2-141 0-145 M0-158 C-8-166-7-179 0-184 C9-176 9-166 0-158 Z" />
+        <circle cy="-191" r={i % 2 ? 1.2 : 2} className="alpona-dot" />
+      </g>)}
+    </g>
+    {back && <g><path d="M23 319 C40 333 61 327 72 312 C81 300 95 308 89 316 C84 322 78 318 81 313 M41 327 C36 312 44 304 51 306 C56 316 48 322 41 327" /><Lotus x={28} y={322} scale={.34} /></g>}
+  </Drawing>;
+}
+
+export function RadialAlpona({ back = false }: OrnamentProps) {
+  return <Drawing name="radial" back={back}>
+    <g transform={back ? "translate(332 26)" : "translate(307 74)"}>
+      {[24, 29, 66, 73, 109].map((r, i) => <circle key={r} r={r} strokeWidth={i % 2 ? .7 : 1.3} />)}
+      {Array.from({ length: 12 }, (_, i) => <g key={i} transform={`rotate(${i * 30})`}>
+        <path d="M0-31 C-18-40-16-56 0-64 C17-53 17-40 0-31 Z M0-76 C-14-82-15-98 0-106 C15-96 14-82 0-76 Z" />
+        <path strokeWidth=".7" d="M0-38 Q-5-48 0-57 M0-82 Q-4-93 0-100 M15-78 C32-88 30-104 22-102 C16-100 20-94 24-96" />
+        <circle cy="-116" r="2" className="alpona-dot" />
+        <circle cy="-9" r="2" className="alpona-dot" />
+      </g>)}
+      <path d="M-13 0 Q0-23 13 0 Q0 23-13 0 Z" />
+    </g>
+    {back && [24, 326].map(y => <g key={y}>{[153, 167, 180, 193, 207].map((x, i) => <circle key={x} cx={x} cy={y} r={i === 2 ? 2 : 1} className="alpona-dot" />)}</g>)}
+  </Drawing>;
+}
+
+export function BorderAlpona({ back = false }: OrnamentProps) {
+  return <Drawing name="border" back={back}>
+    <path strokeWidth=".85" d="M33 17 H327 Q343 17 343 33 V347 Q343 363 327 363 H33 Q17 363 17 347 V33 Q17 17 33 17 Z M36 23 H324 Q337 23 337 36 V344 Q337 357 324 357 H36 Q23 357 23 344 V36 Q23 23 36 23 Z" />
+    <g transform={back ? "translate(8 10) scale(.75)" : undefined}>
+      <Lotus x={45} y={63} scale={.72} />
+      <path d="M24 88 C40 86 30 65 47 64 C68 63 55 36 78 28 M46 64 C60 77 75 68 71 59 C66 52 60 58 64 62" />
+    </g>
+    <g transform={back ? "translate(352 370) rotate(180) scale(.75)" : "translate(360 380) rotate(180)"}>
+      <Lotus x={45} y={63} scale={.72} />
+      <path d="M24 88 C40 86 30 65 47 64 C68 63 55 36 78 28 M46 64 C60 77 75 68 71 59 C66 52 60 58 64 62" />
+    </g>
+    {!back && <g><path d="M118 380 A62 44 0 0 1 242 380 M125 380 A55 37 0 0 1 235 380" /><Lotus x={180} y={378} scale={.85} /><Lotus x={145} y={379} scale={.45} /><Lotus x={215} y={379} scale={.45} /></g>}
+  </Drawing>;
+}
+
+export function TechStackAlpona({ variant, back = false }: AlponaProps) {
+  const Ornament = ({ "01": PaisleyAlpona, "02": SemicircleAlpona, "03": RadialAlpona, "04": BorderAlpona } as const)[variant as "01" | "02" | "03" | "04"];
+  return Ornament ? <Ornament back={back} /> : null;
 }

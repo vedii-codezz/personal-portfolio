@@ -16,8 +16,6 @@
 .toolkit-alpona .alpona-dot { fill:currentColor; stroke:none; }
 .toolkit-alpona .alpona-edge { opacity:.8; }
 .toolkit-alpona-back { opacity:calc(var(--alpona-opacity) * .65); }
-.toolkit-alpona-back > g:not(.alpona-edge) { transform:translateY(6px); }
-.toolkit-alpona-back .alpona-upper { display:none; }
 /* Solid surface beneath copy masks ornament strokes, including at narrow widths. */
 .toolkit-flip-title,.toolkit-flip-back h3,.toolkit-flip-technologies { background:var(--stack-surface); }
 .toolkit-flip-meta { display:flex; justify-content:space-between; align-items:center; font-size:10px; letter-spacing:.12em; opacity:.8; }
@@ -37,3 +35,18 @@
   .toolkit-flip-content { padding:24px; }
   .toolkit-flip-title { font-size:38px; }
 }
+
+/* Ornament composition: static layers follow the existing card rotation. */
+.toolkit-flip-category:nth-child(4) { --alpona-ink:#FFF6E8; --alpona-opacity:.7; }
+.toolkit-alpona-back { opacity:calc(var(--alpona-opacity) * .4); }
+.toolkit-alpona-back.alpona-radial { opacity:calc(var(--alpona-opacity) * .28); }
+.toolkit-alpona-back.alpona-border { opacity:calc(var(--alpona-opacity) * .65); }
+.toolkit-flip-title { background:transparent; }
+.toolkit-flip-category:nth-child(1) .toolkit-flip-title { max-width:76%; }
+.toolkit-flip-category:nth-child(2) .toolkit-flip-title { max-width:80%; }
+.toolkit-flip-category:nth-child(3) .toolkit-flip-title { margin-top:auto; margin-bottom:18px; max-width:86%; }
+.toolkit-flip-category:nth-child(4) .toolkit-flip-title { text-align:center; }
+.toolkit-flip-back h3,.toolkit-flip-technologies { position:relative; z-index:1; }
+.toolkit-flip-category:nth-child(2) .toolkit-flip-technologies { gap:13px; max-width:240px; }
+.alpona-semicircle { mask-image:linear-gradient(to right,transparent 48%,#000 76%); }
+.toolkit-flip-category:nth-child(1) .toolkit-flip-back h3 { margin-bottom:30px; }
